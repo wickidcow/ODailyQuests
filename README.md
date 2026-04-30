@@ -1,5 +1,7 @@
 # ODailyQuests
 
+<img width="805" height="187" alt="image" src="https://github.com/user-attachments/assets/ecffe00c-7d0f-4b0b-a319-b428aae32f1e" />
+
 ### Dynamize your server & increase player retention !
 
 O'DailyQuests is a powerful and easy-to-use **daily quests plugin** for Minecraft.
