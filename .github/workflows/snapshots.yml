@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with: { fetch-depth: 0 }
 
       - name: Ensure full history
@@ -27,7 +27,7 @@ jobs:
           git fetch --no-tags --prune --unshallow || true
           git fetch --no-tags --prune origin ${{ env.BASE_BRANCH }} --depth=0 || true
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
