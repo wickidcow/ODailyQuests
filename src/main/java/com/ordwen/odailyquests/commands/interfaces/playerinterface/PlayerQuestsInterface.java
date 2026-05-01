@@ -647,7 +647,7 @@ public class PlayerQuestsInterface extends InterfaceItemGetter {
             itemMeta.addEnchant(Enchantment.SILK_TOUCH, 1, false);
         }
 
-        itemMeta.addAttributeModifier(Attribute.GENERIC_MAX_HEALTH, new AttributeModifier(UUID.randomUUID(), "dummy", 0, AttributeModifier.Operation.ADD_NUMBER));
+        itemMeta.addAttributeModifier(Attribute.MAX_HEALTH, new AttributeModifier(UUID.randomUUID(), "dummy", 0, AttributeModifier.Operation.ADD_NUMBER));
         itemMeta.addItemFlags(ItemFlag.values());
     }
 
