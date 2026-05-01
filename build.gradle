@@ -49,9 +49,9 @@ dependencies {
     compileOnly 'org.xerial:sqlite-jdbc:3.49.1.0'
     compileOnly 'com.h2database:h2:2.1.214'
 
-    /* Spigot */
-    compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
-
+    /* Paper */
+    compileOnly 'io.papermc.paper:paper-api:26.1.2.build.+'
+    
     /* Folia */
     implementation 'space.arim.morepaperlib:morepaperlib:0.4.3'
 
@@ -117,7 +117,7 @@ dependencies {
     compileOnly 'com.willfp:eco:6.76.2'
 }
 
-def targetJavaVersion = 21
+def targetJavaVersion = 25
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     if (JavaVersion.current() < javaVersion) {
