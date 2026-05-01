@@ -6,11 +6,9 @@
 
 Give your players a reason to return every day with randomized daily quests, customizable objectives, and flexible rewards. Whether you run a survival, RPG, economy, factions, or MMO-style server, O'DailyQuests helps keep your community active and engaged.
 
-O'DailyQuests was originally developed and maintained by its original creator, but the project was later discontinued. This fork continues the work of keeping the plugin alive for modern Minecraft servers, focusing on compatibility updates, bug fixes, quality-of-life improvements, and continued support for server owners.
+O'DailyQuests was originally developed and maintained by https://github.com/Ordwen but the project was recently discontinued. This fork continues the work of keeping the plugin alive for modern Minecraft servers, focusing on compatibility updates, bug fixes, quality-of-life improvements, and continued support for server owners.
 
 The goal is to preserve the original spirit of O'DailyQuests while giving it a refreshed future.**
-
-<img width="805" height="187" alt="DailyQuests Banner" src="https://github.com/user-attachments/assets/ecffe00c-7d0f-4b0b-a319-b428aae32f1e" />
 
 ## Bring Daily Adventure to Your Minecraft Server
 
