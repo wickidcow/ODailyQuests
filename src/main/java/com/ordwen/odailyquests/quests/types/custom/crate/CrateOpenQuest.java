@@ -11,7 +11,9 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 import su.nightexpress.excellentcrates.api.event.CrateOpenEvent;
 
+import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -100,11 +102,47 @@ public class CrateOpenQuest extends AbstractQuest {
     @Override
     public boolean canProgress(@Nullable Event provided, Progression progression) {
         if (provided instanceof CrateOpenEvent event) {
-            final String crate = event.getCrate().getName();
+            final String crate = getCrateName(event);
+
+            if (crate == null || crate.isBlank()) {
+                Debugger.write("CrateOpenQuest: could not resolve crate name from ExcellentCrates event.");
+                return false;
+            }
+
             Debugger.write("CrateOpenQuest: canProgress checking crate " + crate);
-            return expectedCrate.isEmpty() || expectedCrate.contains(crate.toLowerCase());
+            return expectedCrate.isEmpty() || expectedCrate.contains(crate.toLowerCase(Locale.ROOT));
         }
+
         return false;
+    }
+
+    /**
+     * Reads the ExcellentCrates crate name through reflection.
+     *
+     * <p>This avoids directly compiling against ExcellentCrates' crate implementation,
+     * which may extend NightCore classes that are not present on the compile classpath.</p>
+     *
+     * @param event ExcellentCrates crate open event
+     * @return crate name, or {@code null} if it could not be resolved
+     */
+    @Nullable
+    private String getCrateName(CrateOpenEvent event) {
+        try {
+            final Method getCrateMethod = event.getClass().getMethod("getCrate");
+            final Object crate = getCrateMethod.invoke(event);
+
+            if (crate == null) {
+                return null;
+            }
+
+            final Method getNameMethod = crate.getClass().getMethod("getName");
+            final Object name = getNameMethod.invoke(crate);
+
+            return name == null ? null : name.toString();
+        } catch (ReflectiveOperationException exception) {
+            Debugger.write("CrateOpenQuest: failed to read crate name from ExcellentCrates event: " + exception.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -134,11 +172,16 @@ public class CrateOpenQuest extends AbstractQuest {
         // Accept list or single string
         if (section.isList(REQUIRED)) {
             for (String crate : section.getStringList(REQUIRED)) {
-                expectedCrate.add(crate.toLowerCase());
+                if (crate != null && !crate.isBlank()) {
+                    expectedCrate.add(crate.toLowerCase(Locale.ROOT));
+                }
             }
         } else if (section.isString(REQUIRED)) {
             final String crate = section.getString(REQUIRED);
-            expectedCrate.add(crate.toLowerCase());
+
+            if (crate != null && !crate.isBlank()) {
+                expectedCrate.add(crate.toLowerCase(Locale.ROOT));
+            }
         }
 
         return true;
