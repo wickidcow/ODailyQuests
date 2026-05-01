@@ -51,13 +51,37 @@ public final class NMSHandler {
     /**
      * Checks whether the current server version is at least the provided prefix.
      *
-     * <p>This is a simple lexicographical comparison ({@link String#compareTo(String)}).</p>
+     * <p>Uses numeric component comparison so both legacy versions like {@code "1.21.11"}
+     * and modern versions like {@code "26.1.2"} compare correctly.</p>
      *
-     * @param versionPrefix a version prefix like {@code "1.18.1"}
-     * @return {@code true} if {@link #getVersion()} is lexicographically >= {@code versionPrefix}
+     * @param versionPrefix a version prefix like {@code "1.18.1"} or {@code "26.1.2"}
+     * @return {@code true} if {@link #getVersion()} is numerically >= {@code versionPrefix}
      */
     public static boolean isVersionAtLeast(String versionPrefix) {
-        return VERSION.compareTo(versionPrefix) >= 0;
+        final String[] current = VERSION.split("\\.");
+        final String[] target = versionPrefix.split("\\.");
+        final int max = Math.max(current.length, target.length);
+
+        for (int i = 0; i < max; i++) {
+            final int currentPart = parseVersionPart(current, i);
+            final int targetPart = parseVersionPart(target, i);
+
+            if (currentPart != targetPart) {
+                return currentPart > targetPart;
+            }
+        }
+
+        return true;
+    }
+
+    private static int parseVersionPart(String[] parts, int index) {
+        if (index >= parts.length) return 0;
+
+        try {
+            return Integer.parseInt(parts[index].replaceAll("[^0-9].*$", ""));
+        } catch (NumberFormatException exception) {
+            return 0;
+        }
     }
 
     /**
