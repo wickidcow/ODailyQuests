@@ -1,4 +1,6 @@
-# DailyQuests
+# ODailyQuests
+
+<img width="805" height="187" alt="ODailyQuests Banner" src="https://github.com/user-attachments/assets/ecffe00c-7d0f-4b0b-a319-b428aae32f1e" />
 
 ## Bring Daily Adventure to Your Minecraft Server
 
@@ -6,15 +8,15 @@
 
 Give your players a reason to return every day with randomized daily quests, customizable objectives, and flexible rewards. Whether you run a survival, RPG, economy, factions, or MMO-style server, O'DailyQuests helps keep your community active and engaged.
 
-O'DailyQuests was originally developed and maintained by https://github.com/Ordwen but the project was recently discontinued. This fork continues the work of keeping the plugin alive for modern Minecraft servers, focusing on compatibility updates, bug fixes, quality-of-life improvements, and continued support for server owners.
+---
 
-The goal is to preserve the original spirit of O'DailyQuests while giving it a refreshed future.**
+## 🛠 Project Status
 
-## Bring Daily Adventure to Your Minecraft Server
+O'DailyQuests was originally developed and maintained by its original creator, but the project was later discontinued.
 
-**DailyQuests** is a powerful, lightweight, and easy-to-use daily quest plugin for Minecraft servers.
+This fork continues the work of keeping O'DailyQuests alive for modern Minecraft servers, with a focus on compatibility updates, bug fixes, quality-of-life improvements, and continued support for server owners who still rely on the plugin.
 
-Give your players a reason to return every day with randomized daily quests, customizable objectives, and flexible rewards. Whether you run a survival, RPG, economy, factions, or MMO-style server, O'DailyQuests helps keep your community active and engaged.
+The goal is to preserve the original spirit of O'DailyQuests while giving it a refreshed future.
 
 ---
 
@@ -34,8 +36,6 @@ Give your players a reason to return every day with randomized daily quests, cus
 
 Need help setting up quests, rewards, or configuration files?
 
-Read the full documentation here:
-
 [📚 O'DailyQuests Wiki](https://ordwenplugins.gitbook.io/odailyquests/)
 
 ---
@@ -44,15 +44,22 @@ Read the full documentation here:
 
 Need help, want to report an issue, or have suggestions for future updates?
 
-Join the community Discord:
-
 [💬 Join the Discord](https://discord.com/invite/NPAUE7kTgJ)
+
+---
+
+## 🔗 Downloads
+
+Download O'DailyQuests from your preferred platform:
+
+- [📥 SpigotMC Resource Page](https://www.spigotmc.org/resources/odailyquests-daily-quests-plugin-1-16-1-19.100990/)
+- [📥 Modrinth Resource Page](https://modrinth.com/plugin/odailyquests)
 
 ---
 
 ## 🧩 Addons
 
-Expand DailyQuests with addon support:
+Expand O'DailyQuests with addon support:
 
 - [PyroFishingPro Support](https://github.com/Ordwen/ODQ-PyroFishingPro/releases)
 

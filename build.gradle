@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ordwen'
-version = "3.0.4-Albion-Spigot-26.1.2"
+version = "3.0.3-26.1.2"
 
 def ciVersion = System.getenv("ORG_GRADLE_PROJECT_version")
 if (ciVersion != null && !ciVersion.trim().isEmpty()) {
@@ -49,9 +49,9 @@ dependencies {
     compileOnly 'org.xerial:sqlite-jdbc:3.49.1.0'
     compileOnly 'com.h2database:h2:2.1.214'
 
-    /* Spigot 26.1.2 */
+    /* Spigot */
     compileOnly 'org.spigotmc:spigot-api:26.1.2-R0.1-SNAPSHOT'
-    
+
     /* Folia */
     implementation 'space.arim.morepaperlib:morepaperlib:0.4.3'
 
@@ -64,7 +64,7 @@ dependencies {
     /* economy & points */
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
     compileOnly 'org.black_ixx:playerpoints:3.2.2'
-    compileOnly('su.nightexpress.coinsengine:CoinsEngine:2.4.1') { transitive = false }
+    compileOnly 'su.nightexpress.coinsengine:CoinsEngine:2.4.1'
     compileOnly('com.github.Realizedd:TokenManager:3.2.4') { transitive = false }
 
     /* npcs */
@@ -111,7 +111,7 @@ dependencies {
     compileOnly 'com.github.NuVotifier:NuVotifier:2.7.2'
 
     /* crates */
-    compileOnly('su.nightexpress.excellentcrates:ExcellentCrates:6.0.0') { transitive = false }
+    compileOnly 'su.nightexpress.excellentcrates:ExcellentCrates:6.0.0'
 
     /* compatibility libs */
     compileOnly 'com.willfp:eco:6.76.2'
@@ -119,16 +119,12 @@ dependencies {
 
 def targetJavaVersion = 25
 java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
+    toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
 }
 
 tasks.withType(JavaCompile).configureEach {
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        options.release = targetJavaVersion
-    }
+    options.release = targetJavaVersion
+    options.encoding = 'UTF-8'
 }
 
 tasks.shadowJar {
