@@ -12,6 +12,7 @@ on:
       - 'gradle/**'
       - 'gradlew'
       - '.github/workflows/deploy-javadoc.yml'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -52,10 +53,30 @@ jobs:
           FTP_TARGET_PATH: ${{ secrets.FTP_TARGET_PATH }}
           FTP_PORT: ${{ secrets.FTP_PORT }}
         run: |
-          mkdir -p ~/.ssh
-          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          if [ -z "$FTP_USERNAME" ]; then
+            echo "Missing FTP_USERNAME secret"
+            exit 1
+          fi
+
+          if [ -z "$FTP_PASSWORD" ]; then
+            echo "Missing FTP_PASSWORD secret"
+            exit 1
+          fi
+
+          if [ -z "$FTP_HOST" ]; then
+            echo "Missing FTP_HOST secret"
+            exit 1
+          fi
+
+          if [ -z "$FTP_TARGET_PATH" ]; then
+            echo "Missing FTP_TARGET_PATH secret"
+            exit 1
+          fi
 
           PORT="${FTP_PORT:-22}"
+
+          mkdir -p ~/.ssh
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
           sshpass -p "$FTP_PASSWORD" scp \
             -o StrictHostKeyChecking=no \
