@@ -29,10 +29,9 @@ repositories {
     maven { url = 'https://repo.codemc.org/repository/maven-public/' }
     maven { url = 'https://repo.bg-software.com/repository/api/' }
     maven { url = 'https://mvn-repo.arim.space/lesser-gpl3/' }
-    maven { url = 'https://repo.rosewooddev.io/repository/public/' }
     maven { url = 'https://nexus.phoenixdevt.fr/repository/maven-public/' }
-    maven { url = 'https://maven.enginehub.org/repo/'}
-    maven { url = 'https://repo.glaremasters.me/repository/towny/'}
+    maven { url = 'https://maven.enginehub.org/repo/' }
+    maven { url = 'https://repo.glaremasters.me/repository/towny/' }
     maven { url = 'https://repo.magmaguy.com/releases/' }
     maven { url = 'https://repo.nightexpressdev.com/releases/' }
     maven { url = 'https://repo.nexomc.com/releases/' }
@@ -40,14 +39,15 @@ repositories {
     maven { url = 'https://repo.auxilor.io/repository/maven-public/' }
     maven { url = 'https://repo.fancyinnovations.com/releases' }
     maven { url = 'https://repo.codemc.io/repository/EvenMoreFish/' }
+    maven { url = 'https://maven.devs.beer/' }
     maven { url = 'https://jitpack.io' }
 }
 
 dependencies {
     /* database management */
-    compileOnly 'com.zaxxer:HikariCP:5.0.1'
-    compileOnly 'org.xerial:sqlite-jdbc:3.49.1.0'
-    compileOnly 'com.h2database:h2:2.1.214'
+    compileOnly 'com.zaxxer:HikariCP:7.0.2'
+    compileOnly 'org.xerial:sqlite-jdbc:3.53.0.0'
+    compileOnly 'com.h2database:h2:2.4.240'
 
     /* Spigot */
     compileOnly 'org.spigotmc:spigot-api:26.1.2-R0.1-SNAPSHOT'
@@ -59,33 +59,33 @@ dependencies {
     compileOnly 'com.jeff-media:custom-block-data:2.2.5'
 
     /* Mojang auth API for heads */
-    compileOnly 'com.mojang:authlib:1.5.25'
+    compileOnly 'com.mojang:authlib:3.13.56'
 
     /* economy & points */
-    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
-    compileOnly 'org.black_ixx:playerpoints:3.2.2'
-    compileOnly('su.nightexpress.coinsengine:CoinsEngine:2.4.1') { transitive = false }
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7.1'
+    compileOnly 'org.black_ixx:playerpoints:3.2.6'
+    compileOnly('su.nightexpress.coinsengine:CoinsEngine:2.6.0') { transitive = false }
     compileOnly('com.github.Realizedd:TokenManager:3.2.4') { transitive = false }
 
     /* npcs */
     compileOnly('net.citizensnpcs:citizens-main:2.0.42-SNAPSHOT') { exclude group: '*', module: '*' }
-    compileOnly 'de.oliver:FancyNpcs:2.7.0'
+    compileOnly 'de.oliver:FancyNpcs:2.9.0'
 
     /* mobs */
-    compileOnly 'io.lumine:Mythic-Dist:5.6.1'
+    compileOnly 'io.lumine:Mythic-Dist:5.11.2'
     compileOnly 'com.magmaguy:EliteMobs:10.2.0'
 
     /* stackers */
-    compileOnly 'dev.rosewood:rosestacker:1.5.33'
-    compileOnly 'com.bgsoftware:WildStackerAPI:3.8.0'
+    compileOnly 'dev.rosewood:rosestacker:1.5.38'
+    compileOnly 'com.bgsoftware:WildStackerAPI:2025.2'
 
     /* guis */
     compileOnly 'me.clip:placeholderapi:2.11.6'
 
     /* custom items */
-    compileOnly 'io.th0rgal:oraxen:1.191.0'
-    compileOnly 'com.github.LoneDev6:API-ItemsAdder:4.0.17-beta-9'
-    compileOnly 'com.nexomc:nexo:1.1.0'
+    compileOnly 'com.github.oraxen:oraxen:1.198.1'
+    compileOnly 'dev.lone:api-itemsadder:4.0.10'
+    compileOnly 'com.nexomc:nexo:1.16.1'
     compileOnly 'net.Indyuce:MMOItems-API:6.10.1-SNAPSHOT'
     compileOnly 'net.Indyuce:MMOCore-API:1.13.1-SNAPSHOT'
     compileOnly 'io.lumine:MythicLib-dist:1.7.1-SNAPSHOT'
@@ -111,7 +111,7 @@ dependencies {
     compileOnly 'com.github.NuVotifier:NuVotifier:2.7.2'
 
     /* crates */
-    compileOnly('su.nightexpress.excellentcrates:ExcellentCrates:6.0.0') { transitive = false }
+    compileOnly('su.nightexpress.excellentcrates:ExcellentCrates:6.1.0') { transitive = false }
 
     /* compatibility libs */
     compileOnly 'com.willfp:eco:6.76.2'
