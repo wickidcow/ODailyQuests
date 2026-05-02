@@ -39,6 +39,8 @@ import com.ordwen.odailyquests.quests.types.entity.KillQuest;
 import com.ordwen.odailyquests.quests.types.entity.ShearQuest;
 import com.ordwen.odailyquests.quests.types.entity.TameQuest;
 import com.ordwen.odailyquests.quests.types.global.*;
+import com.ordwen.odailyquests.quests.types.custom.valhallammo.ValhallaMMOExpQuest;
+import com.ordwen.odailyquests.quests.types.custom.valhallammo.ValhallaMMOLevelUpQuest;
 import com.ordwen.odailyquests.quests.types.inventory.GetQuest;
 import com.ordwen.odailyquests.quests.types.inventory.LocationQuest;
 import com.ordwen.odailyquests.quests.types.inventory.PlaceholderQuest;
@@ -234,6 +236,8 @@ public final class ODailyQuests extends JavaPlugin {
         questTypeRegistry.registerQuestType("NU_VOTIFIER", NuVotifierQuest.class);
         questTypeRegistry.registerQuestType("VOTIFIER_PLUS", VotifierPlusQuest.class);
         questTypeRegistry.registerQuestType("CRATE_OPEN", CrateOpenQuest.class);
+        questTypeRegistry.registerQuestType("VALHALLA_EXP", ValhallaMMOExpQuest.class);
+        questTypeRegistry.registerQuestType("VALHALLA_LEVEL_UP", ValhallaMMOLevelUpQuest.class);
 
 
         /* register addons types */
