@@ -8,7 +8,7 @@ import com.ordwen.odailyquests.configuration.integrations.OraxenEnabled;
 import com.ordwen.odailyquests.events.listeners.crate.CrateOpenListener;
 import com.ordwen.odailyquests.events.listeners.customs.CustomFurnaceExtractListener;
 import com.ordwen.odailyquests.events.listeners.entity.custom.stackers.RoseStackerListener;
-import com.ordwen.odailyquests.events.listeners.integrations.emf.EMFFishCaughtListener;
+import com.ordwen.odailyquests.events.listeners.integrations.pyrofishingpro.PyroFishCatchListener;
 import com.ordwen.odailyquests.events.listeners.integrations.npcs.CitizensHook;
 import com.ordwen.odailyquests.events.listeners.integrations.customsuite.CropBreakListener;
 import com.ordwen.odailyquests.events.listeners.integrations.customsuite.FishingLootSpawnListener;
@@ -133,7 +133,7 @@ public class EventsManager {
         registerIfPluginEnabled("eco", () -> pluginManager.registerEvents(new DropQueuePushListener(), oDailyQuests));
         registerIfPluginEnabled("MMOCore", () -> pluginManager.registerEvents(new CustomPlayerFishListener(), oDailyQuests));
         registerIfPluginEnabled("MMOItems", () -> pluginManager.registerEvents(new CraftMMOItemListener(), oDailyQuests));
-        registerIfPluginEnabled("EvenMoreFish", () -> pluginManager.registerEvents(new EMFFishCaughtListener(), oDailyQuests));
+        registerIfPluginEnabled("PyroFishingPro", () -> PyroFishCatchListener.register(pluginManager, oDailyQuests));
     }
 
     private void registerIfPluginEnabled(final String pluginName, final Runnable registerAction) {
