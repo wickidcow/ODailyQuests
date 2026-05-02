@@ -4,43 +4,45 @@ on:
   push:
     branches:
       - master
-      - 3.0.2
+      - 3.0.4
     paths:
       - 'src/**'
       - 'build.gradle'
       - 'settings.gradle'
+      - 'gradle/**'
+      - 'gradlew'
       - '.github/workflows/deploy-javadoc.yml'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Make Gradle Wrapper executable
         run: chmod +x ./gradlew
 
       - name: Generate Javadoc
-        run: ./gradlew javadoc
+        run: ./gradlew javadoc --no-daemon
 
-      - name: Install SSH client
-        run: sudo apt-get install -y openssh-client
+      - name: Install SCP tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client sshpass
 
       - name: Deploy Javadoc via SCP
         env:
@@ -53,4 +55,10 @@ jobs:
           mkdir -p ~/.ssh
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
-          sshpass -p "$FTP_PASSWORD" scp -o StrictHostKeyChecking=no -P $FTP_PORT -r build/docs/javadoc/* $FTP_USERNAME@$FTP_HOST:$FTP_TARGET_PATH
+          PORT="${FTP_PORT:-22}"
+
+          sshpass -p "$FTP_PASSWORD" scp \
+            -o StrictHostKeyChecking=no \
+            -P "$PORT" \
+            -r build/docs/javadoc/* \
+            "$FTP_USERNAME@$FTP_HOST:$FTP_TARGET_PATH"
