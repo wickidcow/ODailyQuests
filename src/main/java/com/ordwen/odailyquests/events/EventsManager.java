@@ -18,6 +18,7 @@ import com.ordwen.odailyquests.events.listeners.integrations.itemsadder.ItemsAdd
 import com.ordwen.odailyquests.events.listeners.integrations.nexo.NexoItemsLoadedListener;
 import com.ordwen.odailyquests.events.listeners.integrations.npcs.FancyNpcsHook;
 import com.ordwen.odailyquests.events.listeners.integrations.oraxen.OraxenItemsLoadedListener;
+import com.ordwen.odailyquests.events.listeners.integrations.valhallammo.ValhallaMMOProgressListener;
 import com.ordwen.odailyquests.events.listeners.item.custom.CraftMMOItemListener;
 import com.ordwen.odailyquests.events.listeners.item.custom.CustomPlayerFishListener;
 import com.ordwen.odailyquests.events.listeners.item.custom.DropQueuePushListener;
@@ -136,6 +137,7 @@ public class EventsManager {
         registerIfPluginEnabled("CustomFishing", () -> pluginManager.registerEvents(new FishingLootSpawnListener(), oDailyQuests));
         registerIfPluginEnabled("EvenMoreFish", () -> pluginManager.registerEvents(new EMFFishCaughtListener(), oDailyQuests));
         registerIfPluginEnabled("PyroFishingPro", () -> PyroFishCatchListener.register(pluginManager, oDailyQuests));
+        registerIfPluginEnabled("ValhallaMMO", () -> ValhallaMMOProgressListener.register(pluginManager, oDailyQuests));
     }
 
     private void registerIfPluginEnabled(final String pluginName, final Runnable registerAction) {
