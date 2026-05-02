@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ordwen'
-version = "3.0.4-Albion-Spigot-26.1.2"
+version = "3.0.4-Spigot-1.21.11+"
 
 def ciVersion = System.getenv("ORG_GRADLE_PROJECT_version")
 if (ciVersion != null && !ciVersion.trim().isEmpty()) {
@@ -50,7 +50,7 @@ dependencies {
     compileOnly 'com.h2database:h2:2.4.240'
 
     /* Spigot */
-    compileOnly 'org.spigotmc:spigot-api:26.1.2-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT'
 
     /* Folia */
     implementation 'space.arim.morepaperlib:morepaperlib:0.4.3'
@@ -117,13 +117,15 @@ dependencies {
     compileOnly 'com.willfp:eco:6.76.2'
 }
 
-def targetJavaVersion = 25
+def buildJavaVersion = 25
+def bytecodeJavaVersion = 21
+
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    toolchain.languageVersion = JavaLanguageVersion.of(buildJavaVersion)
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.release = targetJavaVersion
+    options.release = bytecodeJavaVersion
     options.encoding = 'UTF-8'
 }
 
