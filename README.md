@@ -1,14 +1,6 @@
 # ODailyQuests
 
-<img width="805" height="187" alt="ODailyQuests Banner" src="https://github.com/user-attachments/assets/ecffe00c-7d0f-4b0b-a319-b428aae32f1e" />
-
-## Bring Daily Adventure to Your Minecraft Server
-
-**O'DailyQuests** is a powerful, lightweight, and easy-to-use daily quest plugin for Minecraft servers.
-
-Give your players a reason to return every day with randomized daily quests, customizable objectives, and flexible rewards. Whether you run a survival, RPG, economy, factions, or MMO-style server, O'DailyQuests helps keep your community active and engaged.
-
----
+## Bring Daily Adventure and rewards to Your Minecraft Server
 
 ## 🛠 Project Status
 
@@ -32,7 +24,7 @@ The goal is to preserve the original spirit of O'DailyQuests while giving it a r
 
 ---
 
-## 📖 Documentation
+## 📖 Origonal Developers Documentation
 
 Need help setting up quests, rewards, or configuration files?
 
@@ -74,10 +66,7 @@ If you enjoy using O'DailyQuests and want to support future development, donatio
 [![PayPal](https://img.shields.io/badge/PayPal-Donate-blue?logo=paypal&style=flat-square)](https://www.paypal.com/paypalme/ordwen)
 
 ---
-
-## ⭐ Leave a Review
-
-If O'DailyQuests has helped improve your server, consider leaving a review on SpigotMC.
+This project is a continuation of the origonal Developers addon.
 
 [⭐ Leave a 5-Star Review](https://www.spigotmc.org/resources/odailyquests-daily-quests-plugin-1-16-1-19.100990/reviews/)
 
