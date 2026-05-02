@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ordwen'
-version = "3.0.3-26.1.2"
+version = "3.0.4-Albion-Spigot-26.1.2"
 
 def ciVersion = System.getenv("ORG_GRADLE_PROJECT_version")
 if (ciVersion != null && !ciVersion.trim().isEmpty()) {
