@@ -3,78 +3,80 @@ name: Snapshots
 on:
   push:
     branches:
-      - '3.0.2'
+      - '3.0.4'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 env:
-  SNAPSHOT_BRANCH: 3.0.2
+  SNAPSHOT_BRANCH: 3.0.4
   BASE_BRANCH: master
-  JAVA_VERSION: '21'
+  JAVA_VERSION: '25'
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-snapshot:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
-        with: { fetch-depth: 0 }
+      - name: Checkout project
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Ensure full history
         run: |
           git fetch --no-tags --prune --unshallow || true
           git fetch --no-tags --prune origin ${{ env.BASE_BRANCH }} --depth=0 || true
 
-      - uses: actions/setup-java@v6
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
 
-      - name: Compute meta (version & sha)
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Compute meta version
         id: meta
         run: |
           SHA=$(git rev-parse --short HEAD)
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
-          echo "version=3.0.2-SNAPSHOT+$SHA" >> "$GITHUB_OUTPUT"
+          echo "version=3.0.4-Albion-Spigot-26.1.2-SNAPSHOT+$SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: ${{ runner.os }}-gradle-
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x ./gradlew
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build (snapshot, shadowJar)
-        run: ./gradlew clean shadowJar -x test
+      - name: Build snapshot jar
+        run: ./gradlew clean shadowJar -x test --no-daemon
         env:
           ORG_GRADLE_PROJECT_version: ${{ steps.meta.outputs.version }}
 
-      - name: List built artifacts (debug)
+      - name: List built artifacts
         run: |
-          echo "=== */build/libs contents ==="
-          find . -type f -path "*/build/libs/*" -maxdepth 1 -print | sed 's#^# -> #'
-          echo "================================"
+          echo "=== build/libs contents ==="
+          find . -type f -path "*/build/libs/*" -print | sed 's#^# -> #'
+          echo "==========================="
 
-      - name: Collect JAR files
+      - name: Collect jar files
         id: collect
         run: |
           FILES=$(find . -type f -path "*/build/libs/*.jar" \
-            ! -name "*-sources.jar" ! -name "*-javadoc.jar" -print | tr '\n' ' ')
+            ! -name "*-sources.jar" \
+            ! -name "*-javadoc.jar" \
+            -print | tr '\n' ' ')
+
           if [ -z "$FILES" ]; then
             echo "No JARs found under */build/libs/*.jar"
             exit 1
           fi
+
           echo "files=$FILES" >> "$GITHUB_OUTPUT"
           echo "Will upload: $FILES"
 
-      - name: Delete previous JAR assets on prerelease
+      - name: Delete previous jar assets on prerelease
         uses: actions/github-script@v7
         env:
           TAG: nightly-${{ env.SNAPSHOT_BRANCH }}
@@ -82,29 +84,32 @@ jobs:
           script: |
             const tag = process.env.TAG;
             const { owner, repo } = context.repo;
+
             let release;
             try {
               release = await github.rest.repos.getReleaseByTag({ owner, repo, tag });
             } catch {
               return;
             }
+
             for (const asset of release.data.assets) {
               if (asset.name.endsWith('.jar')) {
-                await github.rest.repos.deleteReleaseAsset({ owner, repo, asset_id: asset.id });
+                await github.rest.repos.deleteReleaseAsset({
+                  owner,
+                  repo,
+                  asset_id: asset.id
+                });
               }
             }
 
-      - name: Build changelogs (only commits unique to branch)
+      - name: Build changelog
         id: changelog
         shell: bash
         run: |
           set -eo pipefail
+
           RANGE="origin/${{ env.BASE_BRANCH }}..HEAD"
           COUNT=$(git rev-list --count $RANGE || echo 0)
-
-          printf 'full<<__GH_FULL__\n' >> "$GITHUB_OUTPUT"
-          git log $RANGE --reverse --pretty=format:'- %h %s' >> "$GITHUB_OUTPUT" || true
-          printf '\n__GH_FULL__\n' >> "$GITHUB_OUTPUT"
 
           printf 'last<<__GH_LAST__\n' >> "$GITHUB_OUTPUT"
           git log -1 --pretty=format:'- %h %s' ${{ github.sha }} >> "$GITHUB_OUTPUT"
@@ -120,8 +125,8 @@ jobs:
           printf '\n</details>\n' >> "$GITHUB_OUTPUT"
           printf '__GH_BODY__\n' >> "$GITHUB_OUTPUT"
 
-      - name: Create/Update prerelease (nightly)
-        uses: softprops/action-gh-release@v2
+      - name: Create or update prerelease
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: nightly-${{ env.SNAPSHOT_BRANCH }}
           name: "Nightly ${{ env.SNAPSHOT_BRANCH }}"
@@ -148,7 +153,22 @@ jobs:
           if [ -z "$WEBHOOK" ]; then
             exit 0
           fi
+
           DESC="$(printf '%s\n\n**Download & notes:** %s' "$LAST" "$URL")"
           DESC="${DESC:0:1900}"
-          curl -X POST -H "Content-Type: application/json" -d "$(jq -nc --arg v "$VERSION" --arg s "$SHA" --arg d "$DESC" --arg u "$URL" \
-          '{embeds: [{title: ("ODailyQuests Snapshot " + $v), url: $u, description: $d, color: 16753920, footer: {text: ("Commit " + $s)}}]}')" "$WEBHOOK"
+
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d "$(jq -nc \
+              --arg v "$VERSION" \
+              --arg s "$SHA" \
+              --arg d "$DESC" \
+              --arg u "$URL" \
+              '{embeds: [{
+                title: ("ODailyQuests Snapshot " + $v),
+                url: $u,
+                description: $d,
+                color: 16753920,
+                footer: {text: ("Commit " + $s)}
+              }]}')" \
+            "$WEBHOOK"
