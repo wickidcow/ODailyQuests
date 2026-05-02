@@ -1,12 +1,12 @@
 name: "ODailyQuests"
 version: '${version}'
 main: com.ordwen.odailyquests.ODailyQuests
-api-version: 26.1.2
+api-version: 1.21.11
 prefix: "O'DailyQuests"
 authors: [ Ordwen ]
 description: Add more objectives and dynamize your server !
 website: https://modrinth.com/plugin/odailyquests
-softdepend: [ Vault, TokenManager, Citizens, FancyNpcs, PlaceholderAPI, PlayerPoints, MythicMobs, EliteMobs, WildStacker, RoseStacker, Multiverse-Core, MyWorlds, HeadDatabase, Oraxen, ItemsAdder, Nexo, CoinsEngine, Towny, PyroFishingPro, Votifier, NuVotifier, KGenerators, CustomCrops, CustomFishing, EvenMoreFish, eco, ExcellentCrates, MMOItems, MMOCore, PlotSquared, EvenMoreFish ]
+softdepend: [ Vault, TokenManager, Citizens, FancyNpcs, PlaceholderAPI, PlayerPoints, MythicMobs, EliteMobs, WildStacker, RoseStacker, Multiverse-Core, MyWorlds, HeadDatabase, Oraxen, ItemsAdder, Nexo, CoinsEngine, Towny, PyroFishingPro, Votifier, NuVotifier, KGenerators, CustomCrops, CustomFishing, EvenMoreFish, eco, ExcellentCrates, MMOItems, MMOCore, PlotSquared ]
 
 libraries:
   - com.zaxxer:HikariCP:5.0.1
