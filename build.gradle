@@ -73,7 +73,7 @@ dependencies {
 
     /* mobs */
     compileOnly 'io.lumine:Mythic-Dist:5.11.2'
-    compileOnly 'com.magmaguy:EliteMobs:10.2.0'
+    compileOnly 'com.magmaguy:EliteMobs:10.0.0-SNAPSHOT'
 
     /* stackers */
     compileOnly 'dev.rosewood:rosestacker:1.5.38'
@@ -83,7 +83,7 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.11.6'
 
     /* custom items */
-    compileOnly 'com.github.oraxen:oraxen:1.198.1'
+    compileOnly 'io.th0rgal:oraxen:1.213.0'
     compileOnly 'dev.lone:api-itemsadder:4.0.10'
     compileOnly 'com.nexomc:nexo:1.16.1'
     compileOnly 'net.Indyuce:MMOItems-API:6.10.1-SNAPSHOT'
