@@ -19,7 +19,6 @@ import com.ordwen.odailyquests.events.listeners.integrations.nexo.NexoItemsLoade
 import com.ordwen.odailyquests.events.listeners.integrations.npcs.FancyNpcsHook;
 import com.ordwen.odailyquests.events.listeners.integrations.oraxen.OraxenItemsLoadedListener;
 import com.ordwen.odailyquests.events.listeners.integrations.valhallammo.ValhallaMMOProgressListener;
-import com.ordwen.odailyquests.events.listeners.item.custom.CraftMMOItemListener;
 import com.ordwen.odailyquests.events.listeners.item.custom.CustomPlayerFishListener;
 import com.ordwen.odailyquests.events.listeners.item.custom.DropQueuePushListener;
 import com.ordwen.odailyquests.events.listeners.vote.VotifierListener;
@@ -35,6 +34,7 @@ import com.ordwen.odailyquests.tools.PluginLogger;
 import com.ordwen.odailyquests.tools.PluginUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
+// import com.ordwen.odailyquests.events.listeners.item.custom.CraftMMOItemListener;
 
 public class EventsManager {
 
@@ -133,7 +133,7 @@ public class EventsManager {
         registerIfPluginEnabled("FancyNpcs", () -> pluginManager.registerEvents(new FancyNpcsHook(oDailyQuests.getInterfacesManager()), oDailyQuests));
         registerIfPluginEnabled("eco", () -> pluginManager.registerEvents(new DropQueuePushListener(), oDailyQuests));
         registerIfPluginEnabled("MMOCore", () -> pluginManager.registerEvents(new CustomPlayerFishListener(), oDailyQuests));
-        registerIfPluginEnabled("MMOItems", () -> pluginManager.registerEvents(new CraftMMOItemListener(), oDailyQuests));
+        // registerIfPluginEnabled("MMOItems", () -> pluginManager.registerEvents(new CraftMMOItemListener(), oDailyQuests));
         registerIfPluginEnabled("CustomFishing", () -> pluginManager.registerEvents(new FishingLootSpawnListener(), oDailyQuests));
         registerIfPluginEnabled("EvenMoreFish", () -> pluginManager.registerEvents(new EMFFishCaughtListener(), oDailyQuests));
         registerIfPluginEnabled("PyroFishingPro", () -> PyroFishCatchListener.register(pluginManager, oDailyQuests));
