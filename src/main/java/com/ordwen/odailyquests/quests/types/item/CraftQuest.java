@@ -3,8 +3,8 @@ package com.ordwen.odailyquests.quests.types.item;
 import com.ordwen.odailyquests.quests.player.progression.Progression;
 import com.ordwen.odailyquests.quests.types.shared.BasicQuest;
 import com.ordwen.odailyquests.quests.types.shared.ItemQuest;
-import com.ordwen.odailyquests.tools.PluginUtils;
-import net.Indyuce.mmoitems.api.event.CraftMMOItemEvent;
+// import com.ordwen.odailyquests.tools.PluginUtils;
+// import net.Indyuce.mmoitems.api.event.CraftMMOItemEvent;
 import org.bukkit.Material;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -41,10 +41,10 @@ public class CraftQuest extends ItemQuest {
             return super.isRequiredItem(item, progression);
         }
 
-        if (PluginUtils.isPluginEnabled("MMOItems") && provided instanceof CraftMMOItemEvent event) {
-            final ItemStack item = event.getResult();
-            return  super.isRequiredItem(item, progression);
-        }
+//        if (PluginUtils.isPluginEnabled("MMOItems") && provided instanceof CraftMMOItemEvent event) {
+//            final ItemStack item = event.getResult();
+//            return  super.isRequiredItem(item, progression);
+//        }
 
         return false;
     }
