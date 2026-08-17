@@ -2,46 +2,65 @@ name: Build ODailyQuests
 
 on:
   push:
-    branches:
-      - master
-      - main
+    branches: [master, main]
+    tags: ['v*']
   pull_request:
-    branches:
-      - master
-      - main
+    branches: [master, main]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
-    name: Build plugin jar
+    name: Build plugin JAR
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout source
         uses: actions/checkout@v6
-
       - name: Set up Java 25
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '25'
-
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
-
-      - name: Make Gradle wrapper executable
-        run: chmod +x ./gradlew
-      - name: Grant execute permission for Gradle wrapper
-        run: chmod +x ./gradlew  
-      - name: Build jar
-        run: ./gradlew clean shadowJar --no-daemon
-
-      - name: Upload jar
-        uses: actions/upload-artifact@v6
+      - name: Build JAR
+        run: chmod +x ./gradlew && ./gradlew clean shadowJar --no-daemon
+      - name: Resolve version and stage JAR
+        id: artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(grep -E '^version = ' build.gradle | head -n1 | sed -E 's/.*"([^"]+)".*/\1/')"
+          SOURCE="build/libs/ODailyQuests-${VERSION}.jar"
+          NAME="ODailyQuests${VERSION}.jar"
+          test -s "$SOURCE"
+          mkdir -p dist
+          cp "$SOURCE" "dist/${NAME}"
+          sha256sum "dist/${NAME}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+      - name: Upload CI artifact
+        uses: actions/upload-artifact@v7
         with:
-          name: ODailyQuests-jar
-          path: build/libs/*.jar
+          name: ODailyQuests${{ steps.artifact.outputs.version }}
+          path: dist/${{ steps.artifact.outputs.name }}
           if-no-files-found: error
+          retention-days: 30
+      - name: Publish raw JAR release asset
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.artifact.outputs.version }}
+          NAME: ${{ steps.artifact.outputs.name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then TAG="$GITHUB_REF_NAME"; else TAG="v${VERSION}"; fi
+          JAR="dist/${NAME}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$JAR" --clobber
+          else
+            gh release create "$TAG" "$JAR" --target "$GITHUB_SHA" --generate-notes --title "ODailyQuests ${VERSION}"
+          fi
