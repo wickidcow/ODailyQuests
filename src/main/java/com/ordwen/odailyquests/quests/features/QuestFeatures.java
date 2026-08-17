@@ -1,10 +1,12 @@
 package com.ordwen.odailyquests.quests.features;
 
 import com.ordwen.odailyquests.ODailyQuests;
+import com.ordwen.odailyquests.files.implementations.QuestsFiles;
 import com.ordwen.odailyquests.quests.types.AbstractQuest;
 import com.ordwen.odailyquests.tools.PluginLogger;
 import com.ordwen.odailyquests.tools.RenewSchedule;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -33,10 +35,17 @@ public final class QuestFeatures {
         String category = quest.getCategoryName();
         if (category == null || category.isBlank()) return null;
 
+        // Prefer the live category configuration. Default quest packs are merged in memory and
+        // deliberately are not written into an administrator's quest YAML files.
+        FileConfiguration loaded = QuestsFiles.getQuestsConfigurationByCategory(normalizeCategory(category));
+        if (loaded != null) {
+            ConfigurationSection section = loaded.getConfigurationSection("quests." + quest.getFileIndex());
+            if (section != null) return section;
+        }
+
         String fileName = category.endsWith(".yml") ? category : category + ".yml";
         File questFile = new File(new File(ODailyQuests.INSTANCE.getDataFolder(), "quests"), fileName);
         if (!questFile.isFile()) {
-            // Some loaders may expose a display/file path rather than the bare category name.
             questFile = new File(ODailyQuests.INSTANCE.getDataFolder(), fileName);
         }
         if (!questFile.isFile()) return null;
@@ -114,6 +123,15 @@ public final class QuestFeatures {
         return section.getStringList("slimefun_ids").stream()
                 .filter(id -> id != null && !id.isBlank())
                 .map(id -> id.trim().toUpperCase(Locale.ROOT))
+                .toList();
+    }
+
+    public static List<String> slimefunAddons(AbstractQuest quest) {
+        ConfigurationSection section = questSection(quest);
+        if (section == null) return Collections.emptyList();
+        return section.getStringList("slimefun_addons").stream()
+                .filter(name -> name != null && !name.isBlank())
+                .map(String::trim)
                 .toList();
     }
 
