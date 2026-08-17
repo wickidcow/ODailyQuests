@@ -118,7 +118,7 @@ public class EventsManager {
         registerIfPluginEnabled("EvenMoreFish", () -> pluginManager.registerEvents(new EMFFishCaughtListener(), oDailyQuests));
         registerIfPluginEnabled("PyroFishingPro", () -> PyroFishCatchListener.register(pluginManager, oDailyQuests));
         registerIfPluginEnabled("ValhallaMMO", () -> ValhallaMMOProgressListener.register(pluginManager, oDailyQuests));
-        registerIfPluginEnabled("Slimefun", () -> pluginManager.registerEvents(new SlimefunItemListener(), oDailyQuests));
+        registerIfPluginEnabled("Slimefun", () -> SlimefunItemListener.register(pluginManager, oDailyQuests));
     }
 
     private void registerIfPluginEnabled(final String pluginName, final Runnable registerAction) {
