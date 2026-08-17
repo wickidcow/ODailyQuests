@@ -4,6 +4,7 @@ import com.ordwen.odailyquests.ODailyQuests;
 import com.ordwen.odailyquests.configuration.ConfigFactory;
 import com.ordwen.odailyquests.configuration.IConfigurable;
 import com.ordwen.odailyquests.files.implementations.ConfigurationFile;
+import com.ordwen.odailyquests.quests.types.custom.items.EMFFishQuest;
 import com.ordwen.odailyquests.quests.types.global.CustomQuest;
 
 import java.util.HashSet;
@@ -28,9 +29,11 @@ public class CustomTypes implements IConfigurable {
         types.clear();
 
         // Built into the maintained fork. Their external plugins remain soft dependencies.
-        registerBuiltin(SLIMEFUN_ITEM);
-        registerBuiltin(SLIMEFUN_CRAFT);
-        registerBuiltin(EMF_FISH);
+        registerBuiltin(SLIMEFUN_ITEM, CustomQuest.class);
+        registerBuiltin(SLIMEFUN_CRAFT, CustomQuest.class);
+        // Use the existing concrete EMF implementation so manually configured fish filters
+        // continue to work; an empty required list still means "any EvenMoreFish fish".
+        registerBuiltin(EMF_FISH, EMFFishQuest.class);
 
         for (String customType : configurationFile.getConfig().getStringList("custom_types")) {
             if (customType == null || customType.isBlank()) continue;
@@ -40,9 +43,9 @@ public class CustomTypes implements IConfigurable {
         }
     }
 
-    private void registerBuiltin(String type) {
+    private void registerBuiltin(String type, Class<? extends com.ordwen.odailyquests.quests.types.AbstractQuest> questClass) {
         types.add(type);
-        ODailyQuests.INSTANCE.registerQuestType(type, CustomQuest.class);
+        ODailyQuests.INSTANCE.registerQuestType(type, questClass);
     }
 
     private static CustomTypes getInstance() {
