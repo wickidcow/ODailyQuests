@@ -30,15 +30,12 @@ public class AdminCompleter implements TabCompleter {
         if (args.length == 1) {
             final List<String> subCommands = new ArrayList<>(commandRegistry.getCommandNames());
             subCommands.add("reload");
-
+            subCommands.add("doctor");
             return StringUtil.copyPartialMatches(args[0], subCommands, new ArrayList<>());
-        } else {
-            final AdminCommandBase subCommand = commandRegistry.getCommandHandler(args[0]);
-            if (subCommand == null) {
-                return Collections.emptyList();
-            }
-            return subCommand.onTabComplete(sender, args);
         }
+
+        final AdminCommandBase subCommand = commandRegistry.getCommandHandler(args[0]);
+        if (subCommand == null) return Collections.emptyList();
+        return subCommand.onTabComplete(sender, args);
     }
 }
-
