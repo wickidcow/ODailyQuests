@@ -25,7 +25,7 @@ Current automated coverage includes renewal scheduling/time math and a full prod
 7. With Slimefun installed, verify Easy/Medium/Hard Slimefun Core quests and at least one detected addon-family pack.
 8. Craft a Slimefun multiblock recipe and verify `SLIMEFUN_CRAFT` progression.
 9. With ValhallaMMO/EvenMoreFish/PyroFishingPro installed, verify their packs appear automatically; remove/disable the dependency and verify they disappear from the generated pool.
-10. Verify Fable Quests - Concord and Fable Quests - Dominion appear in Easy/Medium/Hard and can each be disabled independently.
+10. Verify Fable Quests - Good and Fable Quests - Evil appear in Easy/Medium/Hard and can each be disabled independently.
 11. Confirm MythicMobs has no automatic/default quest pack.
 12. Enable and verify weekly, chain, streak, community, and reroll-cost features individually if they are used on the server.
 
