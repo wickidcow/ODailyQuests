@@ -7,9 +7,12 @@ import com.ordwen.odailyquests.files.implementations.ConfigurationFile;
 import com.ordwen.odailyquests.quests.types.global.CustomQuest;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 public class CustomTypes implements IConfigurable {
+
+    public static final String SLIMEFUN_ITEM = "SLIMEFUN_ITEM";
 
     private final ConfigurationFile configurationFile;
     private final Set<String> types = new HashSet<>();
@@ -22,9 +25,15 @@ public class CustomTypes implements IConfigurable {
     public void load() {
         types.clear();
 
+        // Built into the maintained fork. Slimefun itself remains a soft dependency.
+        types.add(SLIMEFUN_ITEM);
+        ODailyQuests.INSTANCE.registerQuestType(SLIMEFUN_ITEM, CustomQuest.class);
+
         for (String customType : configurationFile.getConfig().getStringList("custom_types")) {
-            types.add(customType);
-            ODailyQuests.INSTANCE.registerQuestType(customType, CustomQuest.class);
+            if (customType == null || customType.isBlank()) continue;
+            String normalized = customType.trim().toUpperCase(Locale.ROOT);
+            types.add(normalized);
+            ODailyQuests.INSTANCE.registerQuestType(normalized, CustomQuest.class);
         }
     }
 
