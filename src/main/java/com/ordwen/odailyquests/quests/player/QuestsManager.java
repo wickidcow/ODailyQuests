@@ -6,8 +6,9 @@ import com.ordwen.odailyquests.configuration.essentials.QuestsPerCategory;
 import com.ordwen.odailyquests.quests.categories.CategoriesLoader;
 import com.ordwen.odailyquests.quests.categories.Category;
 import com.ordwen.odailyquests.quests.conditions.placeholder.PlaceholderRuleSetEvaluator;
-import com.ordwen.odailyquests.quests.types.AbstractQuest;
+import com.ordwen.odailyquests.quests.features.QuestFeatures;
 import com.ordwen.odailyquests.quests.player.progression.Progression;
+import com.ordwen.odailyquests.quests.types.AbstractQuest;
 import com.ordwen.odailyquests.quests.types.shared.EntityQuest;
 import com.ordwen.odailyquests.quests.types.shared.ItemQuest;
 import com.ordwen.odailyquests.tools.PluginLogger;
@@ -17,70 +18,33 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Central manager for players' quests lifecycle: loading on join, saving on quit,
- * and utilities to build / pick quests and progressions.
- * <p>
- * Responsibilities:
- * <ul>
- *   <li>Registering join/quit listeners to load/save player quests via the database manager.</li>
- *   <li>Keeping an in-memory map ({@code activeQuests}) of online players to their {@link PlayerQuests}.</li>
- *   <li>Providing static helpers to select random quests and create fresh {@link Progression} objects.</li>
- * </ul>
- * <p>
- * <strong>Thread-safety:</strong> Bukkit events are called on the main thread.
- * {@code activeQuests} is a plain {@link HashMap}; concurrent access from async tasks must be avoided
- * or externally synchronized.
+ * Central manager for player quest lifecycle and quest selection.
+ *
+ * <p>The active map is concurrent because Folia can run different players on different
+ * region threads at the same time.</p>
  */
 public class QuestsManager implements Listener {
 
-    /** RNG used for dynamic amounts and random selections. */
-    private static final Random random = new Random();
-
-    /**
-     * Main plugin entry point used to reach services such as the database manager.
-     * <p>
-     * Kept {@code private} to preserve encapsulation (this is not a data carrier/record).
-     */
     private final ODailyQuests plugin;
+    private static final Map<String, PlayerQuests> activeQuests = new ConcurrentHashMap<>();
 
-    /**
-     * Creates a new {@link QuestsManager}.
-     *
-     * @param oDailyQuests main plugin instance; must not be {@code null}.
-     */
     public QuestsManager(ODailyQuests oDailyQuests) {
         this.plugin = oDailyQuests;
     }
 
-    /**
-     * In-memory registry of online players' quests, keyed by player name.
-     * <p>
-     * <strong>Lifecycle:</strong>
-     * <ul>
-     *   <li>Inserted (indirectly) when the DB manager loads quests at join.</li>
-     *   <li>Saved and removed on quit.</li>
-     * </ul>
-     * <strong>Note:</strong> Keys are player names; if you plan to support name changes,
-     * consider switching to UUID as the key.
-     */
-    private static final Map<String, PlayerQuests> activeQuests = new HashMap<>();
-
-    /**
-     * Handles player join:
-     * <ol>
-     *   <li>Logs debug info.</li>
-     *   <li>If the player is not registered in {@link #activeQuests}, trigger async/sync load via DB manager.</li>
-     *   <li>If already present, warn (unexpected state) to help diagnose stuck state.</li>
-     * </ol>
-     *
-     * @param event Bukkit player join event
-     */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-
         Debugger.write("[EVENT START]");
         Debugger.write("PlayerJoinEvent triggered.");
 
@@ -93,7 +57,6 @@ public class QuestsManager implements Listener {
 
         if (!activeQuests.containsKey(playerName)) {
             Debugger.write("Player " + playerName + " is not in the array.");
-            // Delegates to DB layer: expected to eventually populate activeQuests.
             plugin.getDatabaseManager().loadQuestsForPlayer(playerName);
         } else {
             Debugger.write("Player " + playerName + " is already in the array.");
@@ -102,17 +65,6 @@ public class QuestsManager implements Listener {
         }
     }
 
-    /**
-     * Handles player quit:
-     * <ol>
-     *   <li>Logs debug info.</li>
-     *   <li>Fetches the player's {@link PlayerQuests} from {@link #activeQuests}.</li>
-     *   <li>If found, persists progression then removes the entry.</li>
-     *   <li>If not found, logs a warning (unexpected state).</li>
-     * </ol>
-     *
-     * @param event Bukkit player quit event
-     */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Debugger.write("[EVENT START]");
@@ -121,9 +73,6 @@ public class QuestsManager implements Listener {
         final Player player = event.getPlayer();
         final String playerName = player.getName();
         final String playerUUID = player.getUniqueId().toString();
-
-        Debugger.write("Player " + playerName + " left the server.");
-
         final PlayerQuests playerQuests = activeQuests.get(playerName);
 
         if (playerQuests == null) {
@@ -134,182 +83,160 @@ public class QuestsManager implements Listener {
 
         plugin.getDatabaseManager().saveProgressionForPlayer(playerName, playerUUID, playerQuests);
         activeQuests.remove(playerName);
-
         Debugger.write("Player " + playerName + " removed from the array.");
     }
 
-    /**
-     * Selects random quests for a player across all categories.
-     * <p>
-     * For each registered category, this method:
-     * <ol>
-     *   <li>Determines the required amount from {@link QuestsPerCategory}.</li>
-     *   <li>Picks non-duplicate quests the player has permission to do.</li>
-     *   <li>Creates a fresh {@link Progression} per quest.</li>
-     * </ol>
-     *
-     * @param player target player (used for permission checks and logging)
-     * @return an ordered map ({@link LinkedHashMap}) of quests to their initial progression
-     */
     public static Map<AbstractQuest, Progression> selectRandomQuests(Player player) {
-        final Map<AbstractQuest, Progression> quests = new LinkedHashMap<>();
+        return selectRandomQuests(player, Map.of());
+    }
 
+    /**
+     * Selects quests while optionally preserving existing weekly-category assignments.
+     */
+    public static Map<AbstractQuest, Progression> selectRandomQuests(
+            Player player,
+            Map<AbstractQuest, Progression> preservedQuests
+    ) {
+        final Map<AbstractQuest, Progression> quests = new LinkedHashMap<>();
         final Map<String, Category> categoryMap = CategoriesLoader.getAllCategories();
         final Map<String, Integer> resolvedAmounts = QuestsPerCategory.resolveAllFor(player);
 
         for (Map.Entry<String, Category> entry : categoryMap.entrySet()) {
             final String categoryName = entry.getKey();
             final Category category = entry.getValue();
+            final int requiredAmount = resolvedAmounts.getOrDefault(categoryName, 0);
+            if (requiredAmount <= 0) continue;
 
-            int requiredAmount = resolvedAmounts.getOrDefault(categoryName, 0);
-            if (requiredAmount <= 0) {
-                continue;
+            int alreadyAssigned = 0;
+            if (QuestFeatures.isWeeklyCategory(categoryName) && preservedQuests != null && !preservedQuests.isEmpty()) {
+                for (Map.Entry<AbstractQuest, Progression> preserved : preservedQuests.entrySet()) {
+                    if (alreadyAssigned >= requiredAmount) break;
+                    if (!preserved.getKey().getCategoryName().equalsIgnoreCase(categoryName)) continue;
+                    quests.put(preserved.getKey(), preserved.getValue());
+                    alreadyAssigned++;
+                }
             }
 
-            for (int i = 0; i < requiredAmount; i++) {
+            for (int i = alreadyAssigned; i < requiredAmount; i++) {
                 final AbstractQuest quest = getRandomQuestForPlayer(quests.keySet(), category, player);
                 if (quest == null) {
-                    Debugger.write("Not enough quests available to assign to " + player.getName() + " in category " + categoryName + ".");
+                    Debugger.write("Not enough quests available to assign to " + player.getName()
+                            + " in category " + categoryName + ".");
                     break;
                 }
-
-                final Progression progression = createFreshProgression(quest);
-                quests.put(quest, progression);
+                quests.put(quest, createFreshProgression(quest));
             }
         }
 
         return quests;
     }
 
-    /**
-     * Resolves a dynamic "required amount" from a configuration string.
-     * Supports fixed integer values (e.g., {@code "5"}) and ranges (e.g., {@code "2-6"}).
-     *
-     * @param requiredAmountRaw raw value from configuration
-     * @return a positive integer (minimum 1)
-     * @throws NumberFormatException if the input cannot be parsed as integers
-     */
     public static int getDynamicRequiredAmount(String requiredAmountRaw) {
         if (requiredAmountRaw.contains("-")) {
-            String[] parts = requiredAmountRaw.split("-");
+            String[] parts = requiredAmountRaw.split("-", 2);
             int min = Integer.parseInt(parts[0].trim());
             int max = Integer.parseInt(parts[1].trim());
             if (min < 1) min = 1;
-
-            return random.nextInt(min, max + 1);
+            if (max < min) max = min;
+            return ThreadLocalRandom.current().nextInt(min, max + 1);
         }
 
         int amount = Integer.parseInt(requiredAmountRaw);
         return Math.max(amount, 1);
     }
 
-    /**
-     * Computes a random index inside a quest's required targets, depending on its type.
-     * <ul>
-     *   <li>{@link EntityQuest}: random entity index</li>
-     *   <li>{@link ItemQuest}: random item index</li>
-     *   <li>Other quests: returns 0</li>
-     * </ul>
-     *
-     * @param quest the quest to inspect
-     * @return a valid index for the quest's "required" list, or 0 if not applicable
-     */
     private static int getRandomIndexFrom(AbstractQuest quest) {
-        if (quest instanceof EntityQuest eq) {
-            return random.nextInt(eq.getRequiredEntities().size());
+        if (quest instanceof EntityQuest eq && !eq.getRequiredEntities().isEmpty()) {
+            return ThreadLocalRandom.current().nextInt(eq.getRequiredEntities().size());
         }
-
-        if (quest instanceof ItemQuest iq) {
-            return random.nextInt(iq.getRequiredItems().size());
+        if (quest instanceof ItemQuest iq && !iq.getRequiredItems().isEmpty()) {
+            return ThreadLocalRandom.current().nextInt(iq.getRequiredItems().size());
         }
-
         return 0;
     }
 
     /**
-     * Creates a fresh {@link Progression} for the provided quest.
-     * <p>
-     * The progression:
-     * <ul>
-     *   <li>has a required amount resolved by {@link #getDynamicRequiredAmount(String)}</li>
-     *   <li>starts at 0 progress, not achieved</li>
-     *   <li>optionally sets a random required index when {@link AbstractQuest#isRandomRequired()} is true</li>
-     * </ul>
-     *
-     * @param quest the quest to build a progression for; must not be {@code null}
-     * @return a new {@link Progression} initialised for the quest
+     * Applies optional per-quest difficulty multipliers to both the required amount and reward.
      */
     public static Progression createFreshProgression(AbstractQuest quest) {
-        final int requiredAmount = getDynamicRequiredAmount(quest.getRequiredAmountRaw());
-        final double rewardAmount = quest.getReward().resolveRewardAmount();
+        final int baseRequired = getDynamicRequiredAmount(quest.getRequiredAmountRaw());
+        final int requiredAmount = QuestFeatures.scaleRequiredAmount(quest, baseRequired);
+        final double baseReward = quest.getReward().resolveRewardAmount();
+        final double rewardAmount = QuestFeatures.scaleRewardAmount(quest, baseReward);
         final Progression progression = new Progression(requiredAmount, rewardAmount, 0, false);
 
         if (quest.isRandomRequired()) {
             progression.setSelectedRequiredIndex(getRandomIndexFrom(quest));
         }
-
         return progression;
     }
 
-    /**
-     * Picks a random quest from a provided list that:
-     * <ul>
-     *   <li>is not already present in {@code currentQuests}</li>
-     *   <li>meets all permission requirements for the given player</li>
-     * </ul>
-     *
-     * @param currentQuests   set of quests already assigned to the player (for duplicate filtering)
-     * @param availableQuests candidate quests to pick from
-     * @param player          player used for permission checks
-     * @return a random eligible quest, or {@code null} if none are eligible
-     */
-    public static AbstractQuest getRandomQuestForPlayer(Set<AbstractQuest> currentQuests, List<AbstractQuest> availableQuests, Player player) {
+    public static AbstractQuest getRandomQuestForPlayer(
+            Set<AbstractQuest> currentQuests,
+            List<AbstractQuest> availableQuests,
+            Player player
+    ) {
         final List<AbstractQuest> filteredQuests = new ArrayList<>();
-
         for (AbstractQuest quest : availableQuests) {
-            if (hasAllPermissions(player, quest.getRequiredPermissions())
-                    && !currentQuests.contains(quest)
-                    && PlaceholderRuleSetEvaluator.evaluate(player, quest.getPlaceholderConditions(), false)) {
-                filteredQuests.add(quest);
-            }
+            if (QuestFeatures.isChainOnly(quest)) continue;
+            if (!QuestFeatures.isPoolAllowed(player, quest)) continue;
+            if (!hasAllPermissions(player, quest.getRequiredPermissions())) continue;
+            if (currentQuests.contains(quest)) continue;
+            if (!PlaceholderRuleSetEvaluator.evaluate(player, quest.getPlaceholderConditions(), false)) continue;
+            filteredQuests.add(quest);
         }
-
-        if (filteredQuests.isEmpty()) {
-            return null;
-        }
-
-        int randomIndex = random.nextInt(filteredQuests.size());
-        return filteredQuests.get(randomIndex);
+        return weightedPick(filteredQuests);
     }
 
     /**
-     * Checks whether a player has all permissions in the provided list.
-     *
-     * @param player      the player to check (must not be {@code null})
-     * @param permissions list of permissions; {@code null} or empty means "no restriction"
-     * @return {@code true} if all permissions are granted or none are required; {@code false} otherwise
+     * Finds a configured chain successor for a completed quest. Chain-only quests are never
+     * part of the normal random draw, but can be inserted into the same quest slot here.
      */
-    private static boolean hasAllPermissions(Player player, List<String> permissions) {
-        if (permissions == null || permissions.isEmpty()) {
-            return true;
+    public static AbstractQuest findChainSuccessor(
+            AbstractQuest completed,
+            Player player,
+            Set<AbstractQuest> currentQuests
+    ) {
+        final Category category = CategoriesLoader.getCategoryByName(completed.getCategoryName());
+        if (category == null) return null;
+
+        final List<AbstractQuest> candidates = new ArrayList<>();
+        for (AbstractQuest candidate : category) {
+            if (currentQuests.contains(candidate)) continue;
+            if (!QuestFeatures.chainMatches(candidate, completed)) continue;
+            if (!QuestFeatures.isPoolAllowed(player, candidate)) continue;
+            if (!hasAllPermissions(player, candidate.getRequiredPermissions())) continue;
+            if (!PlaceholderRuleSetEvaluator.evaluate(player, candidate.getPlaceholderConditions(), false)) continue;
+            candidates.add(candidate);
+        }
+        return weightedPick(candidates);
+    }
+
+    private static AbstractQuest weightedPick(List<AbstractQuest> quests) {
+        if (quests == null || quests.isEmpty()) return null;
+
+        double totalWeight = 0.0D;
+        for (AbstractQuest quest : quests) totalWeight += QuestFeatures.weight(quest);
+        if (totalWeight <= 0.0D) {
+            return quests.get(ThreadLocalRandom.current().nextInt(quests.size()));
         }
 
+        double roll = ThreadLocalRandom.current().nextDouble(totalWeight);
+        for (AbstractQuest quest : quests) {
+            roll -= QuestFeatures.weight(quest);
+            if (roll <= 0.0D) return quest;
+        }
+        return quests.get(quests.size() - 1);
+    }
+
+    private static boolean hasAllPermissions(Player player, List<String> permissions) {
+        if (permissions == null || permissions.isEmpty()) return true;
         for (String permission : permissions) {
-            if (!player.hasPermission(permission)) {
-                return false;
-            }
+            if (!player.hasPermission(permission)) return false;
         }
         return true;
     }
 
-    /**
-     * Exposes the in-memory map of active quests.
-     * <p>
-     * Mutations on the returned map affect the internal state directly.
-     * Prefer adding dedicated methods if you need stricter control.
-     *
-     * @return the live map of player name -&gt; {@link PlayerQuests}
-     */
     public static Map<String, PlayerQuests> getActiveQuests() {
         return activeQuests;
     }
