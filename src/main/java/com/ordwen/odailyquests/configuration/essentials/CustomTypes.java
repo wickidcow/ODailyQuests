@@ -13,6 +13,8 @@ import java.util.Set;
 public class CustomTypes implements IConfigurable {
 
     public static final String SLIMEFUN_ITEM = "SLIMEFUN_ITEM";
+    public static final String SLIMEFUN_CRAFT = "SLIMEFUN_CRAFT";
+    public static final String EMF_FISH = "EMF_FISH";
 
     private final ConfigurationFile configurationFile;
     private final Set<String> types = new HashSet<>();
@@ -25,9 +27,10 @@ public class CustomTypes implements IConfigurable {
     public void load() {
         types.clear();
 
-        // Built into the maintained fork. Slimefun itself remains a soft dependency.
-        types.add(SLIMEFUN_ITEM);
-        ODailyQuests.INSTANCE.registerQuestType(SLIMEFUN_ITEM, CustomQuest.class);
+        // Built into the maintained fork. Their external plugins remain soft dependencies.
+        registerBuiltin(SLIMEFUN_ITEM);
+        registerBuiltin(SLIMEFUN_CRAFT);
+        registerBuiltin(EMF_FISH);
 
         for (String customType : configurationFile.getConfig().getStringList("custom_types")) {
             if (customType == null || customType.isBlank()) continue;
@@ -35,6 +38,11 @@ public class CustomTypes implements IConfigurable {
             types.add(normalized);
             ODailyQuests.INSTANCE.registerQuestType(normalized, CustomQuest.class);
         }
+    }
+
+    private void registerBuiltin(String type) {
+        types.add(type);
+        ODailyQuests.INSTANCE.registerQuestType(type, CustomQuest.class);
     }
 
     private static CustomTypes getInstance() {
