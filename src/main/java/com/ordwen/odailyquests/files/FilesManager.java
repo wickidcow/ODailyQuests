@@ -2,6 +2,7 @@ package com.ordwen.odailyquests.files;
 
 import com.ordwen.odailyquests.ODailyQuests;
 import com.ordwen.odailyquests.files.implementations.*;
+import com.ordwen.odailyquests.quests.features.DefaultQuestPacks;
 
 public class FilesManager {
 
@@ -26,6 +27,13 @@ public class FilesManager {
      */
     public void load() {
         configurationFile.load();
+
+        // Populate new starter-pack toggles without replacing an administrator's values.
+        // Reload once only when keys were added so later file loaders see the saved section.
+        if (DefaultQuestPacks.ensureConfig(configurationFile.getConfig(), configurationFile.getFile())) {
+            configurationFile.load();
+        }
+
         playerInterfaceFile.load();
         totalRewardsFile.load();
         progressionFile.load();
