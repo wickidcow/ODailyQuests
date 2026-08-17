@@ -2,6 +2,7 @@ package com.ordwen.odailyquests.tools;
 
 import com.ordwen.odailyquests.ODailyQuests;
 import com.ordwen.odailyquests.quests.categories.CategoriesLoader;
+import com.ordwen.odailyquests.quests.features.DefaultQuestPacks;
 import com.ordwen.odailyquests.quests.features.StreakService;
 import com.ordwen.odailyquests.quests.player.QuestsManager;
 import org.bukkit.Bukkit;
@@ -40,6 +41,8 @@ public final class DoctorReport {
         line(sender, "Active player data", Integer.toString(QuestsManager.getActiveQuests().size()));
         line(sender, "Next reset", nextReset);
         line(sender, "Weekly categories", String.join(", ", cfg.getStringList("weekly_categories")));
+        line(sender, "Default quest packs", DefaultQuestPacks.statusSummary());
+        line(sender, "Active packs", String.join(", ", DefaultQuestPacks.activePackNames()));
         line(sender, "Streak rewards", Boolean.toString(cfg.getBoolean("streak_rewards.enabled", false)));
         line(sender, "Community quests", Boolean.toString(cfg.getBoolean("community_quests.enabled", false)));
         line(sender, "Reroll cost", Boolean.toString(cfg.getBoolean("reroll_cost.enabled", false)));
