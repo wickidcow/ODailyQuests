@@ -1,10 +1,11 @@
 package com.ordwen.odailyquests.files.implementations;
 
 import com.ordwen.odailyquests.ODailyQuests;
+import com.ordwen.odailyquests.quests.features.DefaultQuestPacks;
+import com.ordwen.odailyquests.tools.PluginLogger;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import com.ordwen.odailyquests.tools.PluginLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +60,15 @@ public class QuestsFiles {
             final FileConfiguration config = new YamlConfiguration();
             try {
                 config.load(file);
+
+                // Filter only explicitly tagged built-in defaults. Untagged existing server quests
+                // are considered custom and are never disabled by a pack toggle.
+                DefaultQuestPacks.filterConfiguredDefaults(config);
+
+                // Dependency/Fable starter quests live in memory, so plugin updates never overwrite
+                // an administrator's quest YAML. Each generated quest still carries its pack tag.
+                DefaultQuestPacks.mergeGenerated(category, config);
+
                 configurations.put(category, config);
                 PluginLogger.fine(category + " quests file successfully loaded.");
             } catch (InvalidConfigurationException | IOException e) {
@@ -74,6 +84,10 @@ public class QuestsFiles {
 
         for (String fileName : defaultFiles) {
             plugin.saveResource("quests/" + fileName, false);
+            File created = new File(new File(plugin.getDataFolder(), "quests"), fileName);
+            if (!"examples.yml".equalsIgnoreCase(fileName)) {
+                DefaultQuestPacks.tagVanillaDefaults(created);
+            }
             PluginLogger.info(fileName + " created as default.");
         }
     }
