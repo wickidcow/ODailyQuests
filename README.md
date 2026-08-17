@@ -170,7 +170,7 @@ quests:
 
 ## Optional config.yml additions
 
-These sections can be added to an existing config. Missing sections retain legacy behavior.
+These sections can be added to an existing config. Missing sections retain legacy behavior. The `default_quest_packs` section does not need to be copied manually; the plugin creates missing pack toggles while preserving any values already set by the administrator.
 
 ```yaml
 # Categories listed here keep their current assignment through daily resets
