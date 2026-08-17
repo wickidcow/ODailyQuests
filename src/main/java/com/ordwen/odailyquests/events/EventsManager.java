@@ -34,7 +34,6 @@ import com.ordwen.odailyquests.tools.PluginLogger;
 import com.ordwen.odailyquests.tools.PluginUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
-// import com.ordwen.odailyquests.events.listeners.item.custom.CraftMMOItemListener;
 
 public class EventsManager {
 
@@ -44,12 +43,8 @@ public class EventsManager {
         this.oDailyQuests = oDailyQuests;
     }
 
-    /**
-     * Registers all events.
-     */
     public void registerListeners() {
         final PluginManager pluginManager = Bukkit.getPluginManager();
-
         registerBukkitNativeListeners(pluginManager);
         registerCustomEvents(pluginManager);
         registerPackIntegrations(pluginManager);
@@ -57,14 +52,12 @@ public class EventsManager {
     }
 
     private void registerBukkitNativeListeners(final PluginManager pluginManager) {
-        // entity events
         pluginManager.registerEvents(new EntityBreedListener(), oDailyQuests);
         pluginManager.registerEvents(new EntityTameListener(), oDailyQuests);
         pluginManager.registerEvents(new ShearEntityListener(), oDailyQuests);
         pluginManager.registerEvents(new EntityDeathListener(), oDailyQuests);
         pluginManager.registerEvents(new SpawnerSpawnListener(), oDailyQuests);
 
-        // global events
         pluginManager.registerEvents(new BucketFillListener(), oDailyQuests);
         pluginManager.registerEvents(new PlayerExpChangeListener(), oDailyQuests);
         pluginManager.registerEvents(new PlayerLevelChangeListener(), oDailyQuests);
@@ -73,7 +66,6 @@ public class EventsManager {
         pluginManager.registerEvents(new PlayerDeathListener(), oDailyQuests);
         pluginManager.registerEvents(new PlayerRespawnListener(), oDailyQuests);
 
-        // item events
         pluginManager.registerEvents(new BlockBreakListener(), oDailyQuests);
         pluginManager.registerEvents(new BlockPlaceListener(), oDailyQuests);
         pluginManager.registerEvents(new CraftItemListener(), oDailyQuests);
@@ -90,7 +82,6 @@ public class EventsManager {
         pluginManager.registerEvents(new PlayerDropItemListener(), oDailyQuests);
         pluginManager.registerEvents(new StructureGrowListener(), oDailyQuests);
 
-        // inventory events
         pluginManager.registerEvents(new InventoryCloseListener(), oDailyQuests);
     }
 
@@ -121,19 +112,17 @@ public class EventsManager {
     }
 
     private void registerPluginListeners(final PluginManager pluginManager) {
-        // Third-party plugin hooks with safety wrapper
         registerIfPluginEnabled("EliteMobs", () -> pluginManager.registerEvents(new EliteMobDeathListener(), oDailyQuests));
         registerIfPluginEnabled("MythicMobs", () -> pluginManager.registerEvents(new MythicMobDeathListener(), oDailyQuests));
         registerIfPluginEnabled("WildStacker", () -> pluginManager.registerEvents(new WildStackerListener(), oDailyQuests));
         registerIfPluginEnabled("RoseStacker", () -> pluginManager.registerEvents(new RoseStackerListener(), oDailyQuests));
         registerIfPluginEnabled("CustomCrops", () -> pluginManager.registerEvents(new CropBreakListener(), oDailyQuests));
         registerIfPluginEnabled("Votifier", () -> pluginManager.registerEvents(new VotifierListener(), oDailyQuests));
-        registerIfPluginEnabled("ExcellentCrates", () -> pluginManager.registerEvents(new CrateOpenListener(), oDailyQuests));
+        registerIfPluginEnabled("ExcellentCrates", () -> CrateOpenListener.register(pluginManager, oDailyQuests));
         registerIfPluginEnabled("Citizens", () -> pluginManager.registerEvents(new CitizensHook(oDailyQuests.getInterfacesManager()), oDailyQuests));
         registerIfPluginEnabled("FancyNpcs", () -> pluginManager.registerEvents(new FancyNpcsHook(oDailyQuests.getInterfacesManager()), oDailyQuests));
         registerIfPluginEnabled("eco", () -> pluginManager.registerEvents(new DropQueuePushListener(), oDailyQuests));
         registerIfPluginEnabled("MMOCore", () -> pluginManager.registerEvents(new CustomPlayerFishListener(), oDailyQuests));
-        // registerIfPluginEnabled("MMOItems", () -> pluginManager.registerEvents(new CraftMMOItemListener(), oDailyQuests));
         registerIfPluginEnabled("CustomFishing", () -> pluginManager.registerEvents(new FishingLootSpawnListener(), oDailyQuests));
         registerIfPluginEnabled("EvenMoreFish", () -> pluginManager.registerEvents(new EMFFishCaughtListener(), oDailyQuests));
         registerIfPluginEnabled("PyroFishingPro", () -> PyroFishCatchListener.register(pluginManager, oDailyQuests));
