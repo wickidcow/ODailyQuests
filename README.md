@@ -35,7 +35,7 @@ This maintained build adds:
 - optional server-wide/community goals
 - automatic, toggleable Easy/Medium/Hard starter quest packs
 - true Slimefun multiblock crafting quests plus addon-aware Slimefun quests
-- Fable Quests with Concord and Dominion paths
+- Fable Quests with Good and Evil paths
 - `/dqadmin doctor` diagnostics
 - `%progressPercent%` placeholder
 - automated unit tests in CI
@@ -53,8 +53,8 @@ Each active pack contributes an **Easy**, **Medium**, and **Hard** quest to the 
 Built-in packs include:
 
 - Vanilla Starter
-- **Fable Quests - Concord** (constructive/good-aligned objectives)
-- **Fable Quests - Dominion** (dangerous/evil-aligned objectives)
+- **Fable Quests - Good**
+- **Fable Quests - Evil**
 - Slimefun Core
 - ValhallaMMO
 - EvenMoreFish
