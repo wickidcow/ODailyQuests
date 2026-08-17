@@ -33,12 +33,67 @@ This maintained build adds:
 - configurable reroll costs with automatic refund on failed rerolls
 - optional completion streak rewards
 - optional server-wide/community goals
-- built-in optional Slimefun item quest integration
+- automatic, toggleable Easy/Medium/Hard starter quest packs
+- true Slimefun multiblock crafting quests plus addon-aware Slimefun quests
+- Fable Quests with Concord and Dominion paths
 - `/dqadmin doctor` diagnostics
 - `%progressPercent%` placeholder
 - automated unit tests in CI
 
-All new progression systems are opt-in unless explicitly configured.
+## Default quest packs
+
+The maintained fork adds a `default_quest_packs` section to `config.yml` automatically. Every shipped pack has an `enabled` toggle. Dependency-backed packs default to enabled but only become active when the matching plugin/addon is actually installed.
+
+Setting `enabled: false` always wins, even if the dependency is present.
+
+Fresh installations tag the bundled Easy/Medium/Hard Vanilla quests as the `vanilla` pack. Existing untagged server quest files are treated as administrator-owned custom content and are never silently disabled or overwritten.
+
+Each active pack contributes an **Easy**, **Medium**, and **Hard** quest to the existing difficulty pools. Difficulty raises both the objective and the reward.
+
+Built-in packs include:
+
+- Vanilla Starter
+- **Fable Quests - Concord** (constructive/good-aligned objectives)
+- **Fable Quests - Dominion** (dangerous/evil-aligned objectives)
+- Slimefun Core
+- ValhallaMMO
+- EvenMoreFish
+- PyroFishingPro
+- Networks
+- Networks Expansion
+- Infinity Expansion / InfinityExpansion2
+- Fluffy Machines
+- Foxy Machines
+- Magic Expansion
+- Military Arsenal
+- Slimefun Warfare
+- Mob Drops
+- Lucky Blocks
+- Alchimia Vitae
+- Dank Tech
+- Supreme
+- Gastronomicon
+- Exotic Garden
+- Potion Expansion
+- Flower Power
+- Fast Machines
+- Infernal Farm
+- IDOE
+- SlimeGlue
+
+Slimefun addon detection is based on the addon that registered an item rather than a hard compile dependency, with aliases for common/forked addon names.
+
+**MythicMobs is intentionally not included as a default quest pack.** Existing manual MythicMobs quest support is unchanged for servers that explicitly configure it.
+
+### Slimefun difficulty examples
+
+The Slimefun Core defaults deliberately scale with crafting complexity:
+
+- Easy: craft **1 Common Talisman** — 500
+- Medium: craft **8 Steel Ingots** — 1,100
+- Hard: craft **2 Reinforced Alloy Ingots** — 2,500
+
+`SLIMEFUN_CRAFT` listens to normal Bukkit crafting and Slimefun's multiblock craft event. `SLIMEFUN_ITEM` can additionally filter by the Slimefun addon that owns the item, which lets addon packs survive recipe and item-layout changes more gracefully.
 
 ## Extended quest keys
 
@@ -48,9 +103,9 @@ The following keys can be added directly to an individual quest entry:
 quests:
   10:
     name: "&bWeighted Challenge"
-    type: BREAK
-    required: 64
-    required_item: DIAMOND_ORE
+    quest_type: BREAK
+    required: DIAMOND_ORE
+    required_amount: 64
 
     # Relative chance inside the eligible category/pool.
     weight: 2.5
@@ -72,36 +127,46 @@ A chain-only quest is excluded from the normal random draw and replaces its pred
 quests:
   20:
     name: "&eChain Part 1"
-    type: BREAK
-    required: 16
-    required_item: IRON_ORE
+    quest_type: BREAK
+    required: IRON_ORE
+    required_amount: 16
 
   21:
     name: "&6Chain Part 2"
-    type: BREAK
-    required: 32
-    required_item: GOLD_ORE
+    quest_type: BREAK
+    required: GOLD_ORE
+    required_amount: 32
     chain_after: "20"
 ```
 
 You can also use a qualified ID such as `easy:20` in `chain_after`.
 
-### Slimefun item quests
+### Slimefun quests
 
-`SLIMEFUN_ITEM` is built into this fork as an optional quest type. Slimefun itself remains a soft dependency.
+Slimefun itself remains a soft dependency.
 
 ```yaml
 quests:
   30:
     name: "&aSlimefun Engineer"
-    type: SLIMEFUN_ITEM
-    required: 4
+    quest_type: SLIMEFUN_CRAFT
+    required_amount: 2
     slimefun_ids:
-      - ELECTRIC_MOTOR
-      - ELECTRIC_MOTOR_2
+      - REINFORCED_ALLOY_INGOT
 ```
 
-The quest progresses when matching Slimefun items are crafted or picked up. If `slimefun_ids` is omitted, any recognized Slimefun item can progress the quest.
+To target an addon family instead of exact IDs:
+
+```yaml
+quests:
+  31:
+    name: "&bNetworks Builder"
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 5
+    slimefun_addons:
+      - Networks
+      - Networks Expansion
+```
 
 ## Optional config.yml additions
 
@@ -161,7 +226,7 @@ Run:
 /dqadmin doctor
 ```
 
-The report includes the plugin/server/Java versions, runtime type, storage mode, loaded categories and quests, registered quest types, active player data, next reset, optional feature state, and detected integrations.
+The report includes the plugin/server/Java versions, runtime type, storage mode, loaded categories and quests, registered quest types, active player data, next reset, starter-pack status, active pack names, optional feature state, and detected integrations.
 
 ## Compatibility philosophy
 
