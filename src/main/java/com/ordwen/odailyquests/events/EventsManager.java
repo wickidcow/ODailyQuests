@@ -37,7 +37,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 
 public class EventsManager {
-
     private final ODailyQuests oDailyQuests;
 
     public EventsManager(ODailyQuests oDailyQuests) {
@@ -97,12 +96,10 @@ public class EventsManager {
                 pluginManager.registerEvents(new CustomBlockBreakListener(), oDailyQuests);
             }, "ItemsAdder");
         }
-        if (OraxenEnabled.isEnabled()) {
-            registerSafely(() -> pluginManager.registerEvents(new OraxenItemsLoadedListener(oDailyQuests), oDailyQuests), "Oraxen");
-        }
-        if (NexoEnabled.isEnabled()) {
-            registerSafely(() -> pluginManager.registerEvents(new NexoItemsLoadedListener(oDailyQuests), oDailyQuests), "Nexo");
-        }
+        if (OraxenEnabled.isEnabled()) registerSafely(() ->
+                pluginManager.registerEvents(new OraxenItemsLoadedListener(oDailyQuests), oDailyQuests), "Oraxen");
+        if (NexoEnabled.isEnabled()) registerSafely(() ->
+                pluginManager.registerEvents(new NexoItemsLoadedListener(oDailyQuests), oDailyQuests), "Nexo");
     }
 
     private void registerPluginListeners(final PluginManager pluginManager) {
@@ -132,7 +129,7 @@ public class EventsManager {
     private void registerSafely(final Runnable registerAction, final String prettyName) {
         try {
             registerAction.run();
-        } catch (NoClassDefFoundError | LinkageError e) {
+        } catch (LinkageError e) {
             PluginLogger.warn("Cannot hook into " + prettyName + " events. This is usually caused by an incompatible " + prettyName + " version.");
             PluginLogger.warn("Details: " + e.getMessage());
         }

@@ -1,89 +1,176 @@
-# Daily Quests
+# ODailyQuests – Maintained 1.21.11+ Fork
 
-## Bring Daily Adventures and Rewards to Your Minecraft Server
+A maintained fork of **O'DailyQuests by Ordwen**, focused on modern Paper/Purpur/Folia compatibility, stability, integrations, and expanded quest progression while preserving existing ODailyQuests configurations wherever possible.
 
-Daily Quests is a maintained fork of O'DailyQuests, designed to keep the original plugin alive for modern Minecraft servers.
+> This project builds on the original work by Ordwen and the ODailyQuests contributors. Please give credit to the original project when redistributing or extending this fork.
 
-This fork focuses on compatibility updates, bug fixes, quality-of-life improvements, and continued support for server owners who rely on daily quest systems to improve player engagement and progression.
+## Downloads
 
-The goal is to preserve the original spirit of O'DailyQuests while giving it a refreshed future.
+Use the raw JAR attached to this fork's GitHub Releases:
 
----
+- https://github.com/wickidcow/ODailyQuests/releases
 
-## 🛠 Project Status
+The original documentation remains the best reference for standard quest configuration:
 
-O'DailyQuests was originally developed and maintained by its original creator, but the project was later discontinued.
+- https://ordwenplugins.gitbook.io/odailyquests/
+- https://github.com/Ordwen/ODailyQuests
 
-Daily Quests continues that work by maintaining compatibility with newer Minecraft server versions, improving stability, and expanding support for modern plugin ecosystems.
+## 3.0.5 modernization
 
-This project is not a replacement for the original work, but a continuation built with respect for the original plugin and its community.
+This maintained build adds:
 
----
+- Paper/Purpur 1.21.11+ compatibility with Java 21 bytecode
+- Java 25 build toolchain support
+- Folia-aware scheduling and concurrent active-player state
+- raw JAR GitHub release output
+- aligned runtime/compile database libraries
+- safer quest-type registration (no silent conflicting overrides)
+- weighted quest selection
+- permission-based quest pools
+- optional per-quest difficulty/reward scaling
+- quest chains
+- weekly quest categories that survive daily resets until the ISO week changes
+- configurable reroll costs with automatic refund on failed rerolls
+- optional completion streak rewards
+- optional server-wide/community goals
+- built-in optional Slimefun item quest integration
+- `/dqadmin doctor` diagnostics
+- `%progressPercent%` placeholder
+- automated unit tests in CI
 
-## ✨ Features
+All new progression systems are opt-in unless explicitly configured.
 
-- Daily randomized quests for each player
-- Fully configurable quest objectives
-- Customizable rewards and messages
-- Easy setup and server-friendly configuration
-- Great for player retention, progression, and engagement
-- Supports a wide range of Minecraft server styles
-- Addon support for expanded plugin compatibility
-- Continued maintenance for modern Minecraft versions
+## Extended quest keys
 
----
+The following keys can be added directly to an individual quest entry:
 
-## 📖 Original Developer Documentation
+```yaml
+quests:
+  10:
+    name: "&bWeighted Challenge"
+    type: BREAK
+    required: 64
+    required_item: DIAMOND_ORE
 
-Need help setting up quests, rewards, or configuration files?
+    # Relative chance inside the eligible category/pool.
+    weight: 2.5
 
-The original O'DailyQuests documentation is still a helpful reference for configuration and setup:
+    # Optional pool controlled from config.yml.
+    pool: veteran
 
-[📚 O'DailyQuests Wiki](https://ordwenplugins.gitbook.io/odailyquests/)
+    # Optional scaling without duplicating quest definitions.
+    difficulty:
+      required_multiplier: 1.5
+      reward_multiplier: 2.0
+```
 
----
+### Quest chains
 
-## 💬 Community & Support
+A chain-only quest is excluded from the normal random draw and replaces its predecessor when that predecessor is completed:
 
-Need help, want to report an issue, or have suggestions for future updates?
+```yaml
+quests:
+  20:
+    name: "&eChain Part 1"
+    type: BREAK
+    required: 16
+    required_item: IRON_ORE
 
-Join the community Discord:
+  21:
+    name: "&6Chain Part 2"
+    type: BREAK
+    required: 32
+    required_item: GOLD_ORE
+    chain_after: "20"
+```
 
-[💬 Join the Discord](https://discord.com/invite/NPAUE7kTgJ)
+You can also use a qualified ID such as `easy:20` in `chain_after`.
 
----
+### Slimefun item quests
 
-## 🔗 Downloads
+`SLIMEFUN_ITEM` is built into this fork as an optional quest type. Slimefun itself remains a soft dependency.
 
-Download Daily Quests from your preferred platform:
+```yaml
+quests:
+  30:
+    name: "&aSlimefun Engineer"
+    type: SLIMEFUN_ITEM
+    required: 4
+    slimefun_ids:
+      - ELECTRIC_MOTOR
+      - ELECTRIC_MOTOR_2
+```
 
-- [📥 SpigotMC Resource Page](https://www.spigotmc.org/resources/odailyquests-daily-quests-plugin-1-16-1-19.100990/)
-- [📥 Modrinth Resource Page](https://modrinth.com/plugin/odailyquests)
+The quest progresses when matching Slimefun items are crafted or picked up. If `slimefun_ids` is omitted, any recognized Slimefun item can progress the quest.
 
----
+## Optional config.yml additions
 
-## 🧩 Addons
+These sections can be added to an existing config. Missing sections retain legacy behavior.
 
-Expand Daily Quests with addon support:
+```yaml
+# Categories listed here keep their current assignment through daily resets
+# and redraw when the ISO week changes.
+weekly_categories:
+  - weekly
 
-- [PyroFishingPro Support](https://github.com/Ordwen/ODQ-PyroFishingPro/releases)
+# Pools can require permissions and can be switched off without editing quest files.
+quest_pools:
+  veteran:
+    enabled: true
+    permission: "odailyquests.pool.veteran"
 
----
+# Cost is charged only when enabled. Supported types: MONEY, EXP_LEVELS.
+# odailyquests.reroll.free bypasses the charge.
+reroll_cost:
+  enabled: false
+  type: MONEY
+  amount: 1000
+  insufficient_message: "&cYou need %amount% %type% to reroll."
+  charged_message: "&eReroll cost: &6%amount% %type%&e."
 
-## ☕ Support the Project
+# Consecutive fully-completed quest periods.
+streak_rewards:
+  enabled: false
+  milestones:
+    3:
+      commands:
+        - "give %player% diamond 1"
+    7:
+      commands:
+        - "eco give %player% 5000"
 
-If you enjoy using Daily Quests and want to support future development, donations are always appreciated.
+# Server-wide counters. Each matching completed quest adds one point.
+community_quests:
+  enabled: false
+  goals:
+    weekly_mining:
+      enabled: true
+      category: "*"
+      quest_type: BREAK
+      target: 500
+      period: WEEKLY
+      commands:
+        - "broadcast The server completed %goal%!"
+```
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/I2I41CRIJI)
+## Diagnostics
 
-[![PayPal](https://img.shields.io/badge/PayPal-Donate-blue?logo=paypal&style=flat-square)](https://www.paypal.com/paypalme/ordwen)
+Run:
 
----
+```text
+/dqadmin doctor
+```
 
-## ⭐ Reviews
+The report includes the plugin/server/Java versions, runtime type, storage mode, loaded categories and quests, registered quest types, active player data, next reset, optional feature state, and detected integrations.
 
-If Daily Quests helps your server, consider leaving a review.
+## Compatibility philosophy
 
-[⭐ Leave a 5-Star Review](https://www.spigotmc.org/resources/odailyquests-daily-quests-plugin-1-16-1-19.100990/reviews/)
+Optional integrations are loaded only when their plugin is present. Integrations that do not publish stable compile-time artifacts are isolated behind reflection where practical so a missing optional plugin does not prevent ODailyQuests from starting.
 
-Your support helps the project grow and reach more server owners.
+Folia support requires more than a `folia-supported` flag; this fork routes timed player mutations through entity-aware scheduling and uses concurrent storage for active player assignments.
+
+## License and attribution
+
+This fork retains the repository's **GNU General Public License v3.0**. See [`LICENSE`](LICENSE) for the full terms.
+
+Original project and concept: **Ordwen / ODailyQuests**. This maintained fork is independent and is not affiliated with Mojang Studios or Microsoft.
