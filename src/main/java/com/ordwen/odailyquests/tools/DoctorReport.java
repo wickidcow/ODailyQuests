@@ -17,7 +17,6 @@ import java.util.List;
 
 /** Human-readable runtime diagnostics for /dqadmin doctor. */
 public final class DoctorReport {
-
     private DoctorReport() {}
 
     public static void send(ODailyQuests plugin, CommandSender sender) {
@@ -26,8 +25,7 @@ public final class DoctorReport {
         RenewSchedule.Settings schedule = RenewSchedule.settings();
         String nextReset = "invalid";
         if (RenewSchedule.isValid(schedule)) {
-            long millis = RenewSchedule.millisUntilNext(ZonedDateTime.now(schedule.zone()), schedule);
-            nextReset = DurationParser.prettyDuration(millis);
+            nextReset = formatDuration(RenewSchedule.millisUntilNext(ZonedDateTime.now(schedule.zone()), schedule));
         }
 
         sender.sendMessage(ChatColor.AQUA + "----- ODailyQuests Doctor -----");
@@ -46,15 +44,27 @@ public final class DoctorReport {
         line(sender, "Community quests", Boolean.toString(cfg.getBoolean("community_quests.enabled", false)));
         line(sender, "Reroll cost", Boolean.toString(cfg.getBoolean("reroll_cost.enabled", false)));
         line(sender, "Integrations", String.join(", ", enabledIntegrations()));
-
         if (sender instanceof org.bukkit.entity.Player player) {
             line(sender, "Your streak", Integer.toString(StreakService.getStreak(player.getUniqueId())));
         }
         sender.sendMessage(ChatColor.AQUA + "-------------------------------");
     }
 
+    private static String formatDuration(long millis) {
+        long seconds = Math.max(0L, millis / 1000L);
+        long days = seconds / 86400L;
+        long hours = (seconds % 86400L) / 3600L;
+        long minutes = (seconds % 3600L) / 60L;
+        long secs = seconds % 60L;
+        if (days > 0) return days + "d " + hours + "h " + minutes + "m";
+        if (hours > 0) return hours + "h " + minutes + "m";
+        if (minutes > 0) return minutes + "m " + secs + "s";
+        return secs + "s";
+    }
+
     private static void line(CommandSender sender, String label, String value) {
-        sender.sendMessage(ChatColor.GRAY + label + ": " + ChatColor.WHITE + (value == null || value.isBlank() ? "none" : value));
+        sender.sendMessage(ChatColor.GRAY + label + ": " + ChatColor.WHITE
+                + (value == null || value.isBlank() ? "none" : value));
     }
 
     private static boolean isFoliaRuntime() {
