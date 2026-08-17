@@ -2,30 +2,30 @@ package com.ordwen.odailyquests.rewards;
 
 import com.ordwen.odailyquests.ODailyQuests;
 import com.ordwen.odailyquests.configuration.essentials.Debugger;
-import com.ordwen.odailyquests.configuration.functionalities.progression.ToastNotification;
-import com.ordwen.odailyquests.externs.hooks.points.PlayerPointsHook;
-import com.ordwen.odailyquests.externs.hooks.points.TokenManagerHook;
-import com.ordwen.odailyquests.externs.hooks.eco.VaultHook;
 import com.ordwen.odailyquests.configuration.functionalities.progression.ActionBar;
 import com.ordwen.odailyquests.configuration.functionalities.progression.Title;
+import com.ordwen.odailyquests.configuration.functionalities.progression.ToastNotification;
 import com.ordwen.odailyquests.enums.QuestsMessages;
+import com.ordwen.odailyquests.externs.hooks.eco.VaultHook;
+import com.ordwen.odailyquests.externs.hooks.points.PlayerPointsHook;
+import com.ordwen.odailyquests.externs.hooks.points.TokenManagerHook;
 import com.ordwen.odailyquests.quests.player.progression.Progression;
+import com.ordwen.odailyquests.tools.PluginLogger;
 import com.ordwen.odailyquests.tools.PluginUtils;
 import com.ordwen.odailyquests.tools.TextFormatter;
-import com.ordwen.odailyquests.tools.PluginLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import su.nightexpress.coinsengine.api.CoinsEngineAPI;
-import su.nightexpress.coinsengine.api.currency.Currency;
+import su.nightexpress.excellenteconomy.api.ExcellentEconomyAPI;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * The {@code RewardManager} class is responsible for handling and delivering quest rewards to players.
  * <p>
- * Rewards can be of multiple types (commands, experience, money, points, custom plugins like CoinsEngine).
+ * Rewards can be of multiple types (commands, experience, money, points, custom economy plugins).
  * This class centralizes the logic for giving those rewards and ensures that error handling and
  * placeholder replacements are consistently applied.
  * </p>
@@ -34,7 +34,7 @@ import java.util.Map;
  * <ul>
  *     <li>Send quest completion notifications (titles, action bars, toasts, messages).</li>
  *     <li>Dispatch rewards depending on their {@link RewardType}.</li>
- *     <li>Integrate with third-party APIs (Vault, TokenManager, PlayerPoints, CoinsEngine).</li>
+ *     <li>Integrate with third-party APIs (Vault, TokenManager, PlayerPoints, ExcellentEconomy/CoinsEngine).</li>
  *     <li>Provide error handling when required plugins are missing or misconfigured.</li>
  * </ul>
  *
@@ -43,34 +43,21 @@ import java.util.Map;
  */
 public class RewardManager {
 
-    /**
-     * Prevent instantiation of the utility class.
-     */
     private RewardManager() {
     }
 
     private static final String REWARD_AMOUNT = "%rewardAmount%";
 
-    /**
-     * Sends all the visual feedback and actual reward items to a player when they achieve a quest.
-     *
-     * @param questName   the name of the quest
-     * @param player      the player receiving the reward
-     * @param reward      the reward configuration
-     * @param progression the progression object used to populate placeholders
-     */
     public static void sendQuestRewardItems(String questName, Player player, Reward reward, Progression progression) {
         Debugger.write("RewardManager: sendAllRewardItems summoned by " + player.getName() + " for " + questName + ".");
 
         final String msg = QuestsMessages.QUEST_ACHIEVED.getMessage(player, Map.of("%questName%", questName));
         if (msg != null) player.sendMessage(msg);
 
-        // Send visual notifications
         Title.sendTitle(player, questName);
         ToastNotification.sendToastNotification(player, questName);
         ActionBar.sendActionbar(player, questName);
 
-        // Prepare placeholders for reward messages
         final Map<String, String> placeholders = Map.of(
                 "%required%", String.valueOf(progression.getRequiredAmount()),
                 "%questName%", questName
@@ -80,25 +67,10 @@ public class RewardManager {
         sendReward(player, reward, placeholders, rewardAmount);
     }
 
-    /**
-     * Sends the configured reward to the player.
-     *
-     * @param player       the player receiving the reward
-     * @param reward       the reward configuration
-     * @param placeholders optional placeholders to expand in command or message rewards
-     */
     public static void sendReward(Player player, Reward reward, Map<String, String> placeholders) {
         sendReward(player, reward, placeholders, null);
     }
 
-    /**
-     * Sends the configured reward to the player with an optional resolved amount.
-     *
-     * @param player         the player receiving the reward
-     * @param reward         the reward configuration
-     * @param placeholders   optional placeholders to expand in command or message rewards
-     * @param resolvedAmount resolved amount to use, or {@code null} to compute it
-     */
     public static void sendReward(Player player, Reward reward, Map<String, String> placeholders, Double resolvedAmount) {
         if (reward.getRewardType() == RewardType.NONE) return;
 
@@ -121,21 +93,12 @@ public class RewardManager {
             default -> rewardTypeError(player, reward.getRewardType());
         }
 
-        // Custom reward message (optional)
         final String custom = reward.getMessage();
         if (custom != null && !custom.isEmpty()) {
             player.sendMessage(expandPlaceholders(player, custom, expandedPlaceholders));
         }
     }
 
-    /**
-     * Ensures that the progression object has a reward amount set.
-     * If not, it sets it to the resolved reward amount from the reward configuration.
-     *
-     * @param reward      the reward configuration
-     * @param progression the progression object
-     * @return the ensured reward amount
-     */
     private static double ensureProgressionRewardAmount(Reward reward, Progression progression) {
         if (progression == null) {
             return reward.resolveRewardAmount();
@@ -148,12 +111,6 @@ public class RewardManager {
         return progression.getRewardAmount();
     }
 
-    /* -------------------- Reward handlers -------------------- */
-
-    /**
-     * Handles rewards of type {@link RewardType#COMMAND}.
-     * Executes configured commands, replacing placeholders before dispatch.
-     */
     private static void handleCommandReward(Player player, Reward reward, Map<String, String> placeholders) {
         for (String raw : reward.getRewardCommands()) {
             final String cmd = expandPlaceholders(player, raw, placeholders);
@@ -179,9 +136,6 @@ public class RewardManager {
         sendMsg(player, QuestsMessages.REWARD_COMMAND);
     }
 
-    /**
-     * Handles rewards of type {@link RewardType#EXP_LEVELS}.
-     */
     private static void handleExpLevelsReward(Player player, double amount) {
         ODailyQuests.morePaperLib.scheduling().entitySpecificScheduler(player)
                 .run(() -> {
@@ -191,9 +145,6 @@ public class RewardManager {
         sendMsgAmount(player, QuestsMessages.REWARD_EXP_LEVELS, amount);
     }
 
-    /**
-     * Handles rewards of type {@link RewardType#EXP_POINTS}.
-     */
     private static void handleExpPointsReward(Player player, double amount) {
         ODailyQuests.morePaperLib.scheduling().entitySpecificScheduler(player)
                 .run(() -> {
@@ -203,10 +154,6 @@ public class RewardManager {
         sendMsgAmount(player, QuestsMessages.REWARD_EXP_POINTS, amount);
     }
 
-    /**
-     * Handles rewards of type {@link RewardType#MONEY}.
-     * Uses Vault API if available.
-     */
     private static void handleMoneyReward(Player player, double amount) {
         if (VaultHook.getEconomy() == null) {
             rewardTypeErrorWithVault(player, RewardType.MONEY);
@@ -218,10 +165,6 @@ public class RewardManager {
         sendMsgAmount(player, QuestsMessages.REWARD_MONEY, amount);
     }
 
-    /**
-     * Handles rewards of type {@link RewardType#POINTS}.
-     * Uses TokenManager or PlayerPoints if available.
-     */
     private static void handlePointsReward(Player player, double amount) {
         if (TokenManagerHook.getTokenManagerAPI() != null) {
             TokenManagerHook.getTokenManagerAPI().addTokens(player, (int) amount);
@@ -239,41 +182,68 @@ public class RewardManager {
     }
 
     /**
-     * Handles rewards of type {@link RewardType#COINS_ENGINE}.
-     * Uses the CoinsEngine API to give currency to the player.
+     * Keeps the existing COINS_ENGINE reward type compatible while preferring the supported
+     * ExcellentEconomy API. If an older CoinsEngine installation is still present, the legacy
+     * static API is invoked reflectively so ODailyQuests no longer needs the retired Maven artifact.
      */
     private static void handleCoinsEngineReward(Player player, Reward reward, double amount) {
-        if (!PluginUtils.isPluginEnabled("CoinsEngine")) {
-            rewardTypeError(player, reward.getRewardType());
+        if (PluginUtils.isPluginEnabled("ExcellentEconomy")) {
+            final ExcellentEconomyAPI api = Bukkit.getServicesManager().load(ExcellentEconomyAPI.class);
+            if (api == null) {
+                rewardTypeError(player, reward.getRewardType());
+                return;
+            }
+
+            final String currencyId = reward.getRewardCurrency();
+            if (!api.hasCurrency(currencyId)) {
+                currencyError(player, currencyId);
+                return;
+            }
+
+            if (!api.deposit(player, currencyId, amount)) {
+                rewardTypeError(player, reward.getRewardType());
+                return;
+            }
+
+            Debugger.write("RewardManager: Given " + amount + " " + currencyId + " to " + player.getName() + " via ExcellentEconomy.");
+            sendMsgAmountAndCurrency(
+                    player,
+                    QuestsMessages.REWARD_COINS_ENGINE,
+                    amount,
+                    TextFormatter.format(reward.getRewardCurrencyDisplayName())
+            );
             return;
         }
 
-        final Currency currency = CoinsEngineAPI.getCurrency(reward.getRewardCurrency());
-        if (currency == null) {
-            currencyError(player, reward.getRewardCurrency());
-            return;
+        if (PluginUtils.isPluginEnabled("CoinsEngine")) {
+            try {
+                final Class<?> apiClass = Class.forName("su.nightexpress.coinsengine.api.CoinsEngineAPI");
+                final Class<?> currencyClass = Class.forName("su.nightexpress.coinsengine.api.currency.Currency");
+                final Method getCurrency = apiClass.getMethod("getCurrency", String.class);
+                final Object currency = getCurrency.invoke(null, reward.getRewardCurrency());
+                if (currency == null) {
+                    currencyError(player, reward.getRewardCurrency());
+                    return;
+                }
+
+                final Method addBalance = apiClass.getMethod("addBalance", Player.class, currencyClass, double.class);
+                addBalance.invoke(null, player, currency, amount);
+                Debugger.write("RewardManager: Given " + amount + " " + reward.getRewardCurrency() + " to " + player.getName() + " via legacy CoinsEngine.");
+                sendMsgAmountAndCurrency(
+                        player,
+                        QuestsMessages.REWARD_COINS_ENGINE,
+                        amount,
+                        TextFormatter.format(reward.getRewardCurrencyDisplayName())
+                );
+                return;
+            } catch (ReflectiveOperationException exception) {
+                PluginLogger.error("Unable to use the legacy CoinsEngine API: " + exception.getMessage());
+            }
         }
 
-        CoinsEngineAPI.addBalance(player, currency, amount);
-        Debugger.write("RewardManager: Given " + amount + " " + reward.getRewardCurrency() + " to " + player.getName() + " via CoinsEngine.");
-        sendMsgAmountAndCurrency(
-                player,
-                QuestsMessages.REWARD_COINS_ENGINE,
-                amount,
-                TextFormatter.format(reward.getRewardCurrencyDisplayName())
-        );
+        rewardTypeError(player, reward.getRewardType());
     }
 
-    /* -------------------- Utility methods -------------------- */
-
-    /**
-     * Expands all placeholders in a string for the given player.
-     *
-     * @param player       the player for placeholder substitution
-     * @param raw          the raw string containing placeholders
-     * @param placeholders custom placeholders map
-     * @return the formatted string with placeholders replaced
-     */
     private static String expandPlaceholders(Player player, String raw, Map<String, String> placeholders) {
         String s = TextFormatter.format(TextFormatter.format(player, raw)).replace("%player%", player.getName());
         if (placeholders == null || placeholders.isEmpty()) return s;
@@ -285,25 +255,16 @@ public class RewardManager {
         return s;
     }
 
-    /**
-     * Sends a message for a given quest message type.
-     */
     private static void sendMsg(Player player, QuestsMessages qm) {
         final String msg = qm.getMessage(player);
         if (msg != null) player.sendMessage(msg);
     }
 
-    /**
-     * Sends a message with an amount placeholder replaced.
-     */
     private static void sendMsgAmount(Player player, QuestsMessages qm, double amount) {
         final String msg = qm.getMessage(player);
         if (msg != null) player.sendMessage(msg.replace(REWARD_AMOUNT, String.valueOf(amount)));
     }
 
-    /**
-     * Sends a message with both amount and currency placeholders replaced.
-     */
     private static void sendMsgAmountAndCurrency(Player player, QuestsMessages qm, double amount, String currencyName) {
         final String msg = qm.getMessage(player);
         if (msg != null) {
@@ -314,41 +275,27 @@ public class RewardManager {
         }
     }
 
-    /* -------------------- Error handling -------------------- */
-
-    /**
-     * Logs and notifies the player that a required plugin is missing.
-     */
     private static void rewardTypeError(Player player, RewardType type) {
         PluginLogger.error("Impossible to give the reward to " + player.getName() + ".");
         PluginLogger.error("Reward type is " + type + " but required plugin is not hooked.");
         player.sendMessage(ChatColor.RED + "Impossible to give you your reward. Please contact an administrator.");
     }
 
-    /**
-     * Logs and notifies the player that Vault is missing.
-     */
     private static void rewardTypeErrorWithVault(Player player, RewardType type) {
         PluginLogger.error("Impossible to give the reward to " + player.getName() + ".");
         PluginLogger.error("Reward type is " + type + " but Vault is not hooked.");
         player.sendMessage(ChatColor.RED + "Impossible to give you your reward. Please contact an administrator.");
     }
 
-    /**
-     * Logs and notifies the player that no points plugin is hooked.
-     */
     private static void rewardTypeErrorNoPoints(Player player, RewardType type) {
         PluginLogger.error("Impossible to give the reward to " + player.getName() + ".");
         PluginLogger.error("Reward type is " + type + " but no points plugin is hooked.");
         player.sendMessage(ChatColor.RED + "Impossible to give you your reward. Please contact an administrator.");
     }
 
-    /**
-     * Logs and notifies the player that a CoinsEngine currency is invalid.
-     */
     private static void currencyError(Player player, String currency) {
         PluginLogger.error("Impossible to give the reward to " + player.getName() + ".");
-        PluginLogger.error("CoinsEngine currency '" + currency + "' not found.");
+        PluginLogger.error("Economy currency '" + currency + "' not found.");
         player.sendMessage(ChatColor.RED + "Impossible to give you your reward. Please contact an administrator.");
     }
 }
