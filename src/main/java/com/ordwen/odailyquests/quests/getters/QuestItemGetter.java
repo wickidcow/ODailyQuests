@@ -9,22 +9,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
 import java.util.List;
 
 public class QuestItemGetter extends ItemGetter implements IQuestItem {
 
-    /**
-     * Get an item from a string.
-     *
-     * @param material   the material of the item
-     * @param fileName   the name of the file where the item is
-     * @param questIndex the index of the quest in the file
-     * @param parameter  the parameter involved
-     * @return the ItemStack or null if the item cannot be loaded
-     */
     @Override
     public ItemStack getItem(String material, String fileName, String questIndex, String parameter) {
         final String[] split = material.split(":", 2);
@@ -40,15 +30,6 @@ public class QuestItemGetter extends ItemGetter implements IQuestItem {
         };
     }
 
-    /**
-     * Get an item from Oraxen.
-     *
-     * @param namespace  the namespace of the item
-     * @param fileName   the name of the file where the item is
-     * @param questIndex the index of the quest in the file
-     * @param parameter  the parameter involved
-     * @return the ItemStack or null if the item cannot be loaded
-     */
     @Override
     public ItemStack getOraxenItem(String namespace, String fileName, String questIndex, String parameter) {
         final Pair<String, ItemStack> result = super.getOraxenItem(namespace);
@@ -56,19 +37,9 @@ public class QuestItemGetter extends ItemGetter implements IQuestItem {
             PluginLogger.configurationError(fileName, questIndex, parameter, result.first());
             return null;
         }
-
         return result.second();
     }
 
-    /**
-     * Get an item from Nexo.
-     *
-     * @param namespace  the namespace of the item
-     * @param fileName   the name of the file where the item is
-     * @param questIndex the index of the quest in the file
-     * @param parameter  the parameter involved
-     * @return the ItemStack or null if the item cannot be loaded
-     */
     @Override
     public ItemStack getNexoItem(String namespace, String fileName, String questIndex, String parameter) {
         final Pair<String, ItemStack> result = super.getNexoItem(namespace);
@@ -76,19 +47,9 @@ public class QuestItemGetter extends ItemGetter implements IQuestItem {
             PluginLogger.configurationError(fileName, questIndex, parameter, result.first());
             return null;
         }
-
         return result.second();
     }
 
-    /**
-     * Get an item from ItemsAdder.
-     *
-     * @param namespace  the namespace of the item
-     * @param fileName   the name of the file where the item is
-     * @param questIndex the index of the quest in the file
-     * @param parameter  the parameter involved
-     * @return the ItemStack or null if the item cannot be loaded
-     */
     @Override
     public ItemStack getItemsAdderItem(String namespace, String fileName, String questIndex, String parameter) {
         final Pair<String, ItemStack> result = super.getItemsAdderItem(namespace);
@@ -96,19 +57,9 @@ public class QuestItemGetter extends ItemGetter implements IQuestItem {
             PluginLogger.configurationError(fileName, questIndex, parameter, result.first());
             return null;
         }
-
         return result.second();
     }
 
-    /**
-     * Get an item from MMOItems.
-     *
-     * @param namespace  the namespace of the item
-     * @param fileName   the name of the file where the item is
-     * @param questIndex the index of the quest in the file
-     * @param parameter  the parameter involved
-     * @return the ItemStack or null if the item cannot be loaded
-     */
     @Override
     public ItemStack getMMOItemsItem(String namespace, String fileName, String questIndex, String parameter) {
         final Pair<String, ItemStack> result = super.getMMOItemsItem(namespace);
@@ -116,19 +67,9 @@ public class QuestItemGetter extends ItemGetter implements IQuestItem {
             PluginLogger.configurationError(fileName, questIndex, parameter, result.first());
             return null;
         }
-
         return result.second();
     }
 
-    /**
-     * Get an item with custom model data.
-     *
-     * @param customModelData the custom model data of the item
-     * @param fileName        the name of the file where the item is
-     * @param questIndex      the index of the quest in the file
-     * @param parameter       the parameter involved
-     * @return the ItemStack or null if the item cannot be loaded
-     */
     @Override
     public ItemStack getCustomModelDataItem(String customModelData, String fileName, String questIndex, String parameter) {
         final String[] split = customModelData.split(":");
@@ -152,24 +93,13 @@ public class QuestItemGetter extends ItemGetter implements IQuestItem {
         }
 
         final Pair<String, ItemStack> result = super.getCustomModelDataItem(material, cmd);
-
         if (!result.first().isEmpty()) {
             PluginLogger.configurationError(fileName, questIndex, parameter, result.first());
             return null;
         }
-
         return result.second();
     }
 
-    /**
-     * Get a custom head.
-     *
-     * @param texture    the texture of the head
-     * @param fileName   the name of the file where the item is
-     * @param questIndex the index of the quest in the file
-     * @param parameter  the parameter involved
-     * @return the ItemStack or null if the item cannot be loaded
-     */
     @Override
     public ItemStack getCustomHead(String texture, String fileName, String questIndex, String parameter) {
         final Pair<String, ItemStack> result = super.getCustomHead(texture);
@@ -177,18 +107,9 @@ public class QuestItemGetter extends ItemGetter implements IQuestItem {
             PluginLogger.configurationError(fileName, questIndex, parameter, result.first());
             return null;
         }
-
         return result.second();
     }
 
-    /**
-     * Load a required item with custom name and lore.
-     *
-     * @param provided quest configuration section
-     * @param file     file name
-     * @param index    quest index
-     * @return the custom item
-     */
     public ItemStack loadCustomItem(ConfigurationSection provided, String file, String index) {
         final ConfigurationSection section = provided.getConfigurationSection(".custom_item");
         if (section == null) {
@@ -212,28 +133,17 @@ public class QuestItemGetter extends ItemGetter implements IQuestItem {
         }
 
         meta.setDisplayName(TextFormatter.format(section.getString(".name")));
-
         final List<String> lore = section.getStringList(".lore");
         for (String str : lore) {
             lore.set(lore.indexOf(str), TextFormatter.format(str));
         }
         meta.setLore(lore);
         requiredItem.setItemMeta(meta);
-
         return requiredItem;
     }
 
-    /**
-     * Get an item stack from a material.
-     *
-     * @param material   the material to get
-     * @param fileName   the file name
-     * @param questIndex the quest index
-     * @return the item stack
-     */
     public ItemStack getItemStackFromMaterial(String material, String fileName, String questIndex, String parameter) {
         final ItemStack requiredItem;
-
         if (material.contains(":")) {
             requiredItem = getItem(material, fileName, questIndex, parameter);
             if (requiredItem == null) {
@@ -248,19 +158,9 @@ public class QuestItemGetter extends ItemGetter implements IQuestItem {
                 return null;
             }
         }
-
         return requiredItem;
     }
 
-    /**
-     * Builds an item initialized with a custom {@code item_model} using the default rare material placeholder.
-     *
-     * @param itemModel the namespaced identifier of the model to apply
-     * @param fileName  file name (for error reporting)
-     * @param questIndex quest index/key (for error reporting)
-     * @param parameter configuration parameter name
-     * @return an {@link ItemStack} with the model applied, or {@code null} on error
-     */
     @Override
     public ItemStack getItemModelItem(String itemModel, String fileName, String questIndex, String parameter) {
         final Pair<String, ItemStack> result = super.getItemModelItem(itemModel);
@@ -272,54 +172,55 @@ public class QuestItemGetter extends ItemGetter implements IQuestItem {
     }
 
     /**
-     * Load the potion attributes.
-     *
-     * @param section      quest section
-     * @param fileName     file name where the quest is
-     * @param questIndex   quest index in the file
-     * @param requiredItem current required item
-     * @return potion meta
+     * Load potion attributes using the modern base PotionType API.
      */
     public PotionMeta loadPotionItem(ConfigurationSection section, String fileName, String questIndex, ItemStack requiredItem) {
-        PotionMeta potionMeta = null;
-
-        PotionType potionType;
-        boolean upgraded = false;
-        boolean extended = false;
-
         final ConfigurationSection potionSection = section.getConfigurationSection(".potion");
         if (potionSection == null) return null;
 
-        if (potionSection.contains("type")) {
-            try {
-                potionType = PotionType.valueOf(potionSection.getString("type"));
-            } catch (IllegalArgumentException e) {
-                PluginLogger.configurationError(fileName, questIndex, "type", "Invalid potion type.");
-                return null;
-            }
-        } else {
+        final String rawType = potionSection.getString("type");
+        if (rawType == null) {
             PluginLogger.configurationError(fileName, questIndex, "type", "Potion type is not defined.");
             return null;
         }
 
-        if (potionSection.contains("upgraded")) upgraded = potionSection.getBoolean("upgraded");
-        if (potionSection.contains("extended")) extended = potionSection.getBoolean("extended");
+        final PotionType baseType;
+        try {
+            baseType = PotionType.valueOf(rawType.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            PluginLogger.configurationError(fileName, questIndex, "type", "Invalid potion type.");
+            return null;
+        }
 
+        final boolean upgraded = potionSection.getBoolean("upgraded", false);
+        final boolean extended = potionSection.getBoolean("extended", false);
         if (upgraded && extended) {
             PluginLogger.configurationError(fileName, questIndex, null, "Potion cannot be both upgraded and extended.");
             return null;
         }
 
-        if (requiredItem.getType() == Material.POTION
-                || requiredItem.getType() == Material.SPLASH_POTION
-                || requiredItem.getType() == Material.LINGERING_POTION) {
+        String resolvedName = baseType.name();
+        if (upgraded && !resolvedName.startsWith("STRONG_")) resolvedName = "STRONG_" + resolvedName;
+        if (extended && !resolvedName.startsWith("LONG_")) resolvedName = "LONG_" + resolvedName;
 
-            potionMeta = (PotionMeta) requiredItem.getItemMeta();
-            if (potionMeta == null) return null;
-
-            potionMeta.setBasePotionData(new PotionData(potionType, extended, upgraded));
+        final PotionType resolvedType;
+        try {
+            resolvedType = PotionType.valueOf(resolvedName);
+        } catch (IllegalArgumentException e) {
+            PluginLogger.configurationError(fileName, questIndex, "potion",
+                    "This potion type does not support the requested upgraded/extended state.");
+            return null;
         }
 
+        if (requiredItem.getType() != Material.POTION
+                && requiredItem.getType() != Material.SPLASH_POTION
+                && requiredItem.getType() != Material.LINGERING_POTION) {
+            return null;
+        }
+
+        final PotionMeta potionMeta = (PotionMeta) requiredItem.getItemMeta();
+        if (potionMeta == null) return null;
+        potionMeta.setBasePotionType(resolvedType);
         return potionMeta;
     }
 }
