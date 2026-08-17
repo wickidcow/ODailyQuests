@@ -53,7 +53,7 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT'
 
     /* Folia/Paper scheduling compatibility */
-    implementation 'space.arim.morepaperlib:morepaperlib:0.4.4'
+    implementation 'space.arim.morepaperlib:morepaperlib:0.4.3'
 
     /* lib for antiglitch */
     compileOnly 'com.jeff-media:custom-block-data:2.2.5'
