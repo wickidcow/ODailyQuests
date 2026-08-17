@@ -16,30 +16,13 @@ import com.ordwen.odailyquests.tools.TextFormatter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import su.nightexpress.excellenteconomy.api.ExcellentEconomyAPI;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The {@code RewardManager} class is responsible for handling and delivering quest rewards to players.
- * <p>
- * Rewards can be of multiple types (commands, experience, money, points, custom economy plugins).
- * This class centralizes the logic for giving those rewards and ensures that error handling and
- * placeholder replacements are consistently applied.
- * </p>
- *
- * <h2>Responsibilities:</h2>
- * <ul>
- *     <li>Send quest completion notifications (titles, action bars, toasts, messages).</li>
- *     <li>Dispatch rewards depending on their {@link RewardType}.</li>
- *     <li>Integrate with third-party APIs (Vault, TokenManager, PlayerPoints, ExcellentEconomy/CoinsEngine).</li>
- *     <li>Provide error handling when required plugins are missing or misconfigured.</li>
- * </ul>
- *
- * <p>
- * This class cannot be instantiated and exposes only static methods.
+ * Handles quest rewards and optional economy/points integrations.
  */
 public class RewardManager {
 
@@ -103,11 +86,9 @@ public class RewardManager {
         if (progression == null) {
             return reward.resolveRewardAmount();
         }
-
         if (!progression.hasRewardAmount()) {
             progression.setRewardAmount(reward.resolveRewardAmount());
         }
-
         return progression.getRewardAmount();
     }
 
@@ -123,13 +104,9 @@ public class RewardManager {
                             Debugger.write("[RewardCmd] Executed command: " + cmd);
                         } catch (Exception e) {
                             Debugger.write("[RewardCmd] Error while executing command: " + cmd);
-                            if (e.getMessage() != null) {
-                                Debugger.write(e.getMessage());
-                            }
+                            if (e.getMessage() != null) Debugger.write(e.getMessage());
                             final String msg = QuestsMessages.REWARD_COMMAND_ERROR.toString();
-                            if (msg != null) {
-                                player.sendMessage(msg.replace("%command%", cmd));
-                            }
+                            if (msg != null) player.sendMessage(msg.replace("%command%", cmd));
                         }
                     });
         }
@@ -159,7 +136,6 @@ public class RewardManager {
             rewardTypeErrorWithVault(player, RewardType.MONEY);
             return;
         }
-
         VaultHook.getEconomy().depositPlayer(player, amount);
         Debugger.write("RewardManager: Given " + amount + " money to " + player.getName() + ".");
         sendMsgAmount(player, QuestsMessages.REWARD_MONEY, amount);
@@ -182,27 +158,42 @@ public class RewardManager {
     }
 
     /**
-     * Keeps the existing COINS_ENGINE reward type compatible while preferring the supported
-     * ExcellentEconomy API. If an older CoinsEngine installation is still present, the legacy
-     * static API is invoked reflectively so ODailyQuests no longer needs the retired Maven artifact.
+     * Keeps the existing COINS_ENGINE configuration key compatible with both the modern
+     * ExcellentEconomy replacement and older CoinsEngine installations. Both integrations are
+     * reflection-based because NightExpress currently does not publish these API artifacts to a
+     * public Maven repository used by this project.
      */
     private static void handleCoinsEngineReward(Player player, Reward reward, double amount) {
-        if (PluginUtils.isPluginEnabled("ExcellentEconomy")) {
-            final ExcellentEconomyAPI api = Bukkit.getServicesManager().load(ExcellentEconomyAPI.class);
+        if (PluginUtils.isPluginEnabled("ExcellentEconomy") && tryExcellentEconomyReward(player, reward, amount)) {
+            return;
+        }
+        if (PluginUtils.isPluginEnabled("CoinsEngine") && tryLegacyCoinsEngineReward(player, reward, amount)) {
+            return;
+        }
+        rewardTypeError(player, reward.getRewardType());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static boolean tryExcellentEconomyReward(Player player, Reward reward, double amount) {
+        try {
+            final Class<?> apiClass = Class.forName("su.nightexpress.excellenteconomy.api.ExcellentEconomyAPI");
+            final Object api = Bukkit.getServicesManager().load((Class<Object>) apiClass);
             if (api == null) {
-                rewardTypeError(player, reward.getRewardType());
-                return;
+                PluginLogger.error("ExcellentEconomy is enabled but its Bukkit service is not registered.");
+                return false;
             }
 
             final String currencyId = reward.getRewardCurrency();
-            if (!api.hasCurrency(currencyId)) {
+            final Method hasCurrency = apiClass.getMethod("hasCurrency", String.class);
+            if (!Boolean.TRUE.equals(hasCurrency.invoke(api, currencyId))) {
                 currencyError(player, currencyId);
-                return;
+                return true;
             }
 
-            if (!api.deposit(player, currencyId, amount)) {
-                rewardTypeError(player, reward.getRewardType());
-                return;
+            final Method deposit = apiClass.getMethod("deposit", Player.class, String.class, double.class);
+            if (!Boolean.TRUE.equals(deposit.invoke(api, player, currencyId, amount))) {
+                PluginLogger.error("ExcellentEconomy rejected the reward deposit for " + player.getName() + ".");
+                return false;
             }
 
             Debugger.write("RewardManager: Given " + amount + " " + currencyId + " to " + player.getName() + " via ExcellentEconomy.");
@@ -212,36 +203,38 @@ public class RewardManager {
                     amount,
                     TextFormatter.format(reward.getRewardCurrencyDisplayName())
             );
-            return;
+            return true;
+        } catch (ReflectiveOperationException exception) {
+            PluginLogger.error("Unable to use ExcellentEconomy API: " + exception.getMessage());
+            return false;
         }
+    }
 
-        if (PluginUtils.isPluginEnabled("CoinsEngine")) {
-            try {
-                final Class<?> apiClass = Class.forName("su.nightexpress.coinsengine.api.CoinsEngineAPI");
-                final Class<?> currencyClass = Class.forName("su.nightexpress.coinsengine.api.currency.Currency");
-                final Method getCurrency = apiClass.getMethod("getCurrency", String.class);
-                final Object currency = getCurrency.invoke(null, reward.getRewardCurrency());
-                if (currency == null) {
-                    currencyError(player, reward.getRewardCurrency());
-                    return;
-                }
-
-                final Method addBalance = apiClass.getMethod("addBalance", Player.class, currencyClass, double.class);
-                addBalance.invoke(null, player, currency, amount);
-                Debugger.write("RewardManager: Given " + amount + " " + reward.getRewardCurrency() + " to " + player.getName() + " via legacy CoinsEngine.");
-                sendMsgAmountAndCurrency(
-                        player,
-                        QuestsMessages.REWARD_COINS_ENGINE,
-                        amount,
-                        TextFormatter.format(reward.getRewardCurrencyDisplayName())
-                );
-                return;
-            } catch (ReflectiveOperationException exception) {
-                PluginLogger.error("Unable to use the legacy CoinsEngine API: " + exception.getMessage());
+    private static boolean tryLegacyCoinsEngineReward(Player player, Reward reward, double amount) {
+        try {
+            final Class<?> apiClass = Class.forName("su.nightexpress.coinsengine.api.CoinsEngineAPI");
+            final Class<?> currencyClass = Class.forName("su.nightexpress.coinsengine.api.currency.Currency");
+            final Method getCurrency = apiClass.getMethod("getCurrency", String.class);
+            final Object currency = getCurrency.invoke(null, reward.getRewardCurrency());
+            if (currency == null) {
+                currencyError(player, reward.getRewardCurrency());
+                return true;
             }
-        }
 
-        rewardTypeError(player, reward.getRewardType());
+            final Method addBalance = apiClass.getMethod("addBalance", Player.class, currencyClass, double.class);
+            addBalance.invoke(null, player, currency, amount);
+            Debugger.write("RewardManager: Given " + amount + " " + reward.getRewardCurrency() + " to " + player.getName() + " via legacy CoinsEngine.");
+            sendMsgAmountAndCurrency(
+                    player,
+                    QuestsMessages.REWARD_COINS_ENGINE,
+                    amount,
+                    TextFormatter.format(reward.getRewardCurrencyDisplayName())
+            );
+            return true;
+        } catch (ReflectiveOperationException exception) {
+            PluginLogger.error("Unable to use the legacy CoinsEngine API: " + exception.getMessage());
+            return false;
+        }
     }
 
     private static String expandPlaceholders(Player player, String raw, Map<String, String> placeholders) {
@@ -268,10 +261,7 @@ public class RewardManager {
     private static void sendMsgAmountAndCurrency(Player player, QuestsMessages qm, double amount, String currencyName) {
         final String msg = qm.getMessage(player);
         if (msg != null) {
-            player.sendMessage(
-                    msg.replace(REWARD_AMOUNT, String.valueOf(amount))
-                            .replace("%currencyName%", currencyName)
-            );
+            player.sendMessage(msg.replace(REWARD_AMOUNT, String.valueOf(amount)).replace("%currencyName%", currencyName));
         }
     }
 
