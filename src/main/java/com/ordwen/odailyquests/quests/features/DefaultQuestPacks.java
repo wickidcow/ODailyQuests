@@ -36,8 +36,8 @@ public final class DefaultQuestPacks {
 
     static {
         add("vanilla", "Vanilla Starter", "vanilla", List.of(), List.of());
-        add("fable-concord", "Fable Quests - Concord", "fable_concord", List.of(), List.of());
-        add("fable-dominion", "Fable Quests - Dominion", "fable_dominion", List.of(), List.of());
+        add("fable-good", "Fable Quests - Good", "fable_good", List.of(), List.of());
+        add("fable-evil", "Fable Quests - Evil", "fable_evil", List.of(), List.of());
 
         add("slimefun-core", "Slimefun Core", "slimefun_core", List.of("Slimefun"), List.of());
         add("valhallammo", "ValhallaMMO", "valhallammo", List.of("ValhallaMMO"), List.of());
@@ -181,8 +181,8 @@ public final class DefaultQuestPacks {
                 case "valhallammo" -> addValhalla(quests, difficulty, packKey);
                 case "evenmorefish" -> addFishing(quests, difficulty, packKey, "EMF_FISH", "EvenMoreFish");
                 case "pyrofishingpro" -> addFishing(quests, difficulty, packKey, "PYRO_FISH", "PyroFishingPro");
-                case "fable_concord" -> addFableConcord(quests, difficulty, packKey);
-                case "fable_dominion" -> addFableDominion(quests, difficulty, packKey);
+                case "fable_good" -> addFableGood(quests, difficulty, packKey);
+                case "fable_evil" -> addFableEvil(quests, difficulty, packKey);
                 default -> { }
             }
         }
@@ -265,26 +265,26 @@ public final class DefaultQuestPacks {
                 "Catch %required% " + display + " fish", Map.of());
     }
 
-    private static void addFableConcord(FileConfiguration q, String d, String pack) {
+    private static void addFableGood(FileConfiguration q, String d, String pack) {
         switch (d) {
-            case "easy" -> addQuest(q, pack, "fable_concord_easy", "&fFable: A Gentle Hand", "WHEAT", "FARMING", 32, 400,
-                    "Harvest %required% wheat for the Concord", Map.of("required", "WHEAT"));
-            case "medium" -> addQuest(q, pack, "fable_concord_medium", "&fFable: Steward of Life", "WHEAT", "BREED", 12, 900,
-                    "Breed %required% animals for the Concord", Map.of("required", List.of("COW", "SHEEP", "PIG", "CHICKEN")));
-            case "hard" -> addQuest(q, pack, "fable_concord_hard", "&fFable: Guardian's Oath", "GOLDEN_APPLE", "TAME", 5, 1800,
-                    "Tame %required% loyal companions for the Concord", Map.of("required", List.of("WOLF", "CAT")));
+            case "easy" -> addQuest(q, pack, "fable_good_easy", "&aFable Good: A Gentle Hand", "WHEAT", "FARMING", 32, 400,
+                    "Harvest %required% wheat for a Good Quest", Map.of("required", "WHEAT"));
+            case "medium" -> addQuest(q, pack, "fable_good_medium", "&aFable Good: Steward of Life", "WHEAT", "BREED", 12, 900,
+                    "Breed %required% animals for a Good Quest", Map.of("required", List.of("COW", "SHEEP", "PIG", "CHICKEN")));
+            case "hard" -> addQuest(q, pack, "fable_good_hard", "&aFable Good: Guardian's Oath", "GOLDEN_APPLE", "TAME", 5, 1800,
+                    "Tame %required% loyal companions for a Good Quest", Map.of("required", List.of("WOLF", "CAT")));
             default -> { }
         }
     }
 
-    private static void addFableDominion(FileConfiguration q, String d, String pack) {
+    private static void addFableEvil(FileConfiguration q, String d, String pack) {
         switch (d) {
-            case "easy" -> addQuest(q, pack, "fable_dominion_easy", "&4Fable: Cull the Restless", "ROTTEN_FLESH", "KILL", 20, 400,
-                    "Defeat %required% zombies for the Dominion", Map.of("required", "ZOMBIE"));
-            case "medium" -> addQuest(q, pack, "fable_dominion_medium", "&4Fable: Trial by Flame", "BLAZE_ROD", "KILL", 15, 900,
-                    "Defeat %required% blazes for the Dominion", Map.of("required", "BLAZE"));
-            case "hard" -> addQuest(q, pack, "fable_dominion_hard", "&4Fable: Black Citadel", "WITHER_SKELETON_SKULL", "KILL", 25, 1800,
-                    "Defeat %required% wither skeletons for the Dominion", Map.of("required", "WITHER_SKELETON"));
+            case "easy" -> addQuest(q, pack, "fable_evil_easy", "&4Fable Evil: Cull the Restless", "ROTTEN_FLESH", "KILL", 20, 400,
+                    "Defeat %required% zombies for an Evil Quest", Map.of("required", "ZOMBIE"));
+            case "medium" -> addQuest(q, pack, "fable_evil_medium", "&4Fable Evil: Trial by Flame", "BLAZE_ROD", "KILL", 15, 900,
+                    "Defeat %required% blazes for an Evil Quest", Map.of("required", "BLAZE"));
+            case "hard" -> addQuest(q, pack, "fable_evil_hard", "&4Fable Evil: Black Citadel", "WITHER_SKELETON_SKULL", "KILL", 25, 1800,
+                    "Defeat %required% wither skeletons for an Evil Quest", Map.of("required", "WITHER_SKELETON"));
             default -> { }
         }
     }
