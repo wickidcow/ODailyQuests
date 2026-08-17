@@ -1,10 +1,10 @@
 package com.ordwen.odailyquests.commands.player.handlers;
 
 import com.ordwen.odailyquests.api.commands.player.PlayerCommandBase;
-import com.ordwen.odailyquests.configuration.essentials.QuestsPerCategory;
 import com.ordwen.odailyquests.configuration.essentials.RerollMaximum;
 import com.ordwen.odailyquests.enums.QuestsMessages;
 import com.ordwen.odailyquests.enums.QuestsPermissions;
+import com.ordwen.odailyquests.quests.features.RerollCostService;
 import com.ordwen.odailyquests.quests.player.PlayerQuests;
 import com.ordwen.odailyquests.quests.player.QuestsManager;
 import org.bukkit.command.CommandSender;
@@ -42,48 +42,45 @@ public class PRerollCommand extends PlayerCommandBase {
             help(player);
             return;
         }
-
         reroll(player, index);
     }
 
-    /**
-     * Rerolls a specific quest for a player.
-     * @param player the player who wants to reroll the quest
-     * @param index the index of the quest to reroll
-     */
     private void reroll(Player player, int index) {
         final String playerName = player.getName();
         final Map<String, PlayerQuests> activeQuests = QuestsManager.getActiveQuests();
-
-        if (index < 1 || index > activeQuests.get(playerName).getQuests().size()) {
+        final PlayerQuests playerQuests = activeQuests.get(playerName);
+        if (playerQuests == null) {
             invalidQuest(player);
             return;
         }
 
-        if (activeQuests.containsKey(playerName)) {
-            final PlayerQuests playerQuests = activeQuests.get(playerName);
-            int count = playerQuests.getRecentlyRolled();
-            boolean canBypass = player.hasPermission(QuestsPermissions.QUESTS_PLAYER_BYPASS_REROLL_LIMIT.get());
-            if (playerQuests.rerollQuest(index - 1, player, canBypass)) {
-                rerollConfirm(index, RerollMaximum.getMaxRerolls()-(count+1), player);
-            }
+        if (index < 1 || index > playerQuests.getQuests().size()) {
+            invalidQuest(player);
+            return;
+        }
+
+        final int previousRerolls = playerQuests.getRecentlyRolled();
+        final boolean bypass = player.hasPermission(QuestsPermissions.QUESTS_PLAYER_BYPASS_REROLL_LIMIT.get());
+        final RerollCostService.Payment payment = bypass ? RerollCostService.Payment.free() : RerollCostService.tryCharge(player);
+        if (payment == null) return;
+
+        if (playerQuests.rerollQuest(index - 1, player, bypass)) {
+            RerollCostService.sendChargedMessage(player, payment);
+            rerollConfirm(index, RerollMaximum.getMaxRerolls() - (previousRerolls + 1), player);
+        } else {
+            // A failed selection must never consume the player's money/levels.
+            RerollCostService.refund(player, payment);
         }
     }
 
-    /**
-     * Sends the confirmation message to the target player.
-     *
-     * @param index  the index of the quest that was rerolled
-     * @param target the player who had their quest rerolled
-     */
     private void rerollConfirm(int index, int remaining, Player target) {
         final String msg = QuestsMessages.QUEST_REROLLED.toString();
-        if (msg != null) target.sendMessage(msg.replace("%index%", String.valueOf(index)).replace("%remaining%", String.valueOf(remaining)));
+        if (msg != null) {
+            target.sendMessage(msg.replace("%index%", String.valueOf(index))
+                    .replace("%remaining%", String.valueOf(remaining)));
+        }
     }
 
-    /**
-     * Sends the invalid quest message to the sender.
-     */
     protected void invalidQuest(Player player) {
         final String msg = QuestsMessages.INVALID_QUEST_INDEX.toString();
         if (msg != null) player.sendMessage(msg);
@@ -93,17 +90,12 @@ public class PRerollCommand extends PlayerCommandBase {
     public List<String> onTabComplete(@NotNull CommandSender sender, String[] args) {
         if (args.length == 2 && sender instanceof Player player) {
             final PlayerQuests playerQuests = QuestsManager.getActiveQuests().get(player.getName());
-            if (playerQuests == null) {
-                return Collections.emptyList();
-            }
+            if (playerQuests == null) return Collections.emptyList();
 
             List<String> questNumbers = new ArrayList<>();
-            for (int i = 1; i <= playerQuests.getQuests().size(); i++) {
-                questNumbers.add(String.valueOf(i));
-            }
+            for (int i = 1; i <= playerQuests.getQuests().size(); i++) questNumbers.add(String.valueOf(i));
             return questNumbers;
         }
-
         return Collections.emptyList();
     }
 }
