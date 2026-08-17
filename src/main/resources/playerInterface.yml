@@ -4,6 +4,7 @@
 # Never delete a %variable% unless you know what you're doing.
 # %achieved% is replaced by the number of completed quests.
 # %drawIn% is replaced by the time remaining before the next quests draw.
+# %progressPercent% is replaced by the quest completion percentage.
 # ======================================================
 player_interface:
   size: 45
@@ -12,7 +13,7 @@ player_interface:
   disable_status: false
   # the 3 following lines will not be used if disable_status is set to true
   status: "&eStatus :"
-  progress: "&b%progress%&3/&b%required%"
+  progress: "&b%progress%&3/&b%required% &7(&f%progressPercent%%%&7)"
   achieved: "&bCOMPLETED"
   # if you want to glow the item when the quest is achieved
   glowing_if_achieved: true
@@ -35,22 +36,8 @@ player_interface:
   # More info on Wiki.
   #
   # SLOTS STARTS AT 1!
-
-  # Note: Items of type FILL will be displayed with an empty name and no lore, even if defined.
-  # If you want to display a name or lore, use PLAYER_COMMAND or CONSOLE_COMMAND types with an empty command list.
   # ========================================================
-  quests: # set the position of quests items
-    # Option 1: keep the legacy order-based positioning (quest 1 goes in slot 12, quest 2 in slot 21, etc.).
-    # 1: 12
-    # 2: 21
-    # 3: 30
-    # 4: 14
-    # 5: 23
-    # 6: 32
-    # 7: 16
-    # 8: 25
-    # 9: 34
-    # Option 2: define fixed slots per category (case-insensitive). Slots are consumed in the order quests are loaded.
+  quests:
     categories:
       easy:
         - 12
