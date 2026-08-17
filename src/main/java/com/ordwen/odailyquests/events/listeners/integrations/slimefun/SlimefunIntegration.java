@@ -1,7 +1,9 @@
 package com.ordwen.odailyquests.events.listeners.integrations.slimefun;
 
 import com.ordwen.odailyquests.tools.PluginLogger;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -70,22 +72,31 @@ public final class SlimefunIntegration {
         return aliases.stream().map(SlimefunIntegration::normalize).anyMatch(addon::equals);
     }
 
-    /** Checks the live Slimefun registry so renamed/forked Bukkit plugin jars can still match by addon ownership. */
+    /**
+     * Checks both loaded Bukkit plugins and the live Slimefun registry. The plugin-name pass
+     * works during startup even if an addon has not registered all of its items yet; the registry
+     * pass covers addons/forks whose Bukkit plugin name differs from their Slimefun addon name.
+     */
     public static boolean isAnyAddonPresent(List<String> aliases) {
         if (aliases == null || aliases.isEmpty()) return true;
+
+        List<String> normalizedAliases = aliases.stream()
+                .map(SlimefunIntegration::normalize)
+                .filter(value -> !value.isEmpty())
+                .toList();
+
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+            if (normalizedAliases.contains(normalize(plugin.getName()))) return true;
+        }
+
         init();
         if (!available) return false;
 
         try {
             Class<?> slimefun = Class.forName("io.github.thebusybiscuit.slimefun4.implementation.Slimefun");
             Object registry = slimefun.getMethod("getRegistry").invoke(null);
-            Object itemsObject = registry.getClass().getMethod("getSlimefunItems").invoke(registry);
+            Object itemsObject = registry.getClass().getMethod("getAllSlimefunItems").invoke(registry);
             if (!(itemsObject instanceof Collection<?> items)) return false;
-
-            List<String> normalizedAliases = aliases.stream()
-                    .map(SlimefunIntegration::normalize)
-                    .filter(value -> !value.isEmpty())
-                    .toList();
 
             for (Object item : items) {
                 String addonName = normalize(addonName(item));
