@@ -35,7 +35,8 @@ The daily quest interface received a focused usability pass for 3.0.5:
 - **Reroll All** is atomic and counts as one reroll action, not one action per quest.
 - Normal players receive **one reroll action per daily quest set**.
 - The existing reroll bypass permission remains available for administrators.
-- If **Jobs** or **JobsReborn** is enabled, the bottom-right corner becomes a **Jobs Quests** button that opens `/jobs quests`.
+- If **Jobs** or **JobsReborn** is enabled, the bottom-right corner becomes a **Jobs Quests** button.
+- The Jobs shortcut executes `/jobs quests` **as the clicking player** and leaves the Jobs quest GUI open instead of immediately closing the newly opened inventory.
 - If Jobs is absent, the position remains normal filler.
 
 Existing recognizable maintained interfaces are migrated narrowly so unrelated custom buttons and styling are not overwritten.
@@ -133,6 +134,7 @@ Upgrade compatibility includes:
 - real administrator-owned quest YAML is not blindly overwritten
 - exact Pylon defaults are added only to a maintained Pylon/Rebar Tech pool
 - the maintained reroll limit migrates to **one action per daily set**
+- older maintained Jobs buttons are corrected to run the player command without closing the external Jobs GUI afterward
 
 If a player still has an old saved quest set after upgrading, wait for the next draw or regenerate it with:
 
