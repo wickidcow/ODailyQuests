@@ -21,6 +21,9 @@ quests:
     required_amount: 1
     pylon_keys:
       - pylon:shimmer_magnet
+    # The Shimmer Altar gives its finished result directly to the player's inventory.
+    # Enable the Paper inventory-gain bridge for this machine-produced item only.
+    pylon_inventory_gain: true
     reward:
       reward_type: COMMAND
       commands:
