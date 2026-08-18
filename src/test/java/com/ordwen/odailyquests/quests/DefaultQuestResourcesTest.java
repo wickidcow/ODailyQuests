@@ -42,6 +42,8 @@ class DefaultQuestResourcesTest {
         String yaml = resource("quests/pylon-defaults.yml");
         assertEquals(4, occurrences(yaml, "    quest_type: REBAR_ITEM"), "Unexpected exact Pylon default count");
         assertEquals(4, occurrences(yaml, "    default_pack: pylon-rebar"), "Every Pylon default must be dependency tagged");
+        assertEquals(1, occurrences(yaml, "    pylon_inventory_gain: true"),
+                "Only the Shimmer Altar objective should use the direct-inventory gain bridge");
         assertTrue(yaml.contains("pylon:shimmer_magnet"));
         assertTrue(yaml.contains("pylon:diamond_hammer"));
         assertTrue(yaml.contains("pylon:elevator_1"));
