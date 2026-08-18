@@ -4,8 +4,7 @@ import com.ordwen.odailyquests.ODailyQuests;
 import com.ordwen.odailyquests.tools.updater.config.ConfigUpdater;
 
 /**
- * Marks pre-3.0.5 configurations as upgraded after the maintained compatibility migrations
- * performed by FilesManager have populated the seven-category and dependency-pack settings.
+ * Applies maintained 3.0.5 compatibility defaults before marking the configuration upgraded.
  */
 public class Update302to305 extends ConfigUpdater {
 
@@ -15,6 +14,9 @@ public class Update302to305 extends ConfigUpdater {
 
     @Override
     public void apply(ODailyQuests plugin, String version) {
+        // The maintained player menu exposes one daily reroll action. Choosing "reroll all"
+        // still consumes only this single daily action.
+        setDefaultConfigItem("reroll_maximum", 1, config, configFile, true);
         updateVersion(version);
     }
 }
