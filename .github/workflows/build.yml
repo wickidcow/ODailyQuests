@@ -43,6 +43,8 @@ jobs:
             "com/ordwen/odailyquests/quests/features/MaintainedQuestTypes.class"
             "com/ordwen/odailyquests/quests/features/PylonQuestDefaults.class"
             "com/ordwen/odailyquests/quests/types/global/CustomQuest.class"
+            "com/ordwen/odailyquests/events/listeners/integrations/PylonInventoryGainEvent.class"
+            "com/ordwen/odailyquests/events/listeners/integrations/PylonInventoryGainListener.class"
             "quests/easy.yml"
             "quests/medium.yml"
             "quests/hard.yml"
