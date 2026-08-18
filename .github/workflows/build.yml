@@ -41,11 +41,11 @@ jobs:
           sha256sum "dist/${NAME}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
-      - name: Upload CI artifact
+      - name: Upload raw JAR artifact
         uses: actions/upload-artifact@v7
         with:
-          name: ODailyQuests${{ steps.artifact.outputs.version }}
           path: dist/${{ steps.artifact.outputs.name }}
+          archive: false
           if-no-files-found: error
           retention-days: 30
       - name: Publish raw JAR release asset
