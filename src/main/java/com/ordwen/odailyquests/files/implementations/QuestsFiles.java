@@ -3,6 +3,7 @@ package com.ordwen.odailyquests.files.implementations;
 import com.ordwen.odailyquests.ODailyQuests;
 import com.ordwen.odailyquests.quests.features.DefaultQuestPacks;
 import com.ordwen.odailyquests.tools.PluginLogger;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,6 +35,14 @@ public class QuestsFiles {
         return configuration;
     }
 
+    /** Returns whether a loaded category currently contains at least one usable quest. */
+    public static boolean hasQuestEntries(String category) {
+        final FileConfiguration configuration = configurations.get(category);
+        if (configuration == null) return false;
+        final ConfigurationSection quests = configuration.getConfigurationSection("quests");
+        return quests != null && !quests.getKeys(false).isEmpty();
+    }
+
     /**
      * Init quests files.
      */
@@ -41,11 +50,11 @@ public class QuestsFiles {
         configurations.clear();
 
         final File questsFolder = new File(plugin.getDataFolder(), "quests");
+        if (!questsFolder.exists()) questsFolder.mkdirs();
 
-        if (!questsFolder.exists() || questsFolder.listFiles() == null || questsFolder.listFiles().length == 0) {
-            questsFolder.mkdirs();
-            createDefaultQuestFiles();
-        }
+        // Add missing maintained-fork category files without ever overwriting an administrator's files.
+        // This also migrates older installs that only had Easy/Medium/Hard.
+        ensureBuiltInQuestFiles();
 
         final File[] questFiles = questsFolder.listFiles((dir, name) -> name.endsWith(".yml"));
         if (questFiles == null) {
@@ -65,8 +74,8 @@ public class QuestsFiles {
                 // are considered custom and are never disabled by a pack toggle.
                 DefaultQuestPacks.filterConfiguredDefaults(config);
 
-                // Dependency/Fable starter quests live in memory, so plugin updates never overwrite
-                // an administrator's quest YAML. Each generated quest still carries its pack tag.
+                // Tech and Wild Card dependency quests are merged in memory. The physical YAML
+                // remains administrator-owned and is never rewritten by a dependency appearing/disappearing.
                 DefaultQuestPacks.mergeGenerated(category, config);
 
                 configurations.put(category, config);
@@ -79,16 +88,24 @@ public class QuestsFiles {
         }
     }
 
-    private void createDefaultQuestFiles() {
-        final String[] defaultFiles = {"examples.yml", "easy.yml", "medium.yml", "hard.yml"};
+    private void ensureBuiltInQuestFiles() {
+        ensureQuestFile("examples.yml", null);
+        ensureQuestFile("easy.yml", "vanilla");
+        ensureQuestFile("medium.yml", "vanilla");
+        ensureQuestFile("hard.yml", "vanilla");
+        ensureQuestFile("good.yml", "fable-good");
+        ensureQuestFile("evil.yml", "fable-evil");
+        ensureQuestFile("tech.yml", null);
+        ensureQuestFile("wildcard.yml", null);
+    }
 
-        for (String fileName : defaultFiles) {
-            plugin.saveResource("quests/" + fileName, false);
-            File created = new File(new File(plugin.getDataFolder(), "quests"), fileName);
-            if (!"examples.yml".equalsIgnoreCase(fileName)) {
-                DefaultQuestPacks.tagVanillaDefaults(created);
-            }
-            PluginLogger.info(fileName + " created as default.");
-        }
+    private void ensureQuestFile(String fileName, String packKey) {
+        final File questsFolder = new File(plugin.getDataFolder(), "quests");
+        final File file = new File(questsFolder, fileName);
+        if (file.exists()) return;
+
+        plugin.saveResource("quests/" + fileName, false);
+        if (packKey != null) DefaultQuestPacks.tagDefaults(file, packKey);
+        PluginLogger.info(fileName + " created as default.");
     }
 }
