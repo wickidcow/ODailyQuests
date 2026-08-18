@@ -36,6 +36,7 @@ public final class DoctorReport {
         line(sender, "Folia runtime", Boolean.toString(isFoliaRuntime()));
         line(sender, "Storage", cfg.getString("storage_mode", "unknown"));
         line(sender, "Categories", Integer.toString(CategoriesLoader.getAllCategories().size()));
+        line(sender, "Loaded category names", String.join(", ", CategoriesLoader.getAllCategories().keySet()));
         line(sender, "Loaded quests", Integer.toString(questCount));
         line(sender, "Quest types", Integer.toString(plugin.getAPI().getQuestTypeRegistry().size()));
         line(sender, "Active player data", Integer.toString(QuestsManager.getActiveQuests().size()));
@@ -43,6 +44,8 @@ public final class DoctorReport {
         line(sender, "Weekly categories", String.join(", ", cfg.getStringList("weekly_categories")));
         line(sender, "Default quest packs", DefaultQuestPacks.statusSummary());
         line(sender, "Active packs", String.join(", ", DefaultQuestPacks.activePackNames()));
+        line(sender, "Tech available", Boolean.toString(DefaultQuestPacks.isOptionalCategoryAvailable(DefaultQuestPacks.TECH_CATEGORY)));
+        line(sender, "Wild Card available", Boolean.toString(DefaultQuestPacks.isOptionalCategoryAvailable(DefaultQuestPacks.WILDCARD_CATEGORY)));
         line(sender, "Streak rewards", Boolean.toString(cfg.getBoolean("streak_rewards.enabled", false)));
         line(sender, "Community quests", Boolean.toString(cfg.getBoolean("community_quests.enabled", false)));
         line(sender, "Reroll cost", Boolean.toString(cfg.getBoolean("reroll_cost.enabled", false)));
@@ -82,8 +85,9 @@ public final class DoctorReport {
     private static List<String> enabledIntegrations() {
         String[] names = {
                 "Vault", "PlaceholderAPI", "Citizens", "FancyNpcs", "MythicMobs", "EliteMobs",
-                "ItemsAdder", "Oraxen", "Nexo", "Towny", "Slimefun", "PyroFishingPro",
-                "ValhallaMMO", "MMOItems", "MMOCore", "EvenMoreFish", "CustomFishing"
+                "ItemsAdder", "Oraxen", "Nexo", "Towny", "Slimefun", "Pylon", "Rebar",
+                "PyroFishingPro", "ValhallaMMO", "mcMMO", "MMOItems", "MMOCore",
+                "EvenMoreFish", "CustomFishing"
         };
         List<String> enabled = new ArrayList<>();
         for (String name : names) {
