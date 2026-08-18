@@ -1,0 +1,533 @@
+quests:
+  1:
+    name: '#9B1BFFRob the Road Prophet'
+    menu_item: EMERALD
+    description:
+    - '&8A wandering trader carries secrets and coin.'
+    - '&8Leave the road quiet and the purse lighter.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Kill #9B1BFF2 &7Wandering Trader.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+5 &7Light Weapons Skill EXP'
+    - '&7▪ #9B1BFF1200 &7XPs'
+    - '&7▪ #9B1BFF4500 &7Gold'
+    - '&7▪ #9B1BFF75 &7Elite Coins'
+    - '&7▪ #9B1BFF4 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: WANDERING_TRADER
+    required_amount: 2
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1200
+      - val exp light_weapons 5 %player_name%
+      - eco give %player_name% 4500
+      - em money add %player_name% 75
+      - questadmin givepoints %player_name% 4
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  2:
+    name: '#9B1BFFSilence the Caravan'
+    menu_item: LEAD
+    description:
+    - '&8Cut down the trader llamas before their bells'
+    - '&8carry warning through the hills.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Kill #9B1BFF4 &7Trader Llama.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Light Weapons Skill EXP'
+    - '&7▪ #9B1BFF1050 &7XPs'
+    - '&7▪ #9B1BFF3600 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: TRADER_LLAMA
+    required_amount: 4
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1050
+      - val exp light_weapons 4 %player_name%
+      - eco give %player_name% 3600
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  3:
+    name: '#9B1BFFSmoke the Honeyed Hives'
+    menu_item: HONEYCOMB
+    description:
+    - '&8The hive sings of honest labor.'
+    - '&8Let the smoke carry an Evil warning.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Kill #9B1BFF15 &7Bee.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Martial Arts Skill EXP'
+    - '&7▪ #9B1BFF950 &7XPs'
+    - '&7▪ #9B1BFF3400 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: BEE
+    required_amount: 15
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 950
+      - val exp martial_arts 4 %player_name%
+      - eco give %player_name% 3400
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  4:
+    name: '#9B1BFFScutes for the Black Market'
+    menu_item: TURTLE_SCUTE
+    description:
+    - '&8Rare shells fetch a fine price in alleys'
+    - '&8where mercy has no buyer.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Kill #9B1BFF6 &7Turtle.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Light Weapons Skill EXP'
+    - '&7▪ #9B1BFF1000 &7XPs'
+    - '&7▪ #9B1BFF3600 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: TURTLE
+    required_amount: 6
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1000
+      - val exp light_weapons 4 %player_name%
+      - eco give %player_name% 3600
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  5:
+    name: '#9B1BFFCage the Song'
+    menu_item: JUKEBOX
+    description:
+    - '&8The allay carries joy where shadows gather.'
+    - '&8End the song and keep the silence.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Kill #9B1BFF3 &7Allay.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Power Skill EXP'
+    - '&7▪ #9B1BFF1100 &7XPs'
+    - '&7▪ #9B1BFF3800 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: ALLAY
+    required_amount: 3
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1100
+      - val exp power 4 %player_name%
+      - eco give %player_name% 3800
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  6:
+    name: '#9B1BFFBreak the Desert Caravan'
+    menu_item: CACTUS
+    description:
+    - '&8Camels carry merchants past your tolls.'
+    - '&8Break the route and make the road obey.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Kill #9B1BFF3 &7Camel.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Heavy Weapons Skill EXP'
+    - '&7▪ #9B1BFF1100 &7XPs'
+    - '&7▪ #9B1BFF3800 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: CAMEL
+    required_amount: 3
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1100
+      - val exp heavy_weapons 4 %player_name%
+      - eco give %player_name% 3800
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  7:
+    name: '#9B1BFFMelt the Watchmen'
+    menu_item: SNOWBALL
+    description:
+    - '&8Snow golems stand as tiny guards.'
+    - '&8Scatter them before the village feels safe.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Kill #9B1BFF8 &7Snow Golem.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Light Weapons Skill EXP'
+    - '&7▪ #9B1BFF900 &7XPs'
+    - '&7▪ #9B1BFF3200 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: SNOW_GOLEM
+    required_amount: 8
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 900
+      - val exp light_weapons 4 %player_name%
+      - eco give %player_name% 3200
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  8:
+    name: '#9B1BFFBastion Blood Oath'
+    menu_item: GOLDEN_AXE
+    description:
+    - '&8Challenge the brute guardians of the bastion'
+    - '&8and prove Evil takes what it wants.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Kill #9B1BFF3 &7Piglin Brute.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+5 &7Heavy Weapons Skill EXP'
+    - '&7▪ #9B1BFF1400 &7XPs'
+    - '&7▪ #9B1BFF5200 &7Gold'
+    - '&7▪ #9B1BFF75 &7Elite Coins'
+    - '&7▪ #9B1BFF4 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: PIGLIN_BRUTE
+    required_amount: 3
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1400
+      - val exp heavy_weapons 5 %player_name%
+      - eco give %player_name% 5200
+      - em money add %player_name% 75
+      - questadmin givepoints %player_name% 4
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  9:
+    name: '#9B1BFFGold Teeth of the Nether'
+    menu_item: GOLD_INGOT
+    description:
+    - '&8Strike the gold-hungry piglins and carve'
+    - '&8a darker tithe from the Nether.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Kill #9B1BFF20 &7Piglin.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+5 &7Light Weapons Skill EXP'
+    - '&7▪ #9B1BFF1250 &7XPs'
+    - '&7▪ #9B1BFF4500 &7Gold'
+    - '&7▪ #9B1BFF75 &7Elite Coins'
+    - '&7▪ #9B1BFF4 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: PIGLIN
+    required_amount: 20
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1250
+      - val exp light_weapons 5 %player_name%
+      - eco give %player_name% 4500
+      - em money add %player_name% 75
+      - questadmin givepoints %player_name% 4
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  10:
+    name: '#9B1BFFPowder Keg Pact'
+    menu_item: TNT
+    description:
+    - '&8Craft the thunder that opens doors, vaults,'
+    - '&8and kingdoms that refuse to kneel.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Craft #9B1BFF8 &7Tnt.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Power Skill EXP'
+    - '&7▪ #9B1BFF1000 &7XPs'
+    - '&7▪ #9B1BFF3700 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: CRAFT
+    ignore_nbt: true
+    required_item: TNT
+    required_amount: 8
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1000
+      - val exp power 4 %player_name%
+      - eco give %player_name% 3700
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  11:
+    name: '#9B1BFFBolts in the Dark'
+    menu_item: CROSSBOW
+    description:
+    - '&8Make crossbows for masked hands waiting'
+    - '&8on moonless rooftops.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Craft #9B1BFF4 &7Crossbow.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Archery Skill EXP'
+    - '&7▪ #9B1BFF950 &7XPs'
+    - '&7▪ #9B1BFF3500 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: CRAFT
+    ignore_nbt: true
+    required_item: CROSSBOW
+    required_amount: 4
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 950
+      - val exp archery 4 %player_name%
+      - eco give %player_name% 3500
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  12:
+    name: '#9B1BFFKindle the Betrayal'
+    menu_item: FLINT_AND_STEEL
+    description:
+    - '&8Every betrayal starts with one spark.'
+    - '&8Forge enough fire to write your answer.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Craft #9B1BFF4 &7Flint And Steel.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Smithing Skill EXP'
+    - '&7▪ #9B1BFF850 &7XPs'
+    - '&7▪ #9B1BFF3200 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: CRAFT
+    ignore_nbt: true
+    required_item: FLINT_AND_STEEL
+    required_amount: 4
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 850
+      - val exp smithing 4 %player_name%
+      - eco give %player_name% 3200
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  13:
+    name: '#9B1BFFSoulfire Offerings'
+    menu_item: SOUL_TORCH
+    description:
+    - '&8Raise soulflame for the Evil altars'
+    - '&8and let blue fire mark the path below.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Craft #9B1BFF32 &7Soul Torch.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Alchemy Skill EXP'
+    - '&7▪ #9B1BFF950 &7XPs'
+    - '&7▪ #9B1BFF3400 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: CRAFT
+    ignore_nbt: true
+    required_item: SOUL_TORCH
+    required_amount: 32
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 950
+      - val exp alchemy 4 %player_name%
+      - eco give %player_name% 3400
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  14:
+    name: '#9B1BFFTears of the Ruined Gate'
+    menu_item: CRYING_OBSIDIAN
+    description:
+    - '&8Gather crying obsidian from ruined gates'
+    - '&8where old travelers learned to fear the dark.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Gather #9B1BFF16 &7Crying Obsidian.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Mining Skill EXP'
+    - '&7▪ #9B1BFF1000 &7XPs'
+    - '&7▪ #9B1BFF3800 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: GET
+    required_item: CRYING_OBSIDIAN
+    required_amount: 16
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1000
+      - val exp mining 4 %player_name%
+      - eco give %player_name% 3800
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  15:
+    name: '#9B1BFFFeast of Rot'
+    menu_item: ROTTEN_FLESH
+    description:
+    - '&8Swallow the grave-kings meal and prove'
+    - '&8your oath is stronger than disgust.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Consume #9B1BFF16 &7Rotten Flesh.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Power Skill EXP'
+    - '&7▪ #9B1BFF900 &7XPs'
+    - '&7▪ #9B1BFF3200 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: CONSUME
+    required_item: ROTTEN_FLESH
+    required_amount: 16
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 900
+      - val exp power 4 %player_name%
+      - eco give %player_name% 3200
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
+  16:
+    name: '#9B1BFFBreak the Queens Hive'
+    menu_item: BEE_NEST
+    description:
+    - '&8Crack open the hives that feed honest homes'
+    - '&8and leave only wax, fear, and silence.'
+    - ''
+    - '#9B1BFF&lObjectives:'
+    - '&7▪ &7Break #9B1BFF6 &7Bee Nest.'
+    - ''
+    - '#9B1BFF&lRewards:'
+    - '&7▪ #9B1BFF+1 &7Evil Point'
+    - '&7▪ #FFFFFF+4 &7Digging Skill EXP'
+    - '&7▪ #9B1BFF1000 &7XPs'
+    - '&7▪ #9B1BFF3600 &7Gold'
+    - '&7▪ #9B1BFF50 &7Elite Coins'
+    - '&7▪ #9B1BFF3 &7Quest Points'
+    - '&7▪ #9B1BFF2 &7Daily Crate Keys'
+    quest_type: BREAK
+    required_item: BEE_NEST
+    required_amount: 6
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1000
+      - val exp digging 4 %player_name%
+      - eco give %player_name% 3600
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Evil 1
+      - lp user %player_name% meta set alignment.last_deed Evil
+      - lp user %player_name% meta set alignment.last_deed_type evil
