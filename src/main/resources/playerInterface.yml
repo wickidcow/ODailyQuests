@@ -3,6 +3,7 @@
 #
 # Never delete a %variable% unless you know what you're doing.
 # %achieved% is replaced by the number of completed quests.
+# %totalQuests% is replaced by the number of quests currently assigned to the player.
 # %drawIn% is replaced by the time remaining before the next quests draw.
 # %progressPercent% is replaced by the quest completion percentage.
 # ======================================================
@@ -13,7 +14,7 @@ player_interface:
   disable_status: false
   # the 3 following lines will not be used if disable_status is set to true
   status: "&eStatus :"
-  progress: "&b%progress%&3/&b%required% &7(&f%progressPercent%%%&7)"
+  progress: "&b%progress%&3/&b%required% &7(&f%progressPercent%%&7)"
   achieved: "&bCOMPLETED"
   # if you want to glow the item when the quest is achieved
   glowing_if_achieved: true
@@ -26,7 +27,7 @@ player_interface:
     item_name: '&b%player_name%'
     item_description:
       - '&3Status: '
-      - ' &3&l| &7Completed quests: &b%achieved%&3/&b9'
+      - ' &3&l| &7Completed quests: &b%achieved%&3/&b%totalQuests%'
       - ' &3&l| &7Total completed quests: &b%odailyquests_total%'
       - ' &3&l| &7New quests in: &b%drawIn%'
 
@@ -38,19 +39,23 @@ player_interface:
   # SLOTS STARTS AT 1!
   # ========================================================
   quests:
+    # The maintained default is one quest from each loaded category.
+    # Optional Tech/Wild Card categories are simply absent when no provider is available.
     categories:
       easy:
         - 12
-        - 21
-        - 30
       medium:
         - 14
-        - 23
-        - 32
       hard:
         - 16
+      good:
+        - 21
+      evil:
+        - 23
+      tech:
         - 25
-        - 34
+      wildcard:
+        - 32
   items:
     0:
       type: CLOSE
@@ -124,4 +129,6 @@ player_interface:
           - 20
           - 26
           - 29
+          - 30
+          - 34
           - 35
