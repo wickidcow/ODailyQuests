@@ -29,12 +29,27 @@ class DefaultQuestResourcesTest {
     void techPoolIsPhysicallyPopulatedAndDependencyTagged() throws IOException {
         String yaml = resource("quests/tech.yml");
         assertFalse(yaml.contains("quests: {}"), "Tech must never ship as an empty runtime-only shell");
-        assertEquals(27, countQuests(yaml), "Unexpected built-in Tech quest count");
+        assertEquals(27, countQuests(yaml), "Unexpected base built-in Tech quest count");
         assertTrue(yaml.contains("quest_type: SLIMEFUN_CRAFT"));
         assertTrue(yaml.contains("quest_type: SLIMEFUN_ITEM"));
         assertTrue(yaml.contains("quest_type: REBAR_ITEM"));
         assertTrue(yaml.contains("default_pack: slimefun-core"));
         assertTrue(yaml.contains("default_pack: pylon-rebar"));
+    }
+
+    @Test
+    void exactPylonDefaultsArePhysicallyBundled() throws IOException {
+        String yaml = resource("quests/pylon-defaults.yml");
+        assertEquals(4, occurrences(yaml, "    quest_type: REBAR_ITEM"), "Unexpected exact Pylon default count");
+        assertEquals(4, occurrences(yaml, "    default_pack: pylon-rebar"), "Every Pylon default must be dependency tagged");
+        assertTrue(yaml.contains("pylon:shimmer_magnet"));
+        assertTrue(yaml.contains("pylon:diamond_hammer"));
+        assertTrue(yaml.contains("pylon:elevator_1"));
+        assertTrue(yaml.contains("pylon:reactivated_wither_skull"));
+        assertTrue(yaml.contains("Craft a Shimmer Magnet"));
+        assertTrue(yaml.contains("Craft a Diamond Hammer"));
+        assertTrue(yaml.contains("Craft an Elevator I"));
+        assertTrue(yaml.contains("Craft a Reactivated Wither Skull"));
     }
 
     @Test
@@ -49,7 +64,6 @@ class DefaultQuestResourcesTest {
         assertTrue(yaml.contains("default_pack: mmoitems"));
         assertTrue(yaml.contains("default_pack: itemsadder"));
 
-        // Provider-native rewards that are stable across default installations.
         assertTrue(yaml.contains("valhalla reward power_spendableskillpoints_add"));
         assertTrue(yaml.contains("emf admin bait Shrimp"));
         assertTrue(yaml.contains("fish addentropy"));
@@ -80,6 +94,16 @@ class DefaultQuestResourcesTest {
         Matcher matcher = QUEST_ENTRY.matcher(yaml);
         int count = 0;
         while (matcher.find()) count++;
+        return count;
+    }
+
+    private static int occurrences(String text, String needle) {
+        int count = 0;
+        int index = 0;
+        while ((index = text.indexOf(needle, index)) >= 0) {
+            count++;
+            index += needle.length();
+        }
         return count;
     }
 
