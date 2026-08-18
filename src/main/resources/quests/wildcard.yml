@@ -14,7 +14,7 @@ quests:
     - ' &3&l| %status%'
     - ''
     - '&3Rewards:'
-    - ' &3&l| &7+200 Valhalla Power Skill EXP'
+    - ' &3&l| &7+1 Valhalla Skill Point'
     - ' &3&l| &7900 Gold'
     - ' &3&l| &72 Quest Points'
     quest_type: VALHALLA_EXP
@@ -23,7 +23,7 @@ quests:
     reward:
       reward_type: COMMAND
       commands:
-      - valhalla exp power 200 %player_name% false
+      - valhalla reward power_spendableskillpoints_add 1 %player_name%
       - eco give %player_name% 900
       - questadmin givepoints %player_name% 2
     default_pack: valhallammo
@@ -41,7 +41,7 @@ quests:
     - ' &3&l| %status%'
     - ''
     - '&3Rewards:'
-    - ' &3&l| &7+300 Valhalla Mining Skill EXP'
+    - ' &3&l| &7+2 Valhalla Skill Points'
     - ' &3&l| &71200 Gold'
     - ' &3&l| &72 Quest Points'
     quest_type: VALHALLA_EXP
@@ -50,7 +50,7 @@ quests:
     reward:
       reward_type: COMMAND
       commands:
-      - valhalla exp mining 300 %player_name% false
+      - valhalla reward power_spendableskillpoints_add 2 %player_name%
       - eco give %player_name% 1200
       - questadmin givepoints %player_name% 2
     default_pack: valhallammo
@@ -68,7 +68,7 @@ quests:
     - ' &3&l| %status%'
     - ''
     - '&3Rewards:'
-    - ' &3&l| &7+400 Valhalla Archery Skill EXP'
+    - ' &3&l| &7+3 Valhalla Skill Points'
     - ' &3&l| &71500 Gold'
     - ' &3&l| &72 Quest Points'
     quest_type: VALHALLA_EXP
@@ -77,7 +77,7 @@ quests:
     reward:
       reward_type: COMMAND
       commands:
-      - valhalla exp archery 400 %player_name% false
+      - valhalla reward power_spendableskillpoints_add 3 %player_name%
       - eco give %player_name% 1500
       - questadmin givepoints %player_name% 2
     default_pack: valhallammo
@@ -245,7 +245,7 @@ quests:
     - ' &7Category: &fWild Card'
     - ''
     - '&3Task:'
-    - ' &3&l| &7Earn %required% mcMMO skill experience'
+    - ' &3&l| &7Earn %required% mcMMO mining experience'
     - ''
     - '&3Progress:'
     - ' &3&l| %status%'
@@ -272,7 +272,7 @@ quests:
     - ' &7Category: &fWild Card'
     - ''
     - '&3Task:'
-    - ' &3&l| &7Earn %required% mcMMO skill experience'
+    - ' &3&l| &7Earn %required% mcMMO woodcutting experience'
     - ''
     - '&3Progress:'
     - ' &3&l| %status%'
@@ -299,7 +299,7 @@ quests:
     - ' &7Category: &fWild Card'
     - ''
     - '&3Task:'
-    - ' &3&l| &7Earn %required% mcMMO skill experience'
+    - ' &3&l| &7Earn %required% mcMMO swords experience'
     - ''
     - '&3Progress:'
     - ' &3&l| %status%'
