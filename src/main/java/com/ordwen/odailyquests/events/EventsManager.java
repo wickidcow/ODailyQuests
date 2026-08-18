@@ -14,6 +14,7 @@ import com.ordwen.odailyquests.events.listeners.entity.custom.stackers.RoseStack
 import com.ordwen.odailyquests.events.listeners.entity.custom.stackers.WildStackerListener;
 import com.ordwen.odailyquests.events.listeners.global.*;
 import com.ordwen.odailyquests.events.listeners.integrations.ExternalItemProgressListener;
+import com.ordwen.odailyquests.events.listeners.integrations.PylonInventoryGainListener;
 import com.ordwen.odailyquests.events.listeners.integrations.customsuite.CropBreakListener;
 import com.ordwen.odailyquests.events.listeners.integrations.customsuite.FishingLootSpawnListener;
 import com.ordwen.odailyquests.events.listeners.integrations.emf.EMFFishCaughtListener;
@@ -103,11 +104,16 @@ public class EventsManager {
         if (NexoEnabled.isEnabled()) registerSafely(() ->
                 pluginManager.registerEvents(new NexoItemsLoadedListener(oDailyQuests), oDailyQuests), "Nexo");
 
-        // One lightweight listener handles generic item acquisition for the Tech/Wild Card
-        // integrations. Detection itself is reflection-only and returns false when a plugin is absent.
-        if (PluginUtils.isPluginEnabled("Pylon") || PluginUtils.isPluginEnabled("Rebar")
-                || PluginUtils.isPluginEnabled("MMOItems") || PluginUtils.isPluginEnabled("ItemsAdder")) {
+        boolean pylonAvailable = PluginUtils.isPluginEnabled("Pylon") || PluginUtils.isPluginEnabled("Rebar");
+        if (pylonAvailable || PluginUtils.isPluginEnabled("MMOItems") || PluginUtils.isPluginEnabled("ItemsAdder")) {
             pluginManager.registerEvents(new ExternalItemProgressListener(), oDailyQuests);
+        }
+
+        // Pylon machines such as the Shimmer Altar can place finished products directly in a
+        // player's inventory. Paper's slot-change event lets us recognize the net new item while
+        // keeping the integration reflection-only and avoiding a hard Rebar/Pylon dependency.
+        if (pylonAvailable) {
+            PylonInventoryGainListener.register(pluginManager, oDailyQuests);
         }
     }
 
