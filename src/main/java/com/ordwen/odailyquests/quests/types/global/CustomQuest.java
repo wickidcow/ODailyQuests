@@ -1,5 +1,6 @@
 package com.ordwen.odailyquests.quests.types.global;
 
+import com.ordwen.odailyquests.events.listeners.integrations.ExternalItemIntegration;
 import com.ordwen.odailyquests.events.listeners.integrations.slimefun.SlimefunIntegration;
 import com.ordwen.odailyquests.quests.features.QuestFeatures;
 import com.ordwen.odailyquests.quests.player.progression.Progression;
@@ -30,9 +31,25 @@ public class CustomQuest extends AbstractQuest {
 
     @Override
     public boolean canProgress(@Nullable Event provided, Progression progression) {
-        boolean slimefunItemQuest = "SLIMEFUN_ITEM".equalsIgnoreCase(getQuestType());
-        boolean slimefunCraftQuest = "SLIMEFUN_CRAFT".equalsIgnoreCase(getQuestType());
-        if (!slimefunItemQuest && !slimefunCraftQuest) return true;
+        String type = getQuestType();
+        boolean slimefunItemQuest = "SLIMEFUN_ITEM".equalsIgnoreCase(type);
+        boolean slimefunCraftQuest = "SLIMEFUN_CRAFT".equalsIgnoreCase(type);
+        boolean rebarItemQuest = "REBAR_ITEM".equalsIgnoreCase(type);
+        boolean mmoItemQuest = "MMOITEM_ITEM".equalsIgnoreCase(type);
+        boolean itemsAdderItemQuest = "ITEMSADDER_ITEM".equalsIgnoreCase(type);
+        boolean mcMMOQuest = "MCMMO_EXP".equalsIgnoreCase(type);
+
+        // Command-completed/custom types keep the historical permissive behavior.
+        if (!slimefunItemQuest && !slimefunCraftQuest && !rebarItemQuest
+                && !mmoItemQuest && !itemsAdderItemQuest && !mcMMOQuest) {
+            return true;
+        }
+
+        if (mcMMOQuest) {
+            return provided != null
+                    && "com.gmail.nossr50.events.experience.McMMOPlayerXpGainEvent".equals(provided.getClass().getName());
+        }
+
         if (provided == null) return false;
 
         if (slimefunCraftQuest
@@ -42,6 +59,12 @@ public class CustomQuest extends AbstractQuest {
         }
 
         ItemStack stack = extractStack(provided);
+        if (stack == null) return false;
+
+        if (rebarItemQuest) return ExternalItemIntegration.isPylonItem(stack);
+        if (mmoItemQuest) return ExternalItemIntegration.isMMOItem(stack);
+        if (itemsAdderItemQuest) return ExternalItemIntegration.isItemsAdderItem(stack);
+
         String id = SlimefunIntegration.getItemId(stack);
         if (id == null) return false;
 
