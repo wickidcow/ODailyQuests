@@ -95,16 +95,16 @@ quests:
     - ' &3&l| %status%'
     - ''
     - '&3Rewards:'
+    - ' &3&l| &7+1 EvenMoreFish Shrimp Bait'
     - ' &3&l| &7700 Gold'
-    - ' &3&l| &7300 XP'
     - ' &3&l| &72 Quest Points'
     quest_type: EMF_FISH
     required_amount: 4
     reward:
       reward_type: COMMAND
       commands:
+      - emf admin bait Shrimp 1 %player_name%
       - eco give %player_name% 700
-      - xp give %player_name% 300
       - questadmin givepoints %player_name% 2
     default_pack: evenmorefish
     weight: 1.0
@@ -121,16 +121,16 @@ quests:
     - ' &3&l| %status%'
     - ''
     - '&3Rewards:'
+    - ' &3&l| &7+2 EvenMoreFish Shrimp Bait'
     - ' &3&l| &71300 Gold'
-    - ' &3&l| &7550 XP'
     - ' &3&l| &72 Quest Points'
     quest_type: EMF_FISH
     required_amount: 10
     reward:
       reward_type: COMMAND
       commands:
+      - emf admin bait Shrimp 2 %player_name%
       - eco give %player_name% 1300
-      - xp give %player_name% 550
       - questadmin givepoints %player_name% 2
     default_pack: evenmorefish
     weight: 1.0
@@ -147,16 +147,16 @@ quests:
     - ' &3&l| %status%'
     - ''
     - '&3Rewards:'
+    - ' &3&l| &7+3 EvenMoreFish Shrimp Bait'
     - ' &3&l| &72200 Gold'
-    - ' &3&l| &7900 XP'
     - ' &3&l| &72 Quest Points'
     quest_type: EMF_FISH
     required_amount: 18
     reward:
       reward_type: COMMAND
       commands:
+      - emf admin bait Shrimp 3 %player_name%
       - eco give %player_name% 2200
-      - xp give %player_name% 900
       - questadmin givepoints %player_name% 2
     default_pack: evenmorefish
     weight: 1.0
@@ -173,16 +173,17 @@ quests:
     - ' &3&l| %status%'
     - ''
     - '&3Rewards:'
+    - ' &3&l| &7+250 Pyro Entropy'
+    - ' &3&l| &7+100 Pyro Fishing XP'
     - ' &3&l| &7700 Gold'
-    - ' &3&l| &7300 XP'
-    - ' &3&l| &72 Quest Points'
     quest_type: PYRO_FISH
     required_amount: 4
     reward:
       reward_type: COMMAND
       commands:
+      - fish addentropy %player_name% 250
+      - fish addxp %player_name% 100
       - eco give %player_name% 700
-      - xp give %player_name% 300
       - questadmin givepoints %player_name% 2
     default_pack: pyrofishingpro
     weight: 1.0
@@ -199,16 +200,17 @@ quests:
     - ' &3&l| %status%'
     - ''
     - '&3Rewards:'
+    - ' &3&l| &7+600 Pyro Entropy'
+    - ' &3&l| &7+250 Pyro Fishing XP'
     - ' &3&l| &71300 Gold'
-    - ' &3&l| &7550 XP'
-    - ' &3&l| &72 Quest Points'
     quest_type: PYRO_FISH
     required_amount: 10
     reward:
       reward_type: COMMAND
       commands:
+      - fish addentropy %player_name% 600
+      - fish addxp %player_name% 250
       - eco give %player_name% 1300
-      - xp give %player_name% 550
       - questadmin givepoints %player_name% 2
     default_pack: pyrofishingpro
     weight: 1.0
@@ -225,16 +227,17 @@ quests:
     - ' &3&l| %status%'
     - ''
     - '&3Rewards:'
+    - ' &3&l| &7+1200 Pyro Entropy'
+    - ' &3&l| &7+500 Pyro Fishing XP'
     - ' &3&l| &72200 Gold'
-    - ' &3&l| &7900 XP'
-    - ' &3&l| &72 Quest Points'
     quest_type: PYRO_FISH
     required_amount: 18
     reward:
       reward_type: COMMAND
       commands:
+      - fish addentropy %player_name% 1200
+      - fish addxp %player_name% 500
       - eco give %player_name% 2200
-      - xp give %player_name% 900
       - questadmin givepoints %player_name% 2
     default_pack: pyrofishingpro
     weight: 1.0
