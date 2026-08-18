@@ -17,17 +17,22 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Built-in, toggleable starter quest packs. Dependency-backed packs are enabled by default
- * but only become active when their dependency (and, for Slimefun addons, addon registration)
- * is actually present. Existing untagged server quests are always treated as custom content.
+ * Built-in, toggleable quest packs.
+ *
+ * Easy/Medium/Hard and Fable Good/Evil are real quest categories backed by YAML files.
+ * Dependency-backed content is merged into two separate daily categories:
+ * Tech (Slimefun + addons + Pylon/Rebar) and Wild Card (miscellaneous integrations).
  */
 public final class DefaultQuestPacks {
 
     private static final String ROOT = "default_quest_packs";
+    public static final String TECH_CATEGORY = "tech";
+    public static final String WILDCARD_CATEGORY = "wildcard";
 
     private record PackDefinition(
             String displayName,
             String generator,
+            String category,
             List<String> pluginAny,
             List<String> slimefunAddons
     ) {}
@@ -35,15 +40,13 @@ public final class DefaultQuestPacks {
     private static final Map<String, PackDefinition> DEFAULTS = new LinkedHashMap<>();
 
     static {
-        add("vanilla", "Vanilla Starter", "vanilla", List.of(), List.of());
-        add("fable-good", "Fable Quests - Good", "fable_good", List.of(), List.of());
-        add("fable-evil", "Fable Quests - Evil", "fable_evil", List.of(), List.of());
+        add("vanilla", "Vanilla Daily Quests", "none", "", List.of(), List.of());
+        add("fable-good", "Fable Good", "none", "good", List.of(), List.of());
+        add("fable-evil", "Fable Evil", "none", "evil", List.of(), List.of());
 
-        add("slimefun-core", "Slimefun Core", "slimefun_core", List.of("Slimefun"), List.of());
-        add("valhallammo", "ValhallaMMO", "valhallammo", List.of("ValhallaMMO"), List.of());
-        add("evenmorefish", "EvenMoreFish", "evenmorefish", List.of("EvenMoreFish"), List.of());
-        add("pyrofishingpro", "PyroFishingPro", "pyrofishingpro", List.of("PyroFishingPro"), List.of());
-
+        // One Tech category. Difficulty is intentionally a property of the rolled objective,
+        // not the category name.
+        add("slimefun-core", "Slimefun Core", "slimefun_core", TECH_CATEGORY, List.of("Slimefun"), List.of());
         addSlimefunAddon("networks", "Networks", "Networks");
         addSlimefunAddon("networks-expansion", "Networks Expansion", "NetworksExpansion", "Networks Expansion", "NetworkExpansion");
         addSlimefunAddon("infinity-expansion", "Infinity Expansion", "InfinityExpansion", "InfinityExpansion2", "Infinity Expansion", "Infinity Expansion 2");
@@ -65,56 +68,106 @@ public final class DefaultQuestPacks {
         addSlimefunAddon("infernal-farm", "Infernal Farm", "InfernalFarm", "Infernal Farm");
         addSlimefunAddon("idoe", "IDOE", "IDOE", "IllegalDevItems", "Illegal Dev Items");
         addSlimefunAddon("slimeglue", "SlimeGlue", "SlimeGlue", "Slime Glue");
+        // Pylon depends on Rebar. Requiring Pylon prevents an empty Rebar framework install
+        // from creating an impossible Tech quest.
+        add("pylon-rebar", "Pylon / Rebar", "rebar_tech", TECH_CATEGORY, List.of("Pylon"), List.of());
+
+        // One Wild Card category. Each pack only participates when its plugin is enabled.
+        add("valhallammo", "ValhallaMMO", "valhallammo", WILDCARD_CATEGORY, List.of("ValhallaMMO"), List.of());
+        add("evenmorefish", "EvenMoreFish", "evenmorefish", WILDCARD_CATEGORY, List.of("EvenMoreFish"), List.of());
+        add("pyrofishingpro", "PyroFishingPro", "pyrofishingpro", WILDCARD_CATEGORY, List.of("PyroFishingPro"), List.of());
+        add("mcmmo", "mcMMO", "mcmmo", WILDCARD_CATEGORY, List.of("mcMMO"), List.of());
+        add("mmoitems", "MMOItems", "mmoitems", WILDCARD_CATEGORY, List.of("MMOItems"), List.of());
+        add("itemsadder", "ItemsAdder", "itemsadder", WILDCARD_CATEGORY, List.of("ItemsAdder"), List.of());
     }
 
     private DefaultQuestPacks() {}
 
-    private static void add(String key, String displayName, String generator, List<String> pluginAny, List<String> slimefunAddons) {
-        DEFAULTS.put(key, new PackDefinition(displayName, generator, pluginAny, slimefunAddons));
+    private static void add(
+            String key,
+            String displayName,
+            String generator,
+            String category,
+            List<String> pluginAny,
+            List<String> slimefunAddons
+    ) {
+        DEFAULTS.put(key, new PackDefinition(displayName, generator, category, pluginAny, slimefunAddons));
     }
 
     private static void addSlimefunAddon(String key, String displayName, String... aliases) {
-        add(key, displayName, "slimefun_addon", List.of("Slimefun"), List.of(aliases));
+        add(key, displayName, "slimefun_addon", TECH_CATEGORY, List.of("Slimefun"), List.of(aliases));
     }
 
-    /** Adds new pack toggles without replacing an administrator's existing values. */
+    /**
+     * Adds new category/pack settings without replacing administrator choices.
+     * Also removes obsolete pre-Good/Evil Fable pack keys from short-lived test builds.
+     */
     public static boolean ensureConfig(FileConfiguration config, File file) {
         boolean changed = false;
+
+        if (config.contains(ROOT + ".fable-concord")) {
+            config.set(ROOT + ".fable-concord", null);
+            changed = true;
+        }
+        if (config.contains(ROOT + ".fable-dominion")) {
+            config.set(ROOT + ".fable-dominion", null);
+            changed = true;
+        }
+
         for (Map.Entry<String, PackDefinition> entry : DEFAULTS.entrySet()) {
             String base = ROOT + "." + entry.getKey();
             PackDefinition definition = entry.getValue();
-            if (!config.contains(base + ".enabled")) {
-                config.set(base + ".enabled", true);
-                changed = true;
+            changed |= setIfMissing(config, base + ".enabled", true);
+            changed |= setIfMissing(config, base + ".display_name", definition.displayName());
+            changed |= setIfMissing(config, base + ".generator", definition.generator());
+            if (!definition.category().isBlank()) {
+                changed |= setIfMissing(config, base + ".category", definition.category());
             }
-            if (!config.contains(base + ".display_name")) {
-                config.set(base + ".display_name", definition.displayName());
-                changed = true;
+            if (!definition.pluginAny().isEmpty()) {
+                changed |= setIfMissing(config, base + ".plugin_any", definition.pluginAny());
             }
-            if (!config.contains(base + ".generator")) {
-                config.set(base + ".generator", definition.generator());
-                changed = true;
-            }
-            if (!definition.pluginAny().isEmpty() && !config.contains(base + ".plugin_any")) {
-                config.set(base + ".plugin_any", definition.pluginAny());
-                changed = true;
-            }
-            if (!definition.slimefunAddons().isEmpty() && !config.contains(base + ".slimefun_addons")) {
-                config.set(base + ".slimefun_addons", definition.slimefunAddons());
-                changed = true;
+            if (!definition.slimefunAddons().isEmpty()) {
+                changed |= setIfMissing(config, base + ".slimefun_addons", definition.slimefunAddons());
             }
         }
+
+        // Existing servers keep every configured amount they already chose. New built-in
+        // categories are added at one quest per day, matching the tested category layout.
+        changed |= setIfMissing(config, "quests_per_category.good", 1);
+        changed |= setIfMissing(config, "quests_per_category.evil", 1);
+        changed |= setIfMissing(config, "quests_per_category.tech", 1);
+        changed |= setIfMissing(config, "quests_per_category.wildcard", 1);
+
+        changed |= setIfMissing(config, "interfaces.good.inventory_name", "Quests - Fable Good");
+        changed |= setIfMissing(config, "interfaces.good.empty_item", "LIME_STAINED_GLASS_PANE");
+        changed |= setIfMissing(config, "interfaces.evil.inventory_name", "Quests - Fable Evil");
+        changed |= setIfMissing(config, "interfaces.evil.empty_item", "RED_STAINED_GLASS_PANE");
+        changed |= setIfMissing(config, "interfaces.tech.inventory_name", "Quests - Tech");
+        changed |= setIfMissing(config, "interfaces.tech.empty_item", "CYAN_STAINED_GLASS_PANE");
+        changed |= setIfMissing(config, "interfaces.wildcard.inventory_name", "Quests - Wild Card");
+        changed |= setIfMissing(config, "interfaces.wildcard.empty_item", "PURPLE_STAINED_GLASS_PANE");
+
+        changed |= setIfMissing(config, "npcs.good", "&a&lFable Good Quests");
+        changed |= setIfMissing(config, "npcs.evil", "&4&lFable Evil Quests");
+        changed |= setIfMissing(config, "npcs.tech", "&b&lTech Quests");
+        changed |= setIfMissing(config, "npcs.wildcard", "&d&lWild Card Quests");
 
         if (changed) {
             try {
                 config.save(file);
-                PluginLogger.info("Added default quest pack toggles to config.yml.");
+                PluginLogger.info("Updated built-in daily quest category and pack settings in config.yml.");
             } catch (IOException exception) {
                 PluginLogger.warn("Unable to save default quest pack settings: " + exception.getMessage());
                 return false;
             }
         }
         return changed;
+    }
+
+    private static boolean setIfMissing(FileConfiguration config, String path, Object value) {
+        if (config.contains(path)) return false;
+        config.set(path, value);
+        return true;
     }
 
     private static YamlConfiguration mainConfig() {
@@ -126,6 +179,9 @@ public final class DefaultQuestPacks {
     }
 
     private static boolean isPackActive(FileConfiguration config, String packKey) {
+        PackDefinition definition = DEFAULTS.get(packKey);
+        if (definition == null) return false;
+
         ConfigurationSection section = config.getConfigurationSection(ROOT + "." + packKey);
         if (section == null || !section.getBoolean("enabled", false)) return false;
 
@@ -139,7 +195,7 @@ public final class DefaultQuestPacks {
         return addonAliases.isEmpty() || SlimefunIntegration.isAnyAddonPresent(addonAliases);
     }
 
-    /** Removes only explicitly tagged built-in quests; untagged server quests are custom and untouched. */
+    /** Removes only explicitly tagged built-in quests; untagged server quests stay custom. */
     public static void filterConfiguredDefaults(FileConfiguration quests) {
         ConfigurationSection all = quests.getConfigurationSection("quests");
         if (all == null) return;
@@ -158,49 +214,78 @@ public final class DefaultQuestPacks {
     }
 
     /**
-     * Adds the active dependency/Fable packs to an in-memory difficulty category.
-     * The administrator's quest YAML is never rewritten by this merge.
+     * Adds dependency-backed quests to Tech or Wild Card in memory.
+     * Easy/Medium/Hard/Fable files are never polluted with integration quests.
      */
     public static void mergeGenerated(String category, FileConfiguration quests) {
-        String difficulty = category == null ? "" : category.toLowerCase(Locale.ROOT);
-        if (!difficulty.equals("easy") && !difficulty.equals("medium") && !difficulty.equals("hard")) return;
+        String target = normalizeCategory(category);
+        if (!TECH_CATEGORY.equals(target) && !WILDCARD_CATEGORY.equals(target)) return;
 
         FileConfiguration config = mainConfig();
-        ConfigurationSection packs = config.getConfigurationSection(ROOT);
-        if (packs == null) return;
+        for (Map.Entry<String, PackDefinition> entry : DEFAULTS.entrySet()) {
+            String packKey = entry.getKey();
+            PackDefinition definition = entry.getValue();
+            if (!target.equals(definition.category()) || !isPackActive(config, packKey)) continue;
 
-        for (String packKey : packs.getKeys(false)) {
-            if ("vanilla".equalsIgnoreCase(packKey) || !isPackActive(config, packKey)) continue;
-            ConfigurationSection pack = packs.getConfigurationSection(packKey);
-            if (pack == null) continue;
-            String generator = pack.getString("generator", "").toLowerCase(Locale.ROOT);
-            String displayName = pack.getString("display_name", packKey);
+            ConfigurationSection pack = config.getConfigurationSection(ROOT + "." + packKey);
+            String generator = pack == null
+                    ? definition.generator()
+                    : pack.getString("generator", definition.generator()).toLowerCase(Locale.ROOT);
+            String displayName = pack == null
+                    ? definition.displayName()
+                    : pack.getString("display_name", definition.displayName());
+
             switch (generator) {
-                case "slimefun_core" -> addSlimefunCore(quests, difficulty, packKey);
-                case "slimefun_addon" -> addSlimefunAddonQuest(quests, difficulty, packKey, displayName, pack.getStringList("slimefun_addons"));
-                case "valhallammo" -> addValhalla(quests, difficulty, packKey);
-                case "evenmorefish" -> addFishing(quests, difficulty, packKey, "EMF_FISH", "EvenMoreFish");
-                case "pyrofishingpro" -> addFishing(quests, difficulty, packKey, "PYRO_FISH", "PyroFishingPro");
-                case "fable_good" -> addFableGood(quests, difficulty, packKey);
-                case "fable_evil" -> addFableEvil(quests, difficulty, packKey);
+                case "slimefun_core" -> addSlimefunCore(quests, packKey);
+                case "slimefun_addon" -> addSlimefunAddonQuests(quests, packKey, displayName,
+                        pack == null ? definition.slimefunAddons() : pack.getStringList("slimefun_addons"));
+                case "rebar_tech" -> addPylonRebar(quests, packKey);
+                case "valhallammo" -> addValhalla(quests, packKey);
+                case "evenmorefish" -> addFishingSet(quests, packKey, "EMF_FISH", "EvenMoreFish");
+                case "pyrofishingpro" -> addFishingSet(quests, packKey, "PYRO_FISH", "PyroFishingPro");
+                case "mcmmo" -> addMcMMO(quests, packKey);
+                case "mmoitems" -> addExternalItemSet(quests, packKey, "MMOITEM_ITEM", "MMOItems", "IRON_SWORD");
+                case "itemsadder" -> addExternalItemSet(quests, packKey, "ITEMSADDER_ITEM", "ItemsAdder", "PAPER");
                 default -> { }
             }
         }
     }
 
-    /** Tags only newly created bundled Vanilla quest files. */
-    public static void tagVanillaDefaults(File file) {
+    public static boolean isOptionalCategory(String category) {
+        String normalized = normalizeCategory(category);
+        return TECH_CATEGORY.equals(normalized) || WILDCARD_CATEGORY.equals(normalized);
+    }
+
+    /** True when at least one dependency pack can populate this optional category. */
+    public static boolean isOptionalCategoryAvailable(String category) {
+        String normalized = normalizeCategory(category);
+        if (!isOptionalCategory(normalized)) return true;
+        FileConfiguration config = mainConfig();
+        for (Map.Entry<String, PackDefinition> entry : DEFAULTS.entrySet()) {
+            if (normalized.equals(entry.getValue().category()) && isPackActive(config, entry.getKey())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Tags newly created bundled quest files with the pack that owns them. */
+    public static void tagDefaults(File file, String packKey) {
         try {
             YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
             ConfigurationSection quests = yaml.getConfigurationSection("quests");
             if (quests == null) return;
             for (String key : quests.getKeys(false)) {
-                yaml.set("quests." + key + ".default_pack", "vanilla");
+                yaml.set("quests." + key + ".default_pack", packKey);
             }
             yaml.save(file);
         } catch (IOException exception) {
-            PluginLogger.warn("Unable to tag fresh Vanilla starter quests: " + exception.getMessage());
+            PluginLogger.warn("Unable to tag fresh default quests in " + file.getName() + ": " + exception.getMessage());
         }
+    }
+
+    public static void tagVanillaDefaults(File file) {
+        tagDefaults(file, "vanilla");
     }
 
     public static String statusSummary() {
@@ -227,65 +312,66 @@ public final class DefaultQuestPacks {
         return names;
     }
 
-    private static void addSlimefunCore(FileConfiguration q, String d, String pack) {
-        switch (d) {
-            case "easy" -> addQuest(q, pack, "slimefun_core_easy", "&aSlimefun Apprentice", "EMERALD", "SLIMEFUN_CRAFT", 1, 500,
-                    "Craft a Common Talisman", Map.of("slimefun_ids", List.of("COMMON_TALISMAN")));
-            case "medium" -> addQuest(q, pack, "slimefun_core_medium", "&eSlimefun Metallurgist", "IRON_INGOT", "SLIMEFUN_CRAFT", 8, 1100,
-                    "Craft %required% Steel Ingots", Map.of("slimefun_ids", List.of("STEEL_INGOT")));
-            case "hard" -> addQuest(q, pack, "slimefun_core_hard", "&cSlimefun Alloy Master", "NETHERITE_INGOT", "SLIMEFUN_CRAFT", 2, 2500,
-                    "Craft %required% Reinforced Alloy Ingots", Map.of("slimefun_ids", List.of("REINFORCED_ALLOY_INGOT")));
-            default -> { }
+    private static void addSlimefunCore(FileConfiguration q, String pack) {
+        addQuest(q, pack, "slimefun_common_talisman", "&bDaily Tech: Slimefun", "EMERALD", "SLIMEFUN_CRAFT", 1, 500,
+                "Craft a Common Talisman", Map.of("slimefun_ids", List.of("COMMON_TALISMAN")), "Tech");
+        addQuest(q, pack, "slimefun_steel_ingots", "&bDaily Tech: Slimefun", "IRON_INGOT", "SLIMEFUN_CRAFT", 8, 1100,
+                "Craft %required% Steel Ingots", Map.of("slimefun_ids", List.of("STEEL_INGOT")), "Tech");
+        addQuest(q, pack, "slimefun_reinforced_alloy", "&bDaily Tech: Slimefun", "NETHERITE_INGOT", "SLIMEFUN_CRAFT", 2, 2500,
+                "Craft %required% Reinforced Alloy Ingots", Map.of("slimefun_ids", List.of("REINFORCED_ALLOY_INGOT")), "Tech");
+    }
+
+    private static void addSlimefunAddonQuests(FileConfiguration q, String pack, String display, List<String> aliases) {
+        addQuest(q, pack, "addon_" + safe(pack) + "_2", "&bDaily Tech: " + display, "SLIME_BALL", "SLIMEFUN_ITEM", 2, 450,
+                "Create or obtain %required% " + display + " items", Map.of("slimefun_addons", aliases), "Tech");
+        addQuest(q, pack, "addon_" + safe(pack) + "_5", "&bDaily Tech: " + display, "SLIME_BALL", "SLIMEFUN_ITEM", 5, 950,
+                "Create or obtain %required% " + display + " items", Map.of("slimefun_addons", aliases), "Tech");
+        addQuest(q, pack, "addon_" + safe(pack) + "_10", "&bDaily Tech: " + display, "SLIME_BALL", "SLIMEFUN_ITEM", 10, 1900,
+                "Create or obtain %required% " + display + " items", Map.of("slimefun_addons", aliases), "Tech");
+    }
+
+    private static void addPylonRebar(FileConfiguration q, String pack) {
+        addQuest(q, pack, "pylon_rebar_2", "&bDaily Tech: Pylon / Rebar", "COPPER_INGOT", "REBAR_ITEM", 2, 500,
+                "Create or obtain %required% Pylon/Rebar items", Map.of(), "Tech");
+        addQuest(q, pack, "pylon_rebar_6", "&bDaily Tech: Pylon / Rebar", "IRON_INGOT", "REBAR_ITEM", 6, 1200,
+                "Create or obtain %required% Pylon/Rebar items", Map.of(), "Tech");
+        addQuest(q, pack, "pylon_rebar_12", "&bDaily Tech: Pylon / Rebar", "NETHERITE_SCRAP", "REBAR_ITEM", 12, 2400,
+                "Create or obtain %required% Pylon/Rebar items", Map.of(), "Tech");
+    }
+
+    private static void addValhalla(FileConfiguration q, String pack) {
+        addQuest(q, pack, "valhalla_xp_500", "&dWild Card: ValhallaMMO", "EXPERIENCE_BOTTLE", "VALHALLA_EXP", 500, 450,
+                "Earn %required% ValhallaMMO skill experience", Map.of("skill", "ANY"), "Wild Card");
+        addQuest(q, pack, "valhalla_xp_2500", "&dWild Card: ValhallaMMO", "EXPERIENCE_BOTTLE", "VALHALLA_EXP", 2500, 1100,
+                "Earn %required% ValhallaMMO skill experience", Map.of("skill", "ANY"), "Wild Card");
+        addQuest(q, pack, "valhalla_levels_3", "&dWild Card: ValhallaMMO", "EXPERIENCE_BOTTLE", "VALHALLA_LEVEL_UP", 3, 2200,
+                "Gain %required% ValhallaMMO skill levels", Map.of("skill", "ANY"), "Wild Card");
+    }
+
+    private static void addFishingSet(FileConfiguration q, String pack, String type, String display) {
+        int[] amounts = {3, 8, 15};
+        int[] rewards = {400, 900, 1800};
+        for (int i = 0; i < amounts.length; i++) {
+            addQuest(q, pack, safe(pack) + "_fish_" + amounts[i], "&dWild Card: " + display, "FISHING_ROD", type,
+                    amounts[i], rewards[i], "Catch %required% " + display + " fish", Map.of(), "Wild Card");
         }
     }
 
-    private static void addSlimefunAddonQuest(FileConfiguration q, String d, String pack, String display, List<String> aliases) {
-        int amount = switch (d) { case "easy" -> 2; case "medium" -> 5; default -> 10; };
-        int reward = switch (d) { case "easy" -> 450; case "medium" -> 950; default -> 1900; };
-        addQuest(q, pack, "addon_" + safe(pack) + "_" + d, "&a" + display + " " + title(d), "SLIME_BALL", "SLIMEFUN_ITEM", amount, reward,
-                "Create or obtain %required% " + display + " items", Map.of("slimefun_addons", aliases));
+    private static void addMcMMO(FileConfiguration q, String pack) {
+        addQuest(q, pack, "mcmmo_xp_250", "&dWild Card: mcMMO", "IRON_PICKAXE", "MCMMO_EXP", 250, 400,
+                "Earn %required% mcMMO skill experience", Map.of(), "Wild Card");
+        addQuest(q, pack, "mcmmo_xp_1000", "&dWild Card: mcMMO", "DIAMOND_AXE", "MCMMO_EXP", 1000, 950,
+                "Earn %required% mcMMO skill experience", Map.of(), "Wild Card");
+        addQuest(q, pack, "mcmmo_xp_2500", "&dWild Card: mcMMO", "DIAMOND_SWORD", "MCMMO_EXP", 2500, 1900,
+                "Earn %required% mcMMO skill experience", Map.of(), "Wild Card");
     }
 
-    private static void addValhalla(FileConfiguration q, String d, String pack) {
-        if ("hard".equals(d)) {
-            addQuest(q, pack, "valhalla_hard", "&cValhallaMMO Mastery", "EXPERIENCE_BOTTLE", "VALHALLA_LEVEL_UP", 3, 2200,
-                    "Gain %required% ValhallaMMO skill levels", Map.of("skill", "ANY"));
-        } else {
-            int amount = "easy".equals(d) ? 500 : 2500;
-            int reward = "easy".equals(d) ? 450 : 1100;
-            addQuest(q, pack, "valhalla_" + d, "&bValhallaMMO " + title(d), "EXPERIENCE_BOTTLE", "VALHALLA_EXP", amount, reward,
-                    "Earn %required% ValhallaMMO skill experience", Map.of("skill", "ANY"));
-        }
-    }
-
-    private static void addFishing(FileConfiguration q, String d, String pack, String type, String display) {
-        int amount = switch (d) { case "easy" -> 3; case "medium" -> 8; default -> 15; };
-        int reward = switch (d) { case "easy" -> 400; case "medium" -> 900; default -> 1800; };
-        addQuest(q, pack, safe(pack) + "_" + d, "&b" + display + " " + title(d), "FISHING_ROD", type, amount, reward,
-                "Catch %required% " + display + " fish", Map.of());
-    }
-
-    private static void addFableGood(FileConfiguration q, String d, String pack) {
-        switch (d) {
-            case "easy" -> addQuest(q, pack, "fable_good_easy", "&aFable Good: A Gentle Hand", "WHEAT", "FARMING", 32, 400,
-                    "Harvest %required% wheat for a Good Quest", Map.of("required", "WHEAT"));
-            case "medium" -> addQuest(q, pack, "fable_good_medium", "&aFable Good: Steward of Life", "WHEAT", "BREED", 12, 900,
-                    "Breed %required% animals for a Good Quest", Map.of("required", List.of("COW", "SHEEP", "PIG", "CHICKEN")));
-            case "hard" -> addQuest(q, pack, "fable_good_hard", "&aFable Good: Guardian's Oath", "GOLDEN_APPLE", "TAME", 5, 1800,
-                    "Tame %required% loyal companions for a Good Quest", Map.of("required", List.of("WOLF", "CAT")));
-            default -> { }
-        }
-    }
-
-    private static void addFableEvil(FileConfiguration q, String d, String pack) {
-        switch (d) {
-            case "easy" -> addQuest(q, pack, "fable_evil_easy", "&4Fable Evil: Cull the Restless", "ROTTEN_FLESH", "KILL", 20, 400,
-                    "Defeat %required% zombies for an Evil Quest", Map.of("required", "ZOMBIE"));
-            case "medium" -> addQuest(q, pack, "fable_evil_medium", "&4Fable Evil: Trial by Flame", "BLAZE_ROD", "KILL", 15, 900,
-                    "Defeat %required% blazes for an Evil Quest", Map.of("required", "BLAZE"));
-            case "hard" -> addQuest(q, pack, "fable_evil_hard", "&4Fable Evil: Black Citadel", "WITHER_SKELETON_SKULL", "KILL", 25, 1800,
-                    "Defeat %required% wither skeletons for an Evil Quest", Map.of("required", "WITHER_SKELETON"));
-            default -> { }
+    private static void addExternalItemSet(FileConfiguration q, String pack, String type, String display, String icon) {
+        int[] amounts = {1, 3, 6};
+        int[] rewards = {400, 900, 1800};
+        for (int i = 0; i < amounts.length; i++) {
+            addQuest(q, pack, safe(pack) + "_items_" + amounts[i], "&dWild Card: " + display, icon, type,
+                    amounts[i], rewards[i], "Create or obtain %required% " + display + " items", Map.of(), "Wild Card");
         }
     }
 
@@ -299,14 +385,15 @@ public final class DefaultQuestPacks {
             int requiredAmount,
             int reward,
             String task,
-            Map<String, Object> extras
+            Map<String, Object> extras,
+            String categoryLabel
     ) {
         String path = "quests.__pack_" + safe(key);
         if (q.contains(path)) return;
         q.set(path + ".name", name);
         q.set(path + ".menu_item", icon);
         q.set(path + ".description", List.of(
-                " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &e" + title(categoryFromKey(key)),
+                " &7Category: &f" + categoryLabel,
                 "",
                 "&3Task:",
                 " &3&l| &7" + task,
@@ -328,15 +415,8 @@ public final class DefaultQuestPacks {
         }
     }
 
-    private static String categoryFromKey(String key) {
-        if (key.endsWith("_easy")) return "easy";
-        if (key.endsWith("_medium")) return "medium";
-        return "hard";
-    }
-
-    private static String title(String value) {
-        if (value == null || value.isBlank()) return "Quest";
-        return Character.toUpperCase(value.charAt(0)) + value.substring(1).toLowerCase(Locale.ROOT);
+    private static String normalizeCategory(String value) {
+        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT).replace("-", "").replace("_", "");
     }
 
     private static String safe(String value) {
