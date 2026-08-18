@@ -65,6 +65,17 @@ class DefaultQuestResourcesTest {
         }
     }
 
+    @Test
+    void maintainedPlayerInterfaceHasSevenCategorySlotsAndDynamicTotals() throws IOException {
+        String yaml = resource("playerInterface.yml");
+        for (String category : new String[]{"easy", "medium", "hard", "good", "evil", "tech", "wildcard"}) {
+            assertTrue(yaml.contains("      " + category + ":"), "Missing player-interface category: " + category);
+        }
+        assertTrue(yaml.contains("%totalQuests%"), "Player interface must not hardcode the current quest total");
+        assertFalse(yaml.contains("/&b9"), "Player interface must not assume the old nine-quest layout");
+        assertFalse(yaml.contains("%progressPercent%%%"), "Progress percentage must render with only one literal percent sign");
+    }
+
     private static int countQuests(String yaml) {
         Matcher matcher = QUEST_ENTRY.matcher(yaml);
         int count = 0;
