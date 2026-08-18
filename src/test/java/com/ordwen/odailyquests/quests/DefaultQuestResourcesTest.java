@@ -100,6 +100,8 @@ class DefaultQuestResourcesTest {
         assertTrue(yaml.contains("requires_any_plugin:\n        - Jobs\n        - JobsReborn"),
                 "Jobs button must remain dependency-gated");
         assertTrue(yaml.contains("commands:\n        - 'jobs quests'"), "Jobs button must open /jobs quests");
+        assertFalse(yaml.contains("requires_any_plugin:\n        - Jobs\n        - JobsReborn\n      close_on_click: true"),
+                "Jobs button must not close the external Jobs quest GUI immediately after opening it");
     }
 
     @Test
