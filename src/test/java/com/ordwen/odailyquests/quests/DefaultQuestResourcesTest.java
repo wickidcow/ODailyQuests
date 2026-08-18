@@ -92,6 +92,21 @@ class DefaultQuestResourcesTest {
         assertFalse(yaml.contains("%progressPercent%%%"), "Progress percentage must render with only one literal percent sign");
     }
 
+    @Test
+    void maintainedPlayerInterfaceHasUpdatedControlsAndPositions() throws IOException {
+        String yaml = resource("playerInterface.yml");
+        assertTrue(yaml.contains("      tech:\n        - 23"), "Tech must use the former Evil quest slot");
+        assertTrue(yaml.contains("      evil:\n        - 25"), "Evil must use the former Tech quest slot");
+        assertTrue(yaml.contains("name: '&b&lInformation'"), "Information button text must be singular");
+        assertFalse(yaml.contains("Informations"), "Obsolete Information pluralization must not ship");
+        assertTrue(yaml.contains("- 'dq reroll'"), "Top-right reroll icon must open the reroll chooser");
+        assertTrue(yaml.contains("requires_any_plugin:"), "Jobs button must be dependency gated");
+        assertTrue(yaml.contains("- Jobs\n"));
+        assertTrue(yaml.contains("- JobsReborn\n"));
+        assertTrue(yaml.contains("- 'jobs quests'"), "Jobs button must run /jobs quests");
+        assertTrue(yaml.contains("slot: 45"), "Jobs button must occupy the bottom-right slot");
+    }
+
     private static int countQuests(String yaml) {
         Matcher matcher = QUEST_ENTRY.matcher(yaml);
         int count = 0;
