@@ -15,6 +15,10 @@ public class CustomTypes implements IConfigurable {
 
     public static final String SLIMEFUN_ITEM = "SLIMEFUN_ITEM";
     public static final String SLIMEFUN_CRAFT = "SLIMEFUN_CRAFT";
+    public static final String REBAR_ITEM = "REBAR_ITEM";
+    public static final String MMOITEM_ITEM = "MMOITEM_ITEM";
+    public static final String ITEMSADDER_ITEM = "ITEMSADDER_ITEM";
+    public static final String MCMMO_EXP = "MCMMO_EXP";
     public static final String EMF_FISH = "EMF_FISH";
 
     private final ConfigurationFile configurationFile;
@@ -31,6 +35,11 @@ public class CustomTypes implements IConfigurable {
         // Built into the maintained fork. Their external plugins remain soft dependencies.
         registerBuiltin(SLIMEFUN_ITEM, CustomQuest.class);
         registerBuiltin(SLIMEFUN_CRAFT, CustomQuest.class);
+        registerBuiltin(REBAR_ITEM, CustomQuest.class);
+        registerBuiltin(MMOITEM_ITEM, CustomQuest.class);
+        registerBuiltin(ITEMSADDER_ITEM, CustomQuest.class);
+        registerBuiltin(MCMMO_EXP, CustomQuest.class);
+
         // Use the existing concrete EMF implementation so manually configured fish filters
         // continue to work; an empty required list still means "any EvenMoreFish fish".
         registerBuiltin(EMF_FISH, EMFFishQuest.class);
