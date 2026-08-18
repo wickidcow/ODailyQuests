@@ -5,7 +5,7 @@ debug: false
 check_for_update: true
 
 # never touch these lines, used for the plugin auto update system
-version: 3.0.0
+version: 3.0.5
 database_version: 4
 
 # prefix that will be displayed before every message from messages.yml
@@ -318,7 +318,7 @@ interfaces:
 # If you don't want to disable worlds, just put hooks. (disabled_worlds: []).
 # In addition, you can disable some worlds for each quest. Please refer to the Wiki.
 #
-# You can also use prefixes/suffixes to disable multiple worlds at once with the "?" character.
+# You can also use prefixes/suffixes to disable multiple worlds with the "?" character.
 # For example, "?_survival" will disable all worlds ending with "_survival".
 disabled_worlds: []
   # - "world_nether"
@@ -362,8 +362,9 @@ complete_only_on_click: false
 # Determines if the quest can be rerolled even if it has already been completed, when using the reroll command.
 reroll_only_if_not_achieved: false
 
-# Determines max amount of times a player can reroll their quest in a day
-reroll_maximum: -1
+# Maximum number of reroll actions a normal player can use per daily quest set.
+# Reroll All still counts as one action. Admin bypass permission can ignore this limit.
+reroll_maximum: 1
 
 # If you are using MythicMobs, you can set this parameter to "true" to share the mobs between players.
 #

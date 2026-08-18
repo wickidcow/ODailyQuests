@@ -24,13 +24,31 @@ Tech and Wild Card are dependency-aware: unavailable provider defaults are filte
 
 ---
 
+## 🖥️ Daily quest menu refresh
+
+The daily quest interface received a focused usability pass for 3.0.5:
+
+- **Tech** now uses the former Fable Evil position and **Fable Evil** moves to the former Tech position.
+- **“Informations”** is corrected to **“Information.”**
+- The top-right **Daily Reroll** icon is now a working button.
+- Clicking it opens a chooser for **Reroll One Quest** or **Reroll All Quests**.
+- **Reroll All** is atomic and counts as one reroll action, not one action per quest.
+- Normal players receive **one reroll action per daily quest set**.
+- The existing reroll bypass permission remains available for administrators.
+- If **Jobs** or **JobsReborn** is enabled, the bottom-right corner becomes a **Jobs Quests** button that opens `/jobs quests`.
+- If Jobs is absent, the position remains normal filler.
+
+Existing recognizable maintained interfaces are migrated narrowly so unrelated custom buttons and styling are not overwritten.
+
+---
+
 ## ⚙️ Tech Expansion
 
 Tech is one unified technology category — **no separate Easy/Medium/Hard Tech tiers**.
 
 ### 🧪 Slimefun
 
-3.0.5 adds real maintained quest types for Slimefun crafting and item ownership. The Tech pool includes objectives such as:
+3.0.5 adds maintained quest types for Slimefun crafting and item ownership. The Tech pool includes objectives such as:
 
 - craft a **Common Talisman**
 - produce **Steel Ingots**
@@ -39,18 +57,18 @@ Tech is one unified technology category — **no separate Easy/Medium/Hard Tech 
 
 Addon coverage includes Networks, Networks Expansion, Infinity Expansion, Fluffy Machines, Foxy Machines, Magic Expansion, Military Arsenal, Slimefun Warfare, Mob Drops, Lucky Blocks, Alchimia Vitae, Dank Tech, Supreme, Gastronomicon, Exotic Garden, Potion Expansion, Flower Power, Fast Machines, Infernal Farm, IDOE and SlimeGlue.
 
-### 🔩 Pylon / Rebar — now with exact-item quests
+### 🔩 Pylon / Rebar — exact-item quests
 
-The generic Pylon/Rebar Tech objectives remain, and 3.0.5 now bundles four exact Pylon challenges using verified Pylon namespaced keys:
+The generic Pylon/Rebar Tech objectives remain, and 3.0.5 bundles four exact Pylon challenges using verified Pylon namespaced keys:
 
 - 🧲 **Craft a Shimmer Magnet** — `pylon:shimmer_magnet`
 - 🔨 **Craft a Diamond Hammer** — `pylon:diamond_hammer`
 - 🛗 **Craft an Elevator I** — `pylon:elevator_1`
 - 💀 **Craft a Reactivated Wither Skull** — `pylon:reactivated_wither_skull`
 
-These are not display-name guesses. The quest matcher reads the Rebar/Pylon item key and requires the exact configured key, so another Pylon item does not complete an exact-item objective.
+These are not display-name guesses. The quest matcher reads the Rebar/Pylon item key and requires the exact configured key, so another Pylon item does not complete the wrong exact-item objective.
 
-The four definitions are physically bundled in `quests/pylon-defaults.yml` and are added to an existing **managed** Pylon/Rebar Tech pool without wiping custom Tech files.
+The four definitions are physically bundled in `quests/pylon-defaults.yml` and are added to a maintained Pylon/Rebar Tech pool without wiping custom Tech files.
 
 ---
 
@@ -71,7 +89,7 @@ MythicMobs remains available for manual quests but is not automatically injected
 
 ---
 
-## 🧠 Integration quest types are now guaranteed at startup
+## 🧠 Integration quest types are guaranteed at startup
 
 The maintained runtime registers its integration quest types **before quest YAML is loaded**:
 
@@ -85,7 +103,7 @@ ITEMSADDER_ITEM
 EMF_FISH
 ```
 
-This closes an important failure mode where Tech/Wild Card YAML could exist and be enabled, but its quest types were not in the registry and therefore never became usable daily quests.
+This closes an important failure mode where Tech/Wild Card YAML could exist and be enabled but its quest types were not in the registry and therefore never became usable daily quests.
 
 ---
 
@@ -107,15 +125,16 @@ The bundled pools contain 16 Good and 16 Evil quests with their alignment progre
 Upgrade compatibility includes:
 
 - older five-position numeric quest menus are expanded for quests 6 and 7 using safe filler positions
-- newer category-based menus are also supported
+- newer category-based menus are supported
 - custom buttons, heads, colors and filler styling are preserved where safe
 - old `%achieved%/5` counters migrate to `%achieved%/%totalQuests%`
 - `%progression%` remains a legacy alias for `%progress%`
 - empty old Tech/Wild Card managed stubs can be replaced with populated defaults
 - real administrator-owned quest YAML is not blindly overwritten
-- exact Pylon defaults are added only when the Tech file already contains the maintained `pylon-rebar` pack
+- exact Pylon defaults are added only to a maintained Pylon/Rebar Tech pool
+- the maintained reroll limit migrates to **one action per daily set**
 
-If a player still has a saved five-quest set after upgrading, wait for the next draw or regenerate it with:
+If a player still has an old saved quest set after upgrading, wait for the next draw or regenerate it with:
 
 ```text
 /dqadmin reset quests <player>
@@ -170,6 +189,7 @@ CI verifies critical runtime classes and resources are physically in the JAR, in
 
 - placeholder-condition classes used by quest selection/reset
 - maintained integration quest classes
+- reroll menu/service classes
 - all seven category YAML resources
 - `quests/pylon-defaults.yml`
 - no missing internal `com.ordwen.odailyquests...` references detectable by `jdeps`
@@ -184,16 +204,32 @@ The release plugin asset is:
 
 `ODailyQuests3.0.5-Spigot-1.21.11+.jar`
 
-No unnecessary extraction step for the plugin file.
+No unnecessary ZIP extraction step for the plugin file.
+
+---
+
+## ☕ Support the developers
+
+### ❤️ Original ODailyQuests developer — Ordwen
+
+- Ko-fi: https://ko-fi.com/I2I41CRIJI
+- PayPal: https://www.paypal.com/paypalme/ordwen
+
+### 🛠️ Maintained fork — wickidcow
+
+- PayPal: https://www.paypal.com/ncp/payment/ZYS8QH2FVV25U
+
+Please use the link for the developer you intend to support.
 
 ---
 
 ## ❤️ Credits
 
-**Original project and concept:** Ordwen / ODailyQuests and contributors.
+**Original project and concept:** Ordwen / ODailyQuests and contributors.  
+**Maintained compatibility and expansion work:** wickidcow.
 
-This maintained fork exists to extend compatibility while respecting the original project, license and configurable design.
+This fork exists to extend compatibility while respecting the original project, license and configurable design.
 
 Independent project; not affiliated with Mojang Studios or Microsoft.
 
-**Have fun with the new rotation — vanilla survival, Fable paths, Slimefun technology, Pylon machinery, RPG skills and fishing systems can finally share the same daily quest board.** 🎉
+**Have fun with the new rotation — vanilla survival, Fable paths, Slimefun technology, Pylon machinery, RPG skills, Jobs and fishing systems can finally share the same daily quest board.** 🎉

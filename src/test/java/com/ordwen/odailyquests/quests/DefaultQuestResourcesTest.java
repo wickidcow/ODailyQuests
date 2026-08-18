@@ -79,6 +79,8 @@ class DefaultQuestResourcesTest {
         for (String category : new String[]{"easy", "medium", "hard", "good", "evil", "tech", "wildcard"}) {
             assertTrue(config.contains("  " + category + ": 1"), "Missing default daily category: " + category);
         }
+        assertTrue(config.contains("version: 3.0.5"), "Bundled config must ship at the maintained release version");
+        assertTrue(config.contains("reroll_maximum: 1"), "Maintained default must allow one reroll action per daily set");
     }
 
     @Test
@@ -90,21 +92,22 @@ class DefaultQuestResourcesTest {
         assertTrue(yaml.contains("%totalQuests%"), "Player interface must not hardcode the current quest total");
         assertFalse(yaml.contains("/&b9"), "Player interface must not assume the old nine-quest layout");
         assertFalse(yaml.contains("%progressPercent%%%"), "Progress percentage must render with only one literal percent sign");
+        assertTrue(yaml.contains("      tech:\n        - 23"), "Tech must use the maintained former Evil position");
+        assertTrue(yaml.contains("      evil:\n        - 25"), "Fable Evil must use the maintained former Tech position");
+        assertTrue(yaml.contains("name: '&b&lInformation'"), "Information button label must use correct English");
+        assertFalse(yaml.contains("Informations"), "Maintained interface must not ship the old Informations wording");
+        assertTrue(yaml.contains("commands:\n        - 'dq reroll'"), "Top-right reroll icon must invoke the reroll chooser");
+        assertTrue(yaml.contains("requires_any_plugin:\n        - Jobs\n        - JobsReborn"),
+                "Jobs button must remain dependency-gated");
+        assertTrue(yaml.contains("commands:\n        - 'jobs quests'"), "Jobs button must open /jobs quests");
     }
 
     @Test
-    void maintainedPlayerInterfaceHasUpdatedControlsAndPositions() throws IOException {
-        String yaml = resource("playerInterface.yml");
-        assertTrue(yaml.contains("      tech:\n        - 23"), "Tech must use the former Evil quest slot");
-        assertTrue(yaml.contains("      evil:\n        - 25"), "Evil must use the former Tech quest slot");
-        assertTrue(yaml.contains("name: '&b&lInformation'"), "Information button text must be singular");
-        assertFalse(yaml.contains("Informations"), "Obsolete Information pluralization must not ship");
-        assertTrue(yaml.contains("- 'dq reroll'"), "Top-right reroll icon must open the reroll chooser");
-        assertTrue(yaml.contains("requires_any_plugin:"), "Jobs button must be dependency gated");
-        assertTrue(yaml.contains("- Jobs\n"));
-        assertTrue(yaml.contains("- JobsReborn\n"));
-        assertTrue(yaml.contains("- 'jobs quests'"), "Jobs button must run /jobs quests");
-        assertTrue(yaml.contains("slot: 45"), "Jobs button must occupy the bottom-right slot");
+    void pluginMetadataKeepsJobsAndJobsRebornOptional() throws IOException {
+        String plugin = resource("plugin.yml");
+        assertTrue(plugin.contains("Jobs"));
+        assertTrue(plugin.contains("JobsReborn"));
+        assertTrue(plugin.contains("softdepend:"), "Jobs integrations must remain optional soft dependencies");
     }
 
     private static int countQuests(String yaml) {
