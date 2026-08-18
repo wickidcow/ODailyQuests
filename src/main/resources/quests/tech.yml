@@ -1,0 +1,3 @@
+# Tech is populated in memory from installed Slimefun/Pylon/Rebar integrations.
+# Add custom Tech quests below if desired; this file is never overwritten.
+quests: {}
