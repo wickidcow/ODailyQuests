@@ -45,18 +45,21 @@ public class QuestsFiles {
         return quests != null && !quests.getKeys(false).isEmpty();
     }
 
-    /**
-     * Init quests files.
-     */
+    /** Init quest files. */
     public void load() {
         configurations.clear();
 
         final File questsFolder = new File(plugin.getDataFolder(), "quests");
         if (!questsFolder.exists()) questsFolder.mkdirs();
 
-        // Add missing maintained-fork category files without ever overwriting an administrator's files.
-        // This also migrates older installs that only had Easy/Medium/Hard.
+        // Add missing maintained-fork category files without overwriting administrator files.
         ensureBuiltInQuestFiles();
+
+        // Two development builds created Tech/Wild Card as empty shells because their quests
+        // were generated only in memory. Replace only those exact empty maintained stubs with
+        // the now-populated bundled YAML. Any file containing a real quest is left untouched.
+        seedPreviouslyEmptyManagedCategory("tech.yml", "Tech is populated in memory");
+        seedPreviouslyEmptyManagedCategory("wildcard.yml", "Wild Card is populated in memory");
 
         final File[] questFiles = questsFolder.listFiles((dir, name) -> name.endsWith(".yml"));
         if (questFiles == null) {
@@ -68,9 +71,6 @@ public class QuestsFiles {
         for (File file : questFiles) {
             final String category = file.getName().replace(".yml", "");
 
-            // A short-lived test build used earlier Fable faction wording. Migrate only the
-            // exact strings that build wrote, so existing Good/Evil files are fixed without
-            // otherwise changing administrator-authored content.
             if ("good".equalsIgnoreCase(category) || "evil".equalsIgnoreCase(category)) {
                 migrateLegacyFableTerminology(file);
             }
@@ -79,13 +79,10 @@ public class QuestsFiles {
             try {
                 config.load(file);
 
-                // Filter only explicitly tagged built-in defaults. Untagged existing server quests
-                // are considered custom and are never disabled by a pack toggle.
+                // Built-in integration quests now live in the physical YAML files. Their
+                // default_pack value controls whether each quest survives dependency filtering.
+                // Untagged administrator quests remain custom and are never removed here.
                 DefaultQuestPacks.filterConfiguredDefaults(config);
-
-                // Tech and Wild Card dependency quests are merged in memory. The physical YAML
-                // remains administrator-owned and is never rewritten by a dependency appearing/disappearing.
-                DefaultQuestPacks.mergeGenerated(category, config);
 
                 configurations.put(category, config);
                 PluginLogger.fine(category + " quests file successfully loaded.");
@@ -116,6 +113,26 @@ public class QuestsFiles {
         plugin.saveResource("quests/" + fileName, false);
         if (packKey != null) DefaultQuestPacks.tagDefaults(file, packKey);
         PluginLogger.info(fileName + " created as default.");
+    }
+
+    private void seedPreviouslyEmptyManagedCategory(String fileName, String legacyMarker) {
+        final File file = new File(new File(plugin.getDataFolder(), "quests"), fileName);
+        if (!file.isFile()) return;
+
+        try {
+            final String original = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+            if (!original.contains(legacyMarker)) return;
+
+            final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+            final ConfigurationSection quests = yaml.getConfigurationSection("quests");
+            if (quests != null && !quests.getKeys(false).isEmpty()) return;
+
+            Files.delete(file.toPath());
+            plugin.saveResource("quests/" + fileName, false);
+            PluginLogger.info("Replaced legacy empty " + fileName + " with the populated built-in quest pool.");
+        } catch (IOException exception) {
+            PluginLogger.warn("Unable to seed populated " + fileName + ": " + exception.getMessage());
+        }
     }
 
     private void migrateLegacyFableTerminology(File file) {
