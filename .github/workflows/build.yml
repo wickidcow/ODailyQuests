@@ -27,6 +27,37 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
       - name: Test and build JAR
         run: chmod +x ./gradlew && ./gradlew clean test shadowJar --no-daemon
+      - name: Verify packaged runtime contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(grep -E '^version = ' build.gradle | head -n1 | sed -E 's/.*"([^"]+)".*/\1/')"
+          JAR="build/libs/ODailyQuests-${VERSION}.jar"
+          test -s "$JAR"
+
+          REQUIRED_ENTRIES=(
+            "com/ordwen/odailyquests/quests/conditions/placeholder/PlaceholderCondition.class"
+            "com/ordwen/odailyquests/quests/conditions/placeholder/PlaceholderConditionEvaluator.class"
+            "com/ordwen/odailyquests/quests/conditions/placeholder/PlaceholderConditionResult.class"
+            "com/ordwen/odailyquests/quests/conditions/placeholder/PlaceholderRuleSetEvaluator.class"
+            "quests/easy.yml"
+            "quests/medium.yml"
+            "quests/hard.yml"
+            "quests/good.yml"
+            "quests/evil.yml"
+            "quests/tech.yml"
+            "quests/wildcard.yml"
+          )
+
+          CONTENTS="$(jar tf "$JAR")"
+          for entry in "${REQUIRED_ENTRIES[@]}"; do
+            if ! grep -Fxq "$entry" <<< "$CONTENTS"; then
+              echo "ERROR: Required runtime entry is missing from production JAR: $entry" >&2
+              exit 1
+            fi
+          done
+
+          echo "Verified ${#REQUIRED_ENTRIES[@]} critical runtime classes/resources in ${JAR}."
       - name: Resolve version and stage JAR
         id: artifact
         shell: bash
