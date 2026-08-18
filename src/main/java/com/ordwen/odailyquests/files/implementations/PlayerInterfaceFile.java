@@ -105,14 +105,29 @@ public class PlayerInterfaceFile extends APluginFile {
                     changed = true;
                 }
 
-                if (entry.getStringList("commands").stream().anyMatch(command -> command.equalsIgnoreCase("jobs quests"))) {
+                final boolean isJobsButton = entry.getStringList("commands").stream()
+                        .anyMatch(command -> command.equalsIgnoreCase("jobs quests") || command.equalsIgnoreCase("/jobs quests"));
+                if (isJobsButton) {
                     jobsButtonExists = true;
+                    if (!"PLAYER_COMMAND".equalsIgnoreCase(entry.getString("type", ""))) {
+                        entry.set("type", "PLAYER_COMMAND");
+                        changed = true;
+                    }
+                    if (entry.getBoolean("close_on_click", false)) {
+                        // /jobs quests opens its own inventory. Closing after command dispatch would
+                        // immediately close the Jobs GUI and make the button appear to do nothing.
+                        entry.set("close_on_click", false);
+                        changed = true;
+                    }
+                    if (!entry.getStringList("commands").equals(List.of("jobs quests"))) {
+                        entry.set("commands", List.of("jobs quests"));
+                        changed = true;
+                    }
                 }
 
                 final String type = entry.getString("type", "");
                 final List<Integer> slots = item.isList("slot") ? item.getIntegerList("slot") : List.of(item.getInt("slot"));
-                if (!"FILL".equalsIgnoreCase(type) && slots.contains(45)
-                        && entry.getStringList("commands").stream().noneMatch(command -> command.equalsIgnoreCase("jobs quests"))) {
+                if (!"FILL".equalsIgnoreCase(type) && slots.contains(45) && !isJobsButton) {
                     bottomRightReservedByCustomItem = true;
                 }
             }
@@ -121,7 +136,6 @@ public class PlayerInterfaceFile extends APluginFile {
                 final ConfigurationSection jobs = items.createSection("jobs_quests");
                 jobs.set("type", "PLAYER_COMMAND");
                 jobs.set("requires_any_plugin", List.of("Jobs", "JobsReborn"));
-                jobs.set("close_on_click", true);
                 jobs.set("commands", List.of("jobs quests"));
                 final ConfigurationSection item = jobs.createSection("item");
                 item.set("material", "WRITABLE_BOOK");
