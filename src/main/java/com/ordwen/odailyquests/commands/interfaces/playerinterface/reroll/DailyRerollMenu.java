@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /** GUI flow opened from the top-right Daily Reroll button. */
 public final class DailyRerollMenu implements Listener {
@@ -37,15 +38,20 @@ public final class DailyRerollMenu implements Listener {
     private static final class Holder implements InventoryHolder {
         private final Mode mode;
         private final Map<Integer, Integer> questIndexes;
+        private Inventory inventory;
 
         private Holder(Mode mode, Map<Integer, Integer> questIndexes) {
             this.mode = mode;
             this.questIndexes = questIndexes;
         }
 
+        private void setInventory(Inventory inventory) {
+            this.inventory = inventory;
+        }
+
         @Override
         public @NotNull Inventory getInventory() {
-            throw new UnsupportedOperationException("Reroll menu holder does not expose a backing inventory");
+            return Objects.requireNonNull(inventory, "Reroll menu inventory has not been initialized yet");
         }
     }
 
@@ -54,6 +60,7 @@ public final class DailyRerollMenu implements Listener {
 
         final Holder holder = new Holder(Mode.CHOICE, Map.of());
         final Inventory inventory = Bukkit.createInventory(holder, 27, ChatColor.AQUA + "Daily Reroll");
+        holder.setInventory(inventory);
         fill(inventory);
 
         inventory.setItem(CHOICE_REROLL_ONE, item(
@@ -88,6 +95,7 @@ public final class DailyRerollMenu implements Listener {
         final Map<Integer, Integer> slotToQuest = new HashMap<>();
         final Holder holder = new Holder(Mode.SINGLE, slotToQuest);
         final Inventory inventory = Bukkit.createInventory(holder, 27, ChatColor.AQUA + "Choose a Quest to Reroll");
+        holder.setInventory(inventory);
         fill(inventory);
 
         final int count = Math.min(quests.size(), QUEST_SLOTS.length);
