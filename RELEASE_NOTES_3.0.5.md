@@ -2,248 +2,198 @@
 
 **Daily quests just got a much bigger world to play in.**
 
-ODailyQuests 3.0.5 takes the familiar daily-quest loop and opens it up for modern RPG, technology, fishing, custom-item, and progression-heavy servers. This release brings **seven daily quest categories**, real pre-generated integration quest pools, true Slimefun crafting support, plugin-aware rewards, safer dependency handling, and a large set of progression features — all while keeping optional plugins optional.
+ODailyQuests 3.0.5 carries the original Ordwen project forward for modern Paper/Purpur/Folia servers and opens the daily board to technology, RPG progression, fishing systems and custom items — while keeping optional plugins optional.
 
-> ❤️ This maintained fork builds on the original work of **Ordwen and the ODailyQuests contributors**. The goal is to preserve the spirit and configurability of ODailyQuests while carrying it forward for modern servers.
-
----
-
-## 🎯 Seven Daily Quest Categories
-
-A fresh maintained setup can now draw one daily quest from each loaded category:
-
-- 🟢 **Easy** — approachable everyday objectives
-- 🟠 **Medium** — a stronger daily challenge
-- 🔴 **Hard** — the serious stuff
-- 🌿 **Fable Good** — Good-aligned deeds and progression
-- 🔥 **Fable Evil** — Evil-aligned deeds and progression
-- ⚙️ **Tech** — Slimefun, Slimefun addons, Pylon and Rebar
-- 🎲 **Wild Card** — installed RPG, fishing and custom-item plugins join the rotation
-
-These are real category YAML files inside the plugin — not hidden placeholder categories.
+> ❤️ Built on the original work of **Ordwen and the ODailyQuests contributors**. This maintained fork preserves the original project's attribution and GPL-3.0 license.
 
 ---
 
-## ⚙️ Tech Expansion — Slimefun + Pylon/Rebar
+## 🎯 Seven Daily Categories
 
-The new **Tech** category is one unified technology pool. It deliberately has **no Easy / Medium / Hard label**: one day may ask for a straightforward component, while another can send players after advanced alloys or addon technology.
+A maintained setup can draw one quest from each available category:
 
-### 🧪 Slimefun Core
+- 🟢 **Easy**
+- 🟠 **Medium**
+- 🔴 **Hard**
+- 🌿 **Fable Good**
+- 🔥 **Fable Evil**
+- ⚙️ **Tech**
+- 🎲 **Wild Card**
 
-ODailyQuests can now track real Slimefun crafting, including Bukkit crafting and Slimefun multiblock crafting paths.
-
-The bundled Tech pool includes objectives such as:
-
-- crafting a **Common Talisman**
-- producing **Steel Ingots**
-- producing **Reinforced Alloy Ingots**
-
-### 🧰 Slimefun Addons
-
-The physical `tech.yml` ships with addon-aware objectives for a broad collection of Slimefun ecosystems, including:
-
-- Networks
-- Networks Expansion
-- Infinity Expansion / InfinityExpansion2
-- Fluffy Machines
-- Foxy Machines
-- Magic Expansion
-- Military Arsenal
-- Slimefun Warfare
-- Mob Drops
-- Lucky Blocks
-- Alchimia Vitae
-- Dank Tech
-- Supreme
-- Gastronomicon
-- Exotic Garden
-- Potion Expansion
-- Flower Power
-- Fast Machines
-- Infernal Farm
-- IDOE
-- SlimeGlue
-
-Addon quests can identify the addon that registered a Slimefun item, allowing the same Tech category to grow with the server's installed addon stack.
-
-### 🔩 Pylon / Rebar
-
-Pylon and Rebar technology can join that same Tech rotation through optional item detection. ODailyQuests does not hard-require either framework just to start.
-
-**`tech.yml` now ships with 27 real, editable built-in quests.**
-
-If every Tech provider is absent or disabled and there are no custom Tech quests, the category is simply skipped for that startup instead of becoming an impossible daily or failing safety mode.
+Tech and Wild Card are dependency-aware: unavailable provider defaults are filtered instead of becoming impossible quests.
 
 ---
 
-## 🎲 Wild Card — Your Plugin Stack Becomes Gameplay
+## ⚙️ Tech Expansion
 
-Wild Card is designed to make the day's final quest feel unpredictable without handing players objectives from plugins they do not have.
+Tech is one unified technology category — **no separate Easy/Medium/Hard Tech tiers**.
 
-**`wildcard.yml` ships with 18 real built-in quests**, and every integration quest carries its provider tag directly in YAML. Only quests whose dependency is actually enabled survive loading.
+### 🧪 Slimefun
 
-### ⚔️ ValhallaMMO
+3.0.5 adds real maintained quest types for Slimefun crafting and item ownership. The Tech pool includes objectives such as:
 
-Wild Card can target specific Valhalla skills such as **Power, Mining, and Archery**.
+- craft a **Common Talisman**
+- produce **Steel Ingots**
+- produce **Reinforced Alloy Ingots**
+- create or obtain items from supported Slimefun addons
 
-And the rewards speak Valhalla's language too:
+Addon coverage includes Networks, Networks Expansion, Infinity Expansion, Fluffy Machines, Foxy Machines, Magic Expansion, Military Arsenal, Slimefun Warfare, Mob Drops, Lucky Blocks, Alchimia Vitae, Dank Tech, Supreme, Gastronomicon, Exotic Garden, Potion Expansion, Flower Power, Fast Machines, Infernal Farm, IDOE and SlimeGlue.
 
-- easier Valhalla objective → **+1 spendable Valhalla Skill Point**
-- stronger objective → **+2 Skill Points**
-- advanced objective → **+3 Skill Points**
+### 🔩 Pylon / Rebar — now with exact-item quests
 
-### 🪓 mcMMO
+The generic Pylon/Rebar Tech objectives remain, and 3.0.5 now bundles four exact Pylon challenges using verified Pylon namespaced keys:
 
-Built-in mcMMO quests can track specific skills such as:
+- 🧲 **Craft a Shimmer Magnet** — `pylon:shimmer_magnet`
+- 🔨 **Craft a Diamond Hammer** — `pylon:diamond_hammer`
+- 🛗 **Craft an Elevator I** — `pylon:elevator_1`
+- 💀 **Craft a Reactivated Wither Skull** — `pylon:reactivated_wither_skull`
 
-- Mining
-- Woodcutting
-- Swords
+These are not display-name guesses. The quest matcher reads the Rebar/Pylon item key and requires the exact configured key, so another Pylon item does not complete an exact-item objective.
 
-Rewards include **mcMMO skill XP** for the matching progression system.
+The four definitions are physically bundled in `quests/pylon-defaults.yml` and are added to an existing **managed** Pylon/Rebar Tech pool without wiping custom Tech files.
 
-### 🎣 PyroFishingPro
+---
 
-Catch PyroFishingPro fish and earn provider-native progression rewards such as:
+## 🎲 Wild Card
 
-- **Pyro Entropy**
-- **Pyro Fishing XP**
+Wild Card lets installed plugins join the daily rotation:
 
-Higher-effort catches pay more of both.
+- **ValhallaMMO** — skill progression with spendable skill-point rewards
+- **mcMMO** — skill XP objectives and mcMMO XP rewards
+- **PyroFishingPro** — fish catches with Entropy/Fishing XP rewards
+- **EvenMoreFish** — EMF catches with bait rewards
+- **MMOItems** — custom-item acquisition
+- **ItemsAdder** — custom-item acquisition
 
-### 🐟 EvenMoreFish
+MMOItems and ItemsAdder reward IDs are intentionally not invented because those IDs belong to each server's content packs.
 
-EvenMoreFish catch objectives are built in and can reward **EvenMoreFish bait** in addition to the normal daily rewards.
+MythicMobs remains available for manual quests but is not automatically injected into Wild Card.
 
-### 🗡️ MMOItems + ✨ ItemsAdder
+---
 
-Wild Card can recognize MMOItems and ItemsAdder items without making either plugin mandatory.
+## 🧠 Integration quest types are now guaranteed at startup
 
-Because MMOItems IDs and ItemsAdder namespaced IDs come from each server's own content packs, the generic release **does not invent fake item IDs** as rewards. The built-in objectives use safe general rewards until the server owner chooses real local item IDs.
+The maintained runtime registers its integration quest types **before quest YAML is loaded**:
 
-### 👾 MythicMobs
+```text
+SLIMEFUN_ITEM
+SLIMEFUN_CRAFT
+REBAR_ITEM
+MCMMO_EXP
+MMOITEM_ITEM
+ITEMSADDER_ITEM
+EMF_FISH
+```
 
-MythicMobs remains available for manually configured quests, but it is **intentionally not injected automatically** into the Wild Card pool.
+This closes an important failure mode where Tech/Wild Card YAML could exist and be enabled, but its quest types were not in the registry and therefore never became usable daily quests.
 
 ---
 
 ## 🌿 Fable Good / 🔥 Fable Evil
 
-Fable now has two proper standalone daily paths:
+Fable is represented by two proper standalone categories:
 
 - **Fable Good**
 - **Fable Evil**
 
-The bundled pools contain **16 Good quests and 16 Evil quests**, with their alignment progression and rewards preserved.
-
-The maintained Fable system uses only **Good / Evil** terminology.
+The bundled pools contain 16 Good and 16 Evil quests with their alignment progression and rewards preserved.
 
 ---
 
-## 🧠 More Than Just New Integrations
+## 🔄 Upgrade without deleting your config
 
-3.0.5 also expands the quest engine itself:
+3.0.5 is designed to migrate existing servers rather than force a clean folder.
 
-- ⚖️ weighted quest selection
-- 🔐 permission-controlled quest pools
-- 📈 per-quest requirement and reward scaling
-- 🔗 quest chains
-- 📅 weekly categories that can survive daily resets
-- 🎲 reroll costs with failed-reroll refunds
-- 🔥 completion streak rewards
-- 🌍 server-wide/community goals
-- 📊 `%progressPercent%` support
-- 🩺 `/dqadmin doctor` diagnostics
+Upgrade compatibility includes:
 
----
+- older five-position numeric quest menus are expanded for quests 6 and 7 using safe filler positions
+- newer category-based menus are also supported
+- custom buttons, heads, colors and filler styling are preserved where safe
+- old `%achieved%/5` counters migrate to `%achieved%/%totalQuests%`
+- `%progression%` remains a legacy alias for `%progress%`
+- empty old Tech/Wild Card managed stubs can be replaced with populated defaults
+- real administrator-owned quest YAML is not blindly overwritten
+- exact Pylon defaults are added only when the Tech file already contains the maintained `pylon-rebar` pack
 
-## 🛡️ Dependency-Safe by Design
-
-Optional integrations stay optional.
-
-Built-in integration quests carry a `default_pack` directly in their physical YAML. If the corresponding plugin or Slimefun addon is missing or disabled, those built-ins are filtered out before the daily pool is used.
-
-Existing administrator-owned quest files are not blindly overwritten. Missing maintained categories can be created automatically, and the short-lived empty Tech/Wild Card development stubs are migrated only when they are still recognizable empty managed files.
-
----
-
-## 🔄 Upgrade Without Wiping Your Configs
-
-3.0.5 is designed to **upgrade existing servers instead of making them start over**.
-
-Older ODailyQuests installations frequently have a five-position player menu that only knows about Easy, Medium, Hard, Good and Evil. Even with Tech/Wild Card enabled in `config.yml`, that old menu has nowhere to draw quest 6 or quest 7.
-
-The maintained migration now recognizes both interface formats:
-
-- newer category-based quest slots
-- older numbered quest slots such as `'1': 19` through `'5': 27`
-
-For numbered menus, missing quest positions are assigned only to configured **FILL** slots, so custom heads, buttons, close items, category decorations, colors and other themed content are preserved.
-
-Other compatibility upgrades include:
-
-- `%progression%` remains supported as a legacy alias for `%progress%`
-- old `%achieved%/5` player-head counters migrate to `%achieved%/%totalQuests%`
-- pre-3.0.5 configs receive the 3.0.5 config migration marker
-- existing custom quest YAML is not blindly replaced
-
-If a player already has an old five-quest daily set saved from before the upgrade, either wait for the next scheduled draw or regenerate the player's active set with:
+If a player still has a saved five-quest set after upgrading, wait for the next draw or regenerate it with:
 
 ```text
 /dqadmin reset quests <player>
 ```
 
-**You should not need to delete the entire `plugins/ODailyQuests/` folder to upgrade.**
+---
+
+## 🩺 Better diagnostics
+
+`/dqadmin doctor` now surfaces the information needed to troubleshoot optional categories, including:
+
+- loaded category names
+- active/default pack state
+- **Tech available: true/false**
+- **Wild Card available: true/false**
+- detected Slimefun, Pylon, Rebar, mcMMO and other providers
 
 ---
 
-## 🧵 Modern Server Support
+## 🧠 More progression features
 
-This maintained release is focused on the modern server ecosystem:
+3.0.5 also includes:
 
-- **Paper / Purpur 1.21.11+**
-- **Folia-aware scheduling**
+- ⚖️ weighted quest selection
+- 🔐 permission-controlled pools
+- 📈 per-quest requirement/reward scaling
+- 🔗 quest chains
+- 📅 weekly categories
+- 🎲 reroll costs and failed-reroll refunds
+- 🔥 completion streak rewards
+- 🌍 community/server-wide goals
+- 📊 `%progressPercent%`
+
+---
+
+## 🧵 Modern server support
+
+- Paper / Purpur **1.21.11+**
+- Folia-aware scheduling
 - Java **21 bytecode**
-- Java **25 build toolchain**
-- concurrent active-player quest state where modern threading requires it
-
-Folia support is treated as a scheduling/threading concern, not just a metadata flag.
-
----
-
-## 🧪 Built and Checked Before Packaging
-
-GitHub Actions runs the test suite and production Shadow JAR build before staging the artifact.
-
-A dedicated regression test verifies that:
-
-- all seven maintained category resources are bundled
-- `tech.yml` never goes back to an empty `quests: {}` shell
-- `wildcard.yml` never goes back to an empty shell
-- Tech contains its Slimefun/Pylon provider tags
-- Wild Card contains its integration provider tags
-- provider-native reward commands remain present
-
-The server smoke-test checklist additionally covers legacy five-slot menu migration, dynamic total-quest counters and immediate quest redraw testing.
+- Java **25 CI toolchain**
+- concurrent active-player quest state
+- reflection-isolated optional integrations where appropriate
 
 ---
 
-## 📦 Download
+## 🧪 Production-JAR safeguards
 
-The release asset is the **raw plugin JAR**:
+GitHub Actions runs tests and the production Shadow JAR build before staging the raw artifact.
+
+CI verifies critical runtime classes and resources are physically in the JAR, including:
+
+- placeholder-condition classes used by quest selection/reset
+- maintained integration quest classes
+- all seven category YAML resources
+- `quests/pylon-defaults.yml`
+- no missing internal `com.ordwen.odailyquests...` references detectable by `jdeps`
+
+This specifically protects against the old class-packaging failure that could break `/dqadmin reset quests` at runtime.
+
+---
+
+## 📦 Raw JAR
+
+The release plugin asset is:
 
 `ODailyQuests3.0.5-Spigot-1.21.11+.jar`
 
-No extra source archive or unnecessary ZIP extraction step is required for the plugin file — grab the JAR and place it in your server's `plugins` folder.
+No unnecessary extraction step for the plugin file.
 
 ---
 
 ## ❤️ Credits
 
-**Original project and concept:** Ordwen / ODailyQuests and its contributors.
+**Original project and concept:** Ordwen / ODailyQuests and contributors.
 
-This maintained fork exists to extend compatibility and keep the project useful on modern Minecraft server software while respecting the original work and license.
+This maintained fork exists to extend compatibility while respecting the original project, license and configurable design.
 
-This project is independent and is not affiliated with Mojang Studios or Microsoft.
+Independent project; not affiliated with Mojang Studios or Microsoft.
 
-**Have fun with the new daily rotation — your technology stack, RPG progression, fishing systems, Fable paths, and custom content can finally share the same quest board.** 🎉
+**Have fun with the new rotation — vanilla survival, Fable paths, Slimefun technology, Pylon machinery, RPG skills and fishing systems can finally share the same daily quest board.** 🎉
