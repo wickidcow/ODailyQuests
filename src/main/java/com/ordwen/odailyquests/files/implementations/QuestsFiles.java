@@ -53,19 +53,12 @@ public class QuestsFiles {
         final File questsFolder = new File(plugin.getDataFolder(), "quests");
         if (!questsFolder.exists()) questsFolder.mkdirs();
 
-        // Add missing maintained-fork category files without overwriting administrator files.
         ensureBuiltInQuestFiles();
-
-        // Earlier development builds created Tech/Wild Card as empty shells because their
-        // quests were generated only in memory. If either managed category is still empty,
-        // replace it with the populated bundled YAML. A file containing even one quest is
-        // administrator-owned and is never overwritten here.
         seedEmptyManagedCategory("tech.yml");
         seedEmptyManagedCategory("wildcard.yml");
 
-        // Expand the maintained Pylon/Rebar portion of Tech with exact-item defaults while
-        // leaving completely custom Tech files alone.
-        PylonQuestDefaults.seed(new File(questsFolder, "tech.yml"));
+        // Expand only a maintained Pylon/Rebar Tech pool. Completely custom Tech files are left alone.
+        PylonQuestDefaults.seed(plugin, new File(questsFolder, "tech.yml"));
 
         final File[] questFiles = questsFolder.listFiles((dir, name) -> name.endsWith(".yml"));
         if (questFiles == null) {
@@ -84,12 +77,7 @@ public class QuestsFiles {
             final FileConfiguration config = new YamlConfiguration();
             try {
                 config.load(file);
-
-                // Built-in integration quests live in the physical YAML files. Their
-                // default_pack value controls whether each quest survives dependency filtering.
-                // Untagged administrator quests remain custom and are never removed here.
                 DefaultQuestPacks.filterConfiguredDefaults(config);
-
                 configurations.put(category, config);
                 PluginLogger.fine(category + " quests file successfully loaded.");
             } catch (InvalidConfigurationException | IOException e) {
@@ -139,8 +127,6 @@ public class QuestsFiles {
     }
 
     private void migrateLegacyFableTerminology(File file) {
-        // Build the two obsolete labels at runtime. This lets us migrate old configs while
-        // keeping those rejected labels out of the compiled class/JAR string table.
         final String legacyGood = String.join("", "Con", "cord");
         final String legacyEvil = String.join("", "Dom", "inion");
 
