@@ -6,6 +6,7 @@ import com.ordwen.odailyquests.quests.features.QuestFeatures;
 import com.ordwen.odailyquests.quests.player.progression.Progression;
 import com.ordwen.odailyquests.quests.types.AbstractQuest;
 import com.ordwen.odailyquests.quests.types.shared.BasicQuest;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -23,6 +25,7 @@ public class CustomQuest extends AbstractQuest {
     private static final String MCMMO_XP_EVENT = "com.gmail.nossr50.events.experience.McMMOPlayerXpGainEvent";
 
     private String requiredSkill = "ANY";
+    private List<String> requiredPylonKeys = List.of();
 
     public CustomQuest(BasicQuest base) {
         super(base);
@@ -64,7 +67,7 @@ public class CustomQuest extends AbstractQuest {
         ItemStack stack = extractStack(provided);
         if (stack == null) return false;
 
-        if (rebarItemQuest) return ExternalItemIntegration.isPylonItem(stack);
+        if (rebarItemQuest) return matchesPylonItem(stack);
         if (mmoItemQuest) return ExternalItemIntegration.isMMOItem(stack);
         if (itemsAdderItemQuest) return ExternalItemIntegration.isItemsAdderItem(stack);
 
@@ -76,6 +79,13 @@ public class CustomQuest extends AbstractQuest {
 
         List<String> addonAliases = QuestFeatures.slimefunAddons(this);
         return addonAliases.isEmpty() || SlimefunIntegration.matchesAddon(stack, addonAliases);
+    }
+
+    private boolean matchesPylonItem(ItemStack stack) {
+        NamespacedKey key = ExternalItemIntegration.getRebarItemKey(stack);
+        if (key == null || !"pylon".equalsIgnoreCase(key.getNamespace())) return false;
+        if (requiredPylonKeys.isEmpty()) return true;
+        return requiredPylonKeys.contains(key.toString().toLowerCase(Locale.ROOT));
     }
 
     private boolean matchesMcMMOSkill(@Nullable Event event) {
@@ -112,6 +122,30 @@ public class CustomQuest extends AbstractQuest {
     @Override
     public boolean loadParameters(ConfigurationSection section, String file, String index) {
         requiredSkill = section.getString(".skill", "ANY").trim().toUpperCase(Locale.ROOT);
+        requiredPylonKeys = loadPylonKeys(section);
         return true;
+    }
+
+    private List<String> loadPylonKeys(ConfigurationSection section) {
+        List<String> raw = new ArrayList<>();
+        if (section.isList("pylon_keys")) {
+            raw.addAll(section.getStringList("pylon_keys"));
+        } else if (section.isString("pylon_keys")) {
+            String value = section.getString("pylon_keys");
+            if (value != null) raw.add(value);
+        }
+        if (section.isString("pylon_key")) {
+            String value = section.getString("pylon_key");
+            if (value != null) raw.add(value);
+        }
+
+        List<String> normalized = new ArrayList<>();
+        for (String value : raw) {
+            if (value == null || value.isBlank()) continue;
+            String key = value.trim().toLowerCase(Locale.ROOT);
+            if (!key.contains(":")) key = "pylon:" + key;
+            normalized.add(key);
+        }
+        return List.copyOf(normalized);
     }
 }
