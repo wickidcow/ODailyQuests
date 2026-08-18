@@ -3,6 +3,7 @@ package com.ordwen.odailyquests.files.implementations;
 import com.ordwen.odailyquests.ODailyQuests;
 import com.ordwen.odailyquests.files.APluginFile;
 import com.ordwen.odailyquests.tools.PluginLogger;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -43,11 +44,43 @@ public class PlayerInterfaceFile extends APluginFile {
             config.load(file);
             migrateSevenCategorySlots();
             migrateLegacyDailyQuestTotal();
+            filterUnavailableOptionalButtons();
         } catch (Exception e) {
             PluginLogger.error("An error occurred while loading the player interface file.");
             PluginLogger.error(e.getMessage());
         }
         PluginLogger.fine("Player interface file successfully loaded.");
+    }
+
+    /**
+     * Removes dependency-gated buttons only from the in-memory interface configuration.
+     * The administrator's YAML is left untouched so the button automatically returns on a
+     * later restart if one of its required plugins is installed/enabled.
+     */
+    private void filterUnavailableOptionalButtons() {
+        final ConfigurationSection items = config.getConfigurationSection("player_interface.items");
+        if (items == null) return;
+
+        for (String key : new ArrayList<>(items.getKeys(false))) {
+            final ConfigurationSection item = items.getConfigurationSection(key);
+            if (item == null) continue;
+
+            final List<String> required = item.getStringList("requires_any_plugin");
+            if (required.isEmpty()) continue;
+
+            boolean available = false;
+            for (String pluginName : required) {
+                if (pluginName != null && !pluginName.isBlank() && Bukkit.getPluginManager().isPluginEnabled(pluginName.trim())) {
+                    available = true;
+                    break;
+                }
+            }
+
+            if (!available) {
+                items.set(key, null);
+                PluginLogger.fine("Hid player-interface item " + key + " because none of its required plugins are enabled.");
+            }
+        }
     }
 
     /**
