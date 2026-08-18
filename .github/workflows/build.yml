@@ -40,6 +40,9 @@ jobs:
             "com/ordwen/odailyquests/quests/conditions/placeholder/PlaceholderConditionEvaluator.class"
             "com/ordwen/odailyquests/quests/conditions/placeholder/PlaceholderConditionResult.class"
             "com/ordwen/odailyquests/quests/conditions/placeholder/PlaceholderRuleSetEvaluator.class"
+            "com/ordwen/odailyquests/quests/features/MaintainedQuestTypes.class"
+            "com/ordwen/odailyquests/quests/features/PylonQuestDefaults.class"
+            "com/ordwen/odailyquests/quests/types/global/CustomQuest.class"
             "quests/easy.yml"
             "quests/medium.yml"
             "quests/hard.yml"
@@ -47,6 +50,7 @@ jobs:
             "quests/evil.yml"
             "quests/tech.yml"
             "quests/wildcard.yml"
+            "quests/pylon-defaults.yml"
           )
 
           CONTENTS="$(jar tf "$JAR")"
@@ -57,8 +61,6 @@ jobs:
             fi
           done
 
-          # Catch the broader form of the old reset-quests packaging regression: production
-          # bytecode must never reference another ODailyQuests class that was omitted from the JAR.
           INTERNAL_MISSING="$(jdeps --multi-release 21 --ignore-missing-deps -verbose:class "$JAR" 2>/dev/null \
             | awk '/not found/ && $3 ~ /^com\.ordwen\.odailyquests/ {print}')"
           if [[ -n "$INTERNAL_MISSING" ]]; then
