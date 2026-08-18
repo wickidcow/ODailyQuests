@@ -1,0 +1,3 @@
+# Wild Card is populated in memory only by miscellaneous integrations that are installed.
+# Add custom Wild Card quests below if desired; this file is never overwritten.
+quests: {}
