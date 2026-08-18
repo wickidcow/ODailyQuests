@@ -1,10 +1,12 @@
 # 🚀 ODailyQuests — Wider Compatibility Expansion
 
-A modern maintained fork of **O'DailyQuests by Ordwen**, focused on preserving the original daily-quest experience while expanding it for current Minecraft servers, Slimefun ecosystems, RPG progression, fishing plugins, custom items, and modern Paper/Purpur/Folia environments.
+**ODailyQuests is now maintained and developed by [wickidcow](https://github.com/wickidcow)**, carrying the project forward for modern Minecraft servers while preserving the spirit, flexibility, and daily-quest experience that made the original plugin successful.
+
+The project was **originally created by Ordwen and the original ODailyQuests contributors**. Their work established the foundation this project continues to build on, and that contribution will always be credited here.
 
 **ODailyQuests 3.0.5** targets Minecraft **1.21.11+**, uses **Java 21 bytecode**, and is built/tested with a **Java 25** CI toolchain.
 
-> ❤️ **Original project:** ODailyQuests by Ordwen and contributors. This fork preserves the original attribution and GPL-3.0 license.
+> ❤️ **Project lineage:** Originally created by **Ordwen and contributors**. Current maintenance, modernization, compatibility work, integrations, and expansion are led by **wickidcow**. The project continues under the **GPL-3.0** license.
 
 ---
 
@@ -53,7 +55,7 @@ Tech and Wild Card are dependency-aware. If a provider is unavailable, its maint
 
 # 🖥️ Daily quest menu refresh
 
-The 3.0.5 maintained interface now gives the quest board a cleaner workflow:
+The 3.0.5 interface gives the quest board a cleaner workflow:
 
 - **Tech** uses slot **23** and **Fable Evil** uses slot **25** in the maintained layout.
 - The old **“Informations”** label is corrected to **“Information.”**
@@ -63,7 +65,7 @@ The 3.0.5 maintained interface now gives the quest board a cleaner workflow:
 - A successful reroll-all counts as **one reroll action**, not one action per quest.
 - Normal players get **one reroll action per daily quest set**. The existing admin bypass permission can still bypass the limit.
 - If **Jobs** or **JobsReborn** is installed, the bottom-right corner becomes a **Jobs Quests** button that runs `/jobs quests` **as the clicking player**.
-- The Jobs button hands off directly to the Jobs GUI and does not immediately close the newly opened inventory.
+- The Jobs button hands off directly to the Jobs GUI.
 - If Jobs is absent, that bottom-right position stays normal filler.
 
 The upgrade code only adjusts recognizable maintained menu values and avoids replacing unrelated custom buttons, colors, heads, or styling.
@@ -101,7 +103,7 @@ Built-in Tech coverage includes:
 
 ## 🧪 Slimefun
 
-The maintained build registers dedicated integration quest types instead of treating Slimefun items like ordinary vanilla items.
+The current build registers dedicated integration quest types instead of treating Slimefun items like ordinary vanilla items.
 
 Exact craft example:
 
@@ -127,7 +129,7 @@ required_amount: 5
 
 Pylon support uses Rebar/Pylon item recognition through reflection, keeping both integrations optional at runtime.
 
-The maintained Tech pool includes exact-item defaults such as:
+The Tech pool includes exact-item defaults such as:
 
 - 🧲 **Craft a Shimmer Magnet** — `pylon:shimmer_magnet`
 - 🔨 **Craft a Diamond Hammer** — `pylon:diamond_hammer`
@@ -239,7 +241,7 @@ Existing server files are treated as administrator-owned.
 - custom menu styling is preserved where migration can prove a slot is safe.
 - old `%achieved%/5` counters migrate to `%achieved%/%totalQuests%`.
 - `%progression%` remains a legacy alias for `%progress%`.
-- older Jobs shortcut entries are migrated so `/jobs quests` runs as a player command without closing the Jobs GUI afterward.
+- older Jobs shortcut entries are migrated so `/jobs quests` runs as a player command.
 
 Older numbered five-slot menus are expanded using safe filler positions rather than replacing the whole interface.
 
@@ -302,7 +304,7 @@ Normal economy, vanilla XP and quest-point commands can still be combined with t
 
 # 🧩 Extended progression features
 
-The maintained fork also includes:
+ODailyQuests also includes:
 
 - weighted quest selection
 - permission-controlled quest pools
@@ -360,43 +362,48 @@ GitHub Actions verifies the final JAR contains critical runtime classes and reso
 
 ---
 
-# 📚 Original documentation
+# 📚 Project history & original documentation
 
-For the original plugin's standard configuration concepts:
+ODailyQuests began with the work of **Ordwen and the original contributors**. This project would not exist without that foundation, and the original documentation and project pages remain valuable references:
 
 - [Original ODailyQuests documentation](https://ordwenplugins.gitbook.io/odailyquests/)
 - [Original Ordwen/ODailyQuests repository](https://github.com/Ordwen/ODailyQuests)
 - [Original Spigot resource](https://www.spigotmc.org/resources/odailyquests-daily-quests-plugin-1-16-1-19.100990/)
 - [Original Modrinth project](https://modrinth.com/plugin/odailyquests)
 
-The maintained fork adds features beyond the original documentation, especially the seven-category model and dependency-backed integrations described here.
+The current ODailyQuests project builds on that foundation with modern server compatibility, the seven-category model, dependency-backed integrations, expanded quest systems, and continued development under **wickidcow**.
 
 ---
 
 # ☕ Support the developers
 
-ODailyQuests exists because of the original project and the continued maintenance work. If you would like to support either side, please use the link for the developer you intend to support.
+If ODailyQuests has been useful to you, you can support the original creator or the current project maintainer directly.
 
 ### ❤️ Support the original developer — Ordwen
+
+Ordwen created the original ODailyQuests project and deserves full credit for the foundation that made the current project possible.
 
 - [Ko-fi — Ordwen](https://ko-fi.com/I2I41CRIJI)
 - [PayPal — Ordwen](https://www.paypal.com/paypalme/ordwen)
 
-### 🛠️ Support the maintained fork — wickidcow
+### 🛠️ Support current ODailyQuests development — wickidcow
 
-- [PayPal — support continued compatibility and expansion work](https://www.paypal.com/ncp/payment/ZYS8QH2FVV25U)
+Support ongoing maintenance, Minecraft version compatibility, testing, integrations, quest expansion, and future development:
 
-Thank you for supporting open-source Minecraft development.
+- [PayPal — wickidcow](https://www.paypal.com/ncp/payment/ZYS8QH2FVV25U)
+
+Thank you for supporting open-source Minecraft development and the developers who built ODailyQuests across both generations of the project.
 
 ---
 
 # ❤️ Credits & license
 
-**Original ODailyQuests:** Ordwen and contributors  
-**Maintained fork:** wickidcow / current compatibility and expansion work
+**Original creator:** Ordwen  
+**Original contributors:** the ODailyQuests contributors who helped build and improve the original project  
+**Current maintainer / developer:** wickidcow
 
-Licensed under the **GNU General Public License v3.0**. See [`LICENSE`](LICENSE).
+ODailyQuests continues under the **GNU General Public License v3.0**. See [`LICENSE`](LICENSE).
 
 This project is independent and is not affiliated with Mojang Studios or Microsoft.
 
-**The goal is simple: preserve the original daily-quest experience while giving modern servers a much larger world to build quests around.**
+**The goal is to honor what made ODailyQuests great, keep it alive on modern Minecraft versions, and continue expanding what server owners can build with it.**
