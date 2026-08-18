@@ -24,6 +24,7 @@ public class PlayerInterfaceFile extends APluginFile {
     private static final Set<String> SLOT_DONOR_CATEGORIES = Set.of("easy", "medium", "hard", "good", "evil", "tech", "wildcard");
     private static final Pattern LEGACY_DAILY_TOTAL = Pattern.compile(
             "(%achieved%[^/]*?/)((?:#[0-9A-Fa-f]{6}|&[0-9A-Fa-fK-Ok-oRr])*)\\d+\\s*$");
+    private static final String REROLL_TEXTURE = "bc8def67a12622ead1decd3d89364257b531896d87e469813131ca235b5c7";
 
     public PlayerInterfaceFile(ODailyQuests plugin) {
         super(plugin);
@@ -44,12 +45,101 @@ public class PlayerInterfaceFile extends APluginFile {
             config.load(file);
             migrateSevenCategorySlots();
             migrateLegacyDailyQuestTotal();
+            migrateMaintainedMenuRefresh();
             filterUnavailableOptionalButtons();
         } catch (Exception e) {
             PluginLogger.error("An error occurred while loading the player interface file.");
             PluginLogger.error(e.getMessage());
         }
         PluginLogger.fine("Player interface file successfully loaded.");
+    }
+
+    /**
+     * Applies the narrow maintained-layout refresh without replacing themed/custom interfaces.
+     * Only recognizable maintained values are touched.
+     */
+    private void migrateMaintainedMenuRefresh() throws IOException {
+        boolean changed = false;
+
+        final ConfigurationSection categories = config.getConfigurationSection("player_interface.quests.categories");
+        if (categories != null
+                && categories.getIntegerList("evil").equals(List.of(23))
+                && categories.getIntegerList("tech").equals(List.of(25))) {
+            categories.set("tech", List.of(23));
+            categories.set("evil", List.of(25));
+            changed = true;
+        }
+
+        final ConfigurationSection items = config.getConfigurationSection("player_interface.items");
+        if (items != null) {
+            boolean jobsButtonExists = false;
+            boolean bottomRightReservedByCustomItem = false;
+
+            for (String key : new ArrayList<>(items.getKeys(false))) {
+                final ConfigurationSection entry = items.getConfigurationSection(key);
+                if (entry == null) continue;
+                final ConfigurationSection item = entry.getConfigurationSection("item");
+                if (item == null) continue;
+
+                final String name = item.getString("name", "");
+                if (name.contains("Informations")) {
+                    item.set("name", name.replace("Informations", "Information"));
+                    changed = true;
+                }
+
+                final String texture = item.getString("texture", "");
+                if (name.toLowerCase().contains("daily reroll") || REROLL_TEXTURE.equals(texture)) {
+                    entry.set("type", "PLAYER_COMMAND");
+                    entry.set("commands", List.of("dq reroll"));
+                    item.set("name", "&b&lDaily Reroll");
+                    item.set("lore", List.of(
+                            " &3&l| &7Reroll your daily quests.",
+                            "",
+                            " &3&l| &7Choose to reroll one quest",
+                            " &3&l| &7or your entire daily set.",
+                            "",
+                            " &8(&7!&8) &7Available once per day.",
+                            "",
+                            " &bClick to choose"
+                    ));
+                    changed = true;
+                }
+
+                if (entry.getStringList("commands").stream().anyMatch(command -> command.equalsIgnoreCase("jobs quests"))) {
+                    jobsButtonExists = true;
+                }
+
+                final String type = entry.getString("type", "");
+                final List<Integer> slots = item.isList("slot") ? item.getIntegerList("slot") : List.of(item.getInt("slot"));
+                if (!"FILL".equalsIgnoreCase(type) && slots.contains(45)
+                        && entry.getStringList("commands").stream().noneMatch(command -> command.equalsIgnoreCase("jobs quests"))) {
+                    bottomRightReservedByCustomItem = true;
+                }
+            }
+
+            if (!jobsButtonExists && !bottomRightReservedByCustomItem) {
+                final ConfigurationSection jobs = items.createSection("jobs_quests");
+                jobs.set("type", "PLAYER_COMMAND");
+                jobs.set("requires_any_plugin", List.of("Jobs", "JobsReborn"));
+                jobs.set("close_on_click", true);
+                jobs.set("commands", List.of("jobs quests"));
+                final ConfigurationSection item = jobs.createSection("item");
+                item.set("material", "WRITABLE_BOOK");
+                item.set("name", "&6&lJobs Quests");
+                item.set("lore", List.of(
+                        " &6&l| &7Open your Jobs quests.",
+                        "",
+                        " &eClick to open"
+                ));
+                item.set("slot", 45);
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            config.save(file);
+            PluginLogger.info("Updated the maintained player quest menu layout and controls.");
+        }
     }
 
     /**
@@ -104,15 +194,6 @@ public class PlayerInterfaceFile extends APluginFile {
         migrateCategorySlots(categories, mainConfig);
     }
 
-    /**
-     * Migrates the original numbered interface format, for example:
-     * quests: { '1': 19, '2': 21, ... '5': 27 }.
-     *
-     * <p>The total number of required slots is derived from quests_per_category. New quest
-     * positions are taken only from configured FILL locations, so custom buttons, heads, close
-     * items and decorative category labels are never overwritten. Quest items are rendered after
-     * the base inventory and naturally overlay the filler.</p>
-     */
     private void migrateLegacyIndexedSlots(ConfigurationSection quests, YamlConfiguration mainConfig) throws IOException {
         final ConfigurationSection questCounts = mainConfig.getConfigurationSection("quests_per_category");
         if (questCounts == null) return;
@@ -136,7 +217,6 @@ public class PlayerInterfaceFile extends APluginFile {
                 final int index = Integer.parseInt(key);
                 if (index > 0) existing.put(index, quests.getInt(key));
             } catch (NumberFormatException ignored) {
-                // Non-numeric custom keys are not part of the legacy numbered quest mapping.
             }
         }
 
@@ -161,9 +241,6 @@ public class PlayerInterfaceFile extends APluginFile {
             return;
         }
 
-        // Prefer filler positions after the existing quest row/area. This keeps old custom menus
-        // visually stable (for example a five-quest row at 19,21,23,25,27 grows into the next
-        // available filler positions instead of taking decorative top-row panes).
         final int highestExisting = reservedQuestSlots.stream().mapToInt(Integer::intValue).max().orElse(0);
         fillSlots.sort(Comparator
                 .comparingInt((Integer slot) -> slot > highestExisting ? 0 : 1)
@@ -213,8 +290,6 @@ public class PlayerInterfaceFile extends APluginFile {
             if (raw instanceof Number number) {
                 requiredCounts.put(category, Math.max(0, number.intValue()));
             } else {
-                // Placeholder-driven/dynamic counts cannot be migrated safely because we do not
-                // know how many of the administrator's configured slots are actually spare.
                 requiredCounts.put(category, Integer.MAX_VALUE);
             }
         }
@@ -255,7 +330,6 @@ public class PlayerInterfaceFile extends APluginFile {
                 .sorted()
                 .forEach(candidates::add);
 
-        // Filler positions are a safe last resort and preserve custom colors/theme/configuration.
         getFillSlots(menuSize).stream()
                 .filter(slot -> !reserved.contains(slot))
                 .forEach(candidates::add);
@@ -284,8 +358,6 @@ public class PlayerInterfaceFile extends APluginFile {
 
         if (assignments.isEmpty()) return;
 
-        // Remove only slots that were genuinely spare from maintained donor categories. This
-        // prevents duplicate slot ownership while keeping all currently-required legacy slots.
         for (Map.Entry<String, List<Integer>> entry : originalSlots.entrySet()) {
             final String category = entry.getKey();
             if (!SLOT_DONOR_CATEGORIES.contains(category.toLowerCase())) continue;
@@ -326,7 +398,6 @@ public class PlayerInterfaceFile extends APluginFile {
                 .toList();
     }
 
-    /** Replaces the old hard-coded x/5 player-head counter with the maintained dynamic total. */
     private void migrateLegacyDailyQuestTotal() throws IOException {
         final String path = "player_interface.player_head.item_description";
         final List<String> description = config.getStringList(path);
