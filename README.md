@@ -62,7 +62,8 @@ The 3.0.5 maintained interface now gives the quest board a cleaner workflow:
 - **Reroll All** is atomic: the replacement set is selected before the current set is changed.
 - A successful reroll-all counts as **one reroll action**, not one action per quest.
 - Normal players get **one reroll action per daily quest set**. The existing admin bypass permission can still bypass the limit.
-- If **Jobs** or **JobsReborn** is installed, the bottom-right corner becomes a **Jobs Quests** button that opens `/jobs quests`.
+- If **Jobs** or **JobsReborn** is installed, the bottom-right corner becomes a **Jobs Quests** button that runs `/jobs quests` **as the clicking player**.
+- The Jobs button hands off directly to the Jobs GUI and does not immediately close the newly opened inventory.
 - If Jobs is absent, that bottom-right position stays normal filler.
 
 The upgrade code only adjusts recognizable maintained menu values and avoids replacing unrelated custom buttons, colors, heads, or styling.
@@ -238,6 +239,7 @@ Existing server files are treated as administrator-owned.
 - custom menu styling is preserved where migration can prove a slot is safe.
 - old `%achieved%/5` counters migrate to `%achieved%/%totalQuests%`.
 - `%progression%` remains a legacy alias for `%progress%`.
+- older Jobs shortcut entries are migrated so `/jobs quests` runs as a player command without closing the Jobs GUI afterward.
 
 Older numbered five-slot menus are expanded using safe filler positions rather than replacing the whole interface.
 
