@@ -163,7 +163,37 @@ Optional integrations stay optional.
 
 Built-in integration quests carry a `default_pack` directly in their physical YAML. If the corresponding plugin or Slimefun addon is missing or disabled, those built-ins are filtered out before the daily pool is used.
 
-Existing administrator-owned quest files are not blindly overwritten. Missing maintained categories can be created automatically, and the short-lived empty Tech/Wild Card development stubs are migrated only when they are still the recognizable empty managed files.
+Existing administrator-owned quest files are not blindly overwritten. Missing maintained categories can be created automatically, and the short-lived empty Tech/Wild Card development stubs are migrated only when they are still recognizable empty managed files.
+
+---
+
+## 🔄 Upgrade Without Wiping Your Configs
+
+3.0.5 is designed to **upgrade existing servers instead of making them start over**.
+
+Older ODailyQuests installations frequently have a five-position player menu that only knows about Easy, Medium, Hard, Good and Evil. Even with Tech/Wild Card enabled in `config.yml`, that old menu has nowhere to draw quest 6 or quest 7.
+
+The maintained migration now recognizes both interface formats:
+
+- newer category-based quest slots
+- older numbered quest slots such as `'1': 19` through `'5': 27`
+
+For numbered menus, missing quest positions are assigned only to configured **FILL** slots, so custom heads, buttons, close items, category decorations, colors and other themed content are preserved.
+
+Other compatibility upgrades include:
+
+- `%progression%` remains supported as a legacy alias for `%progress%`
+- old `%achieved%/5` player-head counters migrate to `%achieved%/%totalQuests%`
+- pre-3.0.5 configs receive the 3.0.5 config migration marker
+- existing custom quest YAML is not blindly replaced
+
+If a player already has an old five-quest daily set saved from before the upgrade, either wait for the next scheduled draw or regenerate the player's active set with:
+
+```text
+/dqadmin reset quests <player>
+```
+
+**You should not need to delete the entire `plugins/ODailyQuests/` folder to upgrade.**
 
 ---
 
@@ -185,7 +215,7 @@ Folia support is treated as a scheduling/threading concern, not just a metadata 
 
 GitHub Actions runs the test suite and production Shadow JAR build before staging the artifact.
 
-A dedicated regression test now verifies that:
+A dedicated regression test verifies that:
 
 - all seven maintained category resources are bundled
 - `tech.yml` never goes back to an empty `quests: {}` shell
@@ -193,6 +223,8 @@ A dedicated regression test now verifies that:
 - Tech contains its Slimefun/Pylon provider tags
 - Wild Card contains its integration provider tags
 - provider-native reward commands remain present
+
+The server smoke-test checklist additionally covers legacy five-slot menu migration, dynamic total-quest counters and immediate quest redraw testing.
 
 ---
 
