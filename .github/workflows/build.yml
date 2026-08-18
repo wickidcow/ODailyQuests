@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build:
-    name: Build plugin JAR
+    name: Test and build plugin JAR
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
@@ -25,9 +25,57 @@ jobs:
           java-version: '25'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
-      - name: Build JAR
-        run: chmod +x ./gradlew && ./gradlew clean shadowJar --no-daemon
-      - name: Resolve version and stage raw JAR
+      - name: Test and build JAR
+        run: chmod +x ./gradlew && ./gradlew clean test shadowJar --no-daemon
+      - name: Verify packaged runtime contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(grep -E '^version = ' build.gradle | head -n1 | sed -E 's/.*"([^"]+)".*/\1/')"
+          JAR="build/libs/ODailyQuests-${VERSION}.jar"
+          test -s "$JAR"
+
+          REQUIRED_ENTRIES=(
+            "com/ordwen/odailyquests/quests/conditions/placeholder/PlaceholderCondition.class"
+            "com/ordwen/odailyquests/quests/conditions/placeholder/PlaceholderConditionEvaluator.class"
+            "com/ordwen/odailyquests/quests/conditions/placeholder/PlaceholderConditionResult.class"
+            "com/ordwen/odailyquests/quests/conditions/placeholder/PlaceholderRuleSetEvaluator.class"
+            "com/ordwen/odailyquests/quests/features/MaintainedQuestTypes.class"
+            "com/ordwen/odailyquests/quests/features/PylonQuestDefaults.class"
+            "com/ordwen/odailyquests/quests/features/RerollService.class"
+            "com/ordwen/odailyquests/quests/types/global/CustomQuest.class"
+            "com/ordwen/odailyquests/commands/interfaces/playerinterface/reroll/DailyRerollMenu.class"
+            "com/ordwen/odailyquests/events/listeners/integrations/PylonInventoryGainEvent.class"
+            "com/ordwen/odailyquests/events/listeners/integrations/PylonInventoryGainListener.class"
+            "quests/easy.yml"
+            "quests/medium.yml"
+            "quests/hard.yml"
+            "quests/good.yml"
+            "quests/evil.yml"
+            "quests/tech.yml"
+            "quests/wildcard.yml"
+            "quests/pylon-defaults.yml"
+          )
+
+          CONTENTS="$(jar tf "$JAR")"
+          for entry in "${REQUIRED_ENTRIES[@]}"; do
+            if ! grep -Fxq "$entry" <<< "$CONTENTS"; then
+              echo "ERROR: Required runtime entry is missing from production JAR: $entry" >&2
+              exit 1
+            fi
+          done
+
+          INTERNAL_MISSING="$(jdeps --multi-release 21 --ignore-missing-deps -verbose:class "$JAR" 2>/dev/null \
+            | awk '/not found/ && $3 ~ /^com\.ordwen\.odailyquests/ {print}')"
+          if [[ -n "$INTERNAL_MISSING" ]]; then
+            echo "ERROR: Production JAR contains missing internal ODailyQuests class references:" >&2
+            echo "$INTERNAL_MISSING" >&2
+            exit 1
+          fi
+
+          echo "Verified ${#REQUIRED_ENTRIES[@]} critical runtime classes/resources in ${JAR}."
+          echo "Verified no missing internal ODailyQuests class references."
+      - name: Resolve version and stage JAR
         id: artifact
         shell: bash
         run: |
@@ -47,8 +95,18 @@ jobs:
           path: dist/${{ steps.artifact.outputs.name }}
           archive: false
           if-no-files-found: error
+          retention-days: 30
       - name: Publish raw JAR release asset
-        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/') || github.ref_name == github.event.repository.default_branch
+        if: >-
+          github.event_name == 'workflow_dispatch' ||
+          startsWith(github.ref, 'refs/tags/') ||
+          github.ref_name == github.event.repository.default_branch ||
+          (github.event_name == 'push' &&
+           github.ref_name == 'agent/odailyquests-3.0.5-modernization' &&
+           contains(github.event.head_commit.message, '[release-3.0.5]')) ||
+          (github.event_name == 'pull_request' &&
+           github.event.pull_request.number == 2 &&
+           contains(github.event.pull_request.body, '<!-- publish-v3.0.5 -->'))
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.artifact.outputs.version }}
@@ -56,10 +114,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then TAG="$GITHUB_REF_NAME"; else TAG="v${VERSION}"; fi
+          RELEASE_VERSION="${VERSION%%-*}"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            TAG="$GITHUB_REF_NAME"
+          else
+            TAG="v${RELEASE_VERSION}"
+          fi
           JAR="dist/${NAME}"
+          TITLE="🚀 ODailyQuests ${RELEASE_VERSION} — Wider Compatibility Expansion"
+          NOTES="RELEASE_NOTES_3.0.5.md"
+
           if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --title "$TITLE" --notes-file "$NOTES"
             gh release upload "$TAG" "$JAR" --clobber
           else
-            gh release create "$TAG" "$JAR" --target "$GITHUB_SHA" --generate-notes --title "ODailyQuests ${VERSION}"
+            gh release create "$TAG" "$JAR" \
+              --target "$GITHUB_SHA" \
+              --title "$TITLE" \
+              --notes-file "$NOTES"
           fi

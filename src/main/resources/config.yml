@@ -5,7 +5,7 @@ debug: false
 check_for_update: true
 
 # never touch these lines, used for the plugin auto update system
-version: 3.0.0
+version: 3.0.5
 database_version: 4
 
 # prefix that will be displayed before every message from messages.yml
@@ -54,9 +54,40 @@ safety_mode: true
 # More information here: https://ordwenplugins.gitbook.io/odailyquests/quests/create-a-category
 quests_per_category:
   #examples: 9
-  easy: 3  # The player will receive 3 quests from the "easy.yml" file
-  medium: 3
-  hard: 3
+  easy: 1
+  medium: 1
+  hard: 1
+  good: 1
+  evil: 1
+  tech: 1       # Slimefun + Slimefun addons + Pylon/Rebar; skipped if unavailable
+  wildcard: 1   # Misc plugin integrations; skipped if unavailable
+
+# Built-in dependency-backed daily quest packs.
+# These toggles are preserved on update. Dependency-backed entries only activate when
+# their plugin/addon is actually installed. Full generated metadata is added automatically.
+default_quest_packs:
+  vanilla:
+    enabled: true
+  fable-good:
+    enabled: true
+  fable-evil:
+    enabled: true
+  slimefun-core:
+    enabled: true
+  pylon-rebar:
+    enabled: true
+  valhallammo:
+    enabled: true
+  evenmorefish:
+    enabled: true
+  pyrofishingpro:
+    enabled: true
+  mcmmo:
+    enabled: true
+  mmoitems:
+    enabled: true
+  itemsadder:
+    enabled: true
 
 # Select the mode of timestamp.
 # ============================================================================
@@ -269,13 +300,25 @@ interfaces:
   hard:
     inventory_name: "Quests - Hard"
     empty_item: RED_STAINED_GLASS_PANE
+  good:
+    inventory_name: "Quests - Fable Good"
+    empty_item: LIME_STAINED_GLASS_PANE
+  evil:
+    inventory_name: "Quests - Fable Evil"
+    empty_item: RED_STAINED_GLASS_PANE
+  tech:
+    inventory_name: "Quests - Tech"
+    empty_item: CYAN_STAINED_GLASS_PANE
+  wildcard:
+    inventory_name: "Quests - Wild Card"
+    empty_item: PURPLE_STAINED_GLASS_PANE
 
 # You can disable quest progression in certain worlds.
 # You must put here the name of the world (in theory the name of its directory).
 # If you don't want to disable worlds, just put hooks. (disabled_worlds: []).
 # In addition, you can disable some worlds for each quest. Please refer to the Wiki.
 #
-# You can also use prefixes/suffixes to disable multiple worlds at once with the "?" character.
+# You can also use prefixes/suffixes to disable multiple worlds with the "?" character.
 # For example, "?_survival" will disable all worlds ending with "_survival".
 disabled_worlds: []
   # - "world_nether"
@@ -292,6 +335,10 @@ npcs:
   easy: "&a&lEasy Quests"
   medium: "&6&lMedium Quests"
   hard: "&c&lHard Quests"
+  good: "&a&lFable Good Quests"
+  evil: "&4&lFable Evil Quests"
+  tech: "&b&lTech Quests"
+  wildcard: "&d&lWild Card Quests"
 
 # Here you can customize the output of some placeholders.
 placeholders:
@@ -315,8 +362,9 @@ complete_only_on_click: false
 # Determines if the quest can be rerolled even if it has already been completed, when using the reroll command.
 reroll_only_if_not_achieved: false
 
-# Determines max amount of times a player can reroll their quest in a day
-reroll_maximum: -1
+# Maximum number of reroll actions a normal player can use per daily quest set.
+# Reroll All still counts as one action. Admin bypass permission can ignore this limit.
+reroll_maximum: 1
 
 # If you are using MythicMobs, you can set this parameter to "true" to share the mobs between players.
 #

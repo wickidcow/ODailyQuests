@@ -12,7 +12,8 @@ public class TextFormatter {
     private TextFormatter() {
     }
 
-    private static final Pattern HEX_PATTERN = Pattern.compile("#[a-fA-F0-9]{6}");
+    // Accept both the historical #RRGGBB format and the commonly used &#RRGGBB form.
+    private static final Pattern HEX_PATTERN = Pattern.compile("&?#[a-fA-F0-9]{6}");
     private static boolean placeholderAPIEnabled = false;
 
     /**
@@ -83,8 +84,9 @@ public class TextFormatter {
     private static String applyHexColor(String message) {
         Matcher matcher = HEX_PATTERN.matcher(message);
         while (matcher.find()) {
-            String hexCode = matcher.group();
-            message = message.replace(hexCode, ChatColor.of(hexCode).toString());
+            String token = matcher.group();
+            String hexCode = token.startsWith("&") ? token.substring(1) : token;
+            message = message.replace(token, ChatColor.of(hexCode).toString());
             matcher = HEX_PATTERN.matcher(message);
         }
         return message;

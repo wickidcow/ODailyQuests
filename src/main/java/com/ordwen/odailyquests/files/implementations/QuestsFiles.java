@@ -1,13 +1,18 @@
 package com.ordwen.odailyquests.files.implementations;
 
 import com.ordwen.odailyquests.ODailyQuests;
+import com.ordwen.odailyquests.quests.features.DefaultQuestPacks;
+import com.ordwen.odailyquests.quests.features.PylonQuestDefaults;
+import com.ordwen.odailyquests.tools.PluginLogger;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import com.ordwen.odailyquests.tools.PluginLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,18 +38,27 @@ public class QuestsFiles {
         return configuration;
     }
 
-    /**
-     * Init quests files.
-     */
+    /** Returns whether a loaded category currently contains at least one usable quest. */
+    public static boolean hasQuestEntries(String category) {
+        final FileConfiguration configuration = configurations.get(category);
+        if (configuration == null) return false;
+        final ConfigurationSection quests = configuration.getConfigurationSection("quests");
+        return quests != null && !quests.getKeys(false).isEmpty();
+    }
+
+    /** Init quest files. */
     public void load() {
         configurations.clear();
 
         final File questsFolder = new File(plugin.getDataFolder(), "quests");
+        if (!questsFolder.exists()) questsFolder.mkdirs();
 
-        if (!questsFolder.exists() || questsFolder.listFiles() == null || questsFolder.listFiles().length == 0) {
-            questsFolder.mkdirs();
-            createDefaultQuestFiles();
-        }
+        ensureBuiltInQuestFiles();
+        seedEmptyManagedCategory("tech.yml");
+        seedEmptyManagedCategory("wildcard.yml");
+
+        // Expand only a maintained Pylon/Rebar Tech pool. Completely custom Tech files are left alone.
+        PylonQuestDefaults.seed(plugin, new File(questsFolder, "tech.yml"));
 
         final File[] questFiles = questsFolder.listFiles((dir, name) -> name.endsWith(".yml"));
         if (questFiles == null) {
@@ -56,9 +70,14 @@ public class QuestsFiles {
         for (File file : questFiles) {
             final String category = file.getName().replace(".yml", "");
 
+            if ("good".equalsIgnoreCase(category) || "evil".equalsIgnoreCase(category)) {
+                migrateLegacyFableTerminology(file);
+            }
+
             final FileConfiguration config = new YamlConfiguration();
             try {
                 config.load(file);
+                DefaultQuestPacks.filterConfiguredDefaults(config);
                 configurations.put(category, config);
                 PluginLogger.fine(category + " quests file successfully loaded.");
             } catch (InvalidConfigurationException | IOException e) {
@@ -69,12 +88,64 @@ public class QuestsFiles {
         }
     }
 
-    private void createDefaultQuestFiles() {
-        final String[] defaultFiles = {"examples.yml", "easy.yml", "medium.yml", "hard.yml"};
+    private void ensureBuiltInQuestFiles() {
+        ensureQuestFile("examples.yml", null);
+        ensureQuestFile("easy.yml", "vanilla");
+        ensureQuestFile("medium.yml", "vanilla");
+        ensureQuestFile("hard.yml", "vanilla");
+        ensureQuestFile("good.yml", "fable-good");
+        ensureQuestFile("evil.yml", "fable-evil");
+        ensureQuestFile("tech.yml", null);
+        ensureQuestFile("wildcard.yml", null);
+    }
 
-        for (String fileName : defaultFiles) {
+    private void ensureQuestFile(String fileName, String packKey) {
+        final File questsFolder = new File(plugin.getDataFolder(), "quests");
+        final File file = new File(questsFolder, fileName);
+        if (file.exists()) return;
+
+        plugin.saveResource("quests/" + fileName, false);
+        if (packKey != null) DefaultQuestPacks.tagDefaults(file, packKey);
+        PluginLogger.info(fileName + " created as default.");
+    }
+
+    private void seedEmptyManagedCategory(String fileName) {
+        final File file = new File(new File(plugin.getDataFolder(), "quests"), fileName);
+        if (!file.isFile()) return;
+
+        try {
+            final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+            final ConfigurationSection quests = yaml.getConfigurationSection("quests");
+            if (quests != null && !quests.getKeys(false).isEmpty()) return;
+
+            Files.delete(file.toPath());
             plugin.saveResource("quests/" + fileName, false);
-            PluginLogger.info(fileName + " created as default.");
+            PluginLogger.info("Replaced empty " + fileName + " with the populated built-in quest pool.");
+        } catch (IOException exception) {
+            PluginLogger.warn("Unable to seed populated " + fileName + ": " + exception.getMessage());
+        }
+    }
+
+    private void migrateLegacyFableTerminology(File file) {
+        final String legacyGood = String.join("", "Con", "cord");
+        final String legacyEvil = String.join("", "Dom", "inion");
+
+        try {
+            String original = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+            String migrated = original
+                    .replace("alignment.last_deed " + legacyGood, "alignment.last_deed Good")
+                    .replace("alignment.last_deed " + legacyEvil, "alignment.last_deed Evil")
+                    .replace("the " + legacyGood + " shrine", "a Good shrine")
+                    .replace("Let the smoke teach it " + legacyEvil + " silence.", "Let the smoke carry an Evil warning.")
+                    .replace("and prove " + legacyEvil + " takes what it wants.", "and prove Evil takes what it wants.")
+                    .replace("Raise soulflame for the " + legacyEvil + " altars", "Raise soulflame for the Evil altars");
+
+            if (!original.equals(migrated)) {
+                Files.writeString(file.toPath(), migrated, StandardCharsets.UTF_8);
+                PluginLogger.info("Migrated legacy Fable terminology in " + file.getName() + ".");
+            }
+        } catch (IOException exception) {
+            PluginLogger.warn("Unable to migrate legacy Fable terminology in " + file.getName() + ": " + exception.getMessage());
         }
     }
 }

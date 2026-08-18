@@ -1,0 +1,480 @@
+# Built-in Wild Card daily quest pool. Each quest is dependency-gated by default_pack.
+# Only quests belonging to plugins installed and enabled on the server are eligible.
+quests:
+  1:
+    name: '&#D966FFWild Card: Valhalla Power'
+    menu_item: NETHER_STAR
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Earn %required% ValhallaMMO power experience'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7+1 Valhalla Skill Point'
+    - ' &3&l| &7900 Gold'
+    - ' &3&l| &72 Quest Points'
+    quest_type: VALHALLA_EXP
+    required_amount: 600
+    skill: POWER
+    reward:
+      reward_type: COMMAND
+      commands:
+      - valhalla reward power_spendableskillpoints_add 1 %player_name%
+      - eco give %player_name% 900
+      - questadmin givepoints %player_name% 2
+    default_pack: valhallammo
+    weight: 1.0
+  2:
+    name: '&#D966FFWild Card: Valhalla Mining'
+    menu_item: DIAMOND_PICKAXE
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Earn %required% ValhallaMMO mining experience'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7+2 Valhalla Skill Points'
+    - ' &3&l| &71200 Gold'
+    - ' &3&l| &72 Quest Points'
+    quest_type: VALHALLA_EXP
+    required_amount: 1200
+    skill: MINING
+    reward:
+      reward_type: COMMAND
+      commands:
+      - valhalla reward power_spendableskillpoints_add 2 %player_name%
+      - eco give %player_name% 1200
+      - questadmin givepoints %player_name% 2
+    default_pack: valhallammo
+    weight: 1.0
+  3:
+    name: '&#D966FFWild Card: Valhalla Archery'
+    menu_item: BOW
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Earn %required% ValhallaMMO archery experience'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7+3 Valhalla Skill Points'
+    - ' &3&l| &71500 Gold'
+    - ' &3&l| &72 Quest Points'
+    quest_type: VALHALLA_EXP
+    required_amount: 1800
+    skill: ARCHERY
+    reward:
+      reward_type: COMMAND
+      commands:
+      - valhalla reward power_spendableskillpoints_add 3 %player_name%
+      - eco give %player_name% 1500
+      - questadmin givepoints %player_name% 2
+    default_pack: valhallammo
+    weight: 1.0
+  4:
+    name: '&#D966FFWild Card: EvenMoreFish'
+    menu_item: FISHING_ROD
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Catch %required% EvenMoreFish fish'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7+1 EvenMoreFish Shrimp Bait'
+    - ' &3&l| &7700 Gold'
+    - ' &3&l| &72 Quest Points'
+    quest_type: EMF_FISH
+    required_amount: 4
+    reward:
+      reward_type: COMMAND
+      commands:
+      - emf admin bait Shrimp 1 %player_name%
+      - eco give %player_name% 700
+      - questadmin givepoints %player_name% 2
+    default_pack: evenmorefish
+    weight: 1.0
+  5:
+    name: '&#D966FFWild Card: EvenMoreFish'
+    menu_item: FISHING_ROD
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Catch %required% EvenMoreFish fish'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7+2 EvenMoreFish Shrimp Bait'
+    - ' &3&l| &71300 Gold'
+    - ' &3&l| &72 Quest Points'
+    quest_type: EMF_FISH
+    required_amount: 10
+    reward:
+      reward_type: COMMAND
+      commands:
+      - emf admin bait Shrimp 2 %player_name%
+      - eco give %player_name% 1300
+      - questadmin givepoints %player_name% 2
+    default_pack: evenmorefish
+    weight: 1.0
+  6:
+    name: '&#D966FFWild Card: EvenMoreFish'
+    menu_item: FISHING_ROD
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Catch %required% EvenMoreFish fish'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7+3 EvenMoreFish Shrimp Bait'
+    - ' &3&l| &72200 Gold'
+    - ' &3&l| &72 Quest Points'
+    quest_type: EMF_FISH
+    required_amount: 18
+    reward:
+      reward_type: COMMAND
+      commands:
+      - emf admin bait Shrimp 3 %player_name%
+      - eco give %player_name% 2200
+      - questadmin givepoints %player_name% 2
+    default_pack: evenmorefish
+    weight: 1.0
+  7:
+    name: '&#D966FFWild Card: PyroFishingPro'
+    menu_item: FISHING_ROD
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Catch %required% PyroFishingPro fish'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7+250 Pyro Entropy'
+    - ' &3&l| &7+100 Pyro Fishing XP'
+    - ' &3&l| &7700 Gold'
+    quest_type: PYRO_FISH
+    required_amount: 4
+    reward:
+      reward_type: COMMAND
+      commands:
+      - fish addentropy %player_name% 250
+      - fish addxp %player_name% 100
+      - eco give %player_name% 700
+      - questadmin givepoints %player_name% 2
+    default_pack: pyrofishingpro
+    weight: 1.0
+  8:
+    name: '&#D966FFWild Card: PyroFishingPro'
+    menu_item: FISHING_ROD
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Catch %required% PyroFishingPro fish'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7+600 Pyro Entropy'
+    - ' &3&l| &7+250 Pyro Fishing XP'
+    - ' &3&l| &71300 Gold'
+    quest_type: PYRO_FISH
+    required_amount: 10
+    reward:
+      reward_type: COMMAND
+      commands:
+      - fish addentropy %player_name% 600
+      - fish addxp %player_name% 250
+      - eco give %player_name% 1300
+      - questadmin givepoints %player_name% 2
+    default_pack: pyrofishingpro
+    weight: 1.0
+  9:
+    name: '&#D966FFWild Card: PyroFishingPro'
+    menu_item: FISHING_ROD
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Catch %required% PyroFishingPro fish'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7+1200 Pyro Entropy'
+    - ' &3&l| &7+500 Pyro Fishing XP'
+    - ' &3&l| &72200 Gold'
+    quest_type: PYRO_FISH
+    required_amount: 18
+    reward:
+      reward_type: COMMAND
+      commands:
+      - fish addentropy %player_name% 1200
+      - fish addxp %player_name% 500
+      - eco give %player_name% 2200
+      - questadmin givepoints %player_name% 2
+    default_pack: pyrofishingpro
+    weight: 1.0
+  10:
+    name: '&#D966FFWild Card: mcMMO Mining'
+    menu_item: IRON_PICKAXE
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Earn %required% mcMMO mining experience'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7+150 mcMMO Mining XP'
+    - ' &3&l| &7700 Gold'
+    - ' &3&l| &72 Quest Points'
+    quest_type: MCMMO_EXP
+    required_amount: 300
+    skill: MINING
+    reward:
+      reward_type: COMMAND
+      commands:
+      - addxp %player_name% mining 150 -s
+      - eco give %player_name% 700
+      - questadmin givepoints %player_name% 2
+    default_pack: mcmmo
+    weight: 1.0
+  11:
+    name: '&#D966FFWild Card: mcMMO Woodcutting'
+    menu_item: DIAMOND_AXE
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Earn %required% mcMMO woodcutting experience'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7+250 mcMMO Woodcutting XP'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &72 Quest Points'
+    quest_type: MCMMO_EXP
+    required_amount: 900
+    skill: WOODCUTTING
+    reward:
+      reward_type: COMMAND
+      commands:
+      - addxp %player_name% woodcutting 250 -s
+      - eco give %player_name% 1100
+      - questadmin givepoints %player_name% 2
+    default_pack: mcmmo
+    weight: 1.0
+  12:
+    name: '&#D966FFWild Card: mcMMO Swords'
+    menu_item: DIAMOND_SWORD
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Earn %required% mcMMO swords experience'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7+400 mcMMO Swords XP'
+    - ' &3&l| &71600 Gold'
+    - ' &3&l| &72 Quest Points'
+    quest_type: MCMMO_EXP
+    required_amount: 1800
+    skill: SWORDS
+    reward:
+      reward_type: COMMAND
+      commands:
+      - addxp %player_name% swords 400 -s
+      - eco give %player_name% 1600
+      - questadmin givepoints %player_name% 2
+    default_pack: mcmmo
+    weight: 1.0
+  13:
+    name: '&#D966FFWild Card: MMOItems'
+    menu_item: IRON_SWORD
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% MMOItems items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7800 Gold'
+    - ' &3&l| &7300 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: MMOITEM_ITEM
+    required_amount: 1
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 800
+      - xp give %player_name% 300
+      - questadmin givepoints %player_name% 2
+    default_pack: mmoitems
+    weight: 1.0
+  14:
+    name: '&#D966FFWild Card: MMOItems'
+    menu_item: IRON_SWORD
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% MMOItems items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71400 Gold'
+    - ' &3&l| &7550 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: MMOITEM_ITEM
+    required_amount: 3
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1400
+      - xp give %player_name% 550
+      - questadmin givepoints %player_name% 2
+    default_pack: mmoitems
+    weight: 1.0
+  15:
+    name: '&#D966FFWild Card: MMOItems'
+    menu_item: IRON_SWORD
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% MMOItems items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &72400 Gold'
+    - ' &3&l| &7900 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: MMOITEM_ITEM
+    required_amount: 6
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 2400
+      - xp give %player_name% 900
+      - questadmin givepoints %player_name% 2
+    default_pack: mmoitems
+    weight: 1.0
+  16:
+    name: '&#D966FFWild Card: ItemsAdder'
+    menu_item: PAPER
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% ItemsAdder items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7800 Gold'
+    - ' &3&l| &7300 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: ITEMSADDER_ITEM
+    required_amount: 1
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 800
+      - xp give %player_name% 300
+      - questadmin givepoints %player_name% 2
+    default_pack: itemsadder
+    weight: 1.0
+  17:
+    name: '&#D966FFWild Card: ItemsAdder'
+    menu_item: PAPER
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% ItemsAdder items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71400 Gold'
+    - ' &3&l| &7550 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: ITEMSADDER_ITEM
+    required_amount: 3
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1400
+      - xp give %player_name% 550
+      - questadmin givepoints %player_name% 2
+    default_pack: itemsadder
+    weight: 1.0
+  18:
+    name: '&#D966FFWild Card: ItemsAdder'
+    menu_item: PAPER
+    description:
+    - ' &7Category: &fWild Card'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% ItemsAdder items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &72400 Gold'
+    - ' &3&l| &7900 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: ITEMSADDER_ITEM
+    required_amount: 6
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 2400
+      - xp give %player_name% 900
+      - questadmin givepoints %player_name% 2
+    default_pack: itemsadder
+    weight: 1.0

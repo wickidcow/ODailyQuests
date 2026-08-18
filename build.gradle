@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ordwen'
-version = "3.0.4-Spigot-1.21.11+"
+version = "3.0.5-Spigot-1.21.11+"
 
 def ciVersion = System.getenv("ORG_GRADLE_PROJECT_version")
 if (ciVersion != null && !ciVersion.trim().isEmpty()) {
@@ -52,7 +52,7 @@ dependencies {
     /* Spigot */
     compileOnly 'org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT'
 
-    /* Folia */
+    /* Folia/Paper scheduling compatibility */
     implementation 'space.arim.morepaperlib:morepaperlib:0.4.3'
 
     /* lib for antiglitch */
@@ -113,6 +113,11 @@ dependencies {
 
     /* compatibility libs */
     compileOnly 'com.willfp:eco:6.76.2'
+
+    /* tests */
+    testImplementation platform('org.junit:junit-bom:5.12.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 def buildJavaVersion = 25
@@ -125,6 +130,11 @@ java {
 tasks.withType(JavaCompile).configureEach {
     options.release = bytecodeJavaVersion
     options.encoding = 'UTF-8'
+}
+
+tasks.test {
+    useJUnitPlatform()
+    failFast = false
 }
 
 tasks.shadowJar {

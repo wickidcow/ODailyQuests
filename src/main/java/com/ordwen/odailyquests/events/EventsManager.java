@@ -1,42 +1,46 @@
 package com.ordwen.odailyquests.events;
 
 import com.ordwen.odailyquests.ODailyQuests;
+import com.ordwen.odailyquests.commands.interfaces.playerinterface.reroll.DailyRerollMenu;
 import com.ordwen.odailyquests.configuration.essentials.CustomFurnaceResults;
 import com.ordwen.odailyquests.configuration.integrations.ItemsAdderEnabled;
 import com.ordwen.odailyquests.configuration.integrations.NexoEnabled;
 import com.ordwen.odailyquests.configuration.integrations.OraxenEnabled;
 import com.ordwen.odailyquests.events.listeners.crate.CrateOpenListener;
 import com.ordwen.odailyquests.events.listeners.customs.CustomFurnaceExtractListener;
-import com.ordwen.odailyquests.events.listeners.entity.custom.stackers.RoseStackerListener;
-import com.ordwen.odailyquests.events.listeners.integrations.customsuite.FishingLootSpawnListener;
-import com.ordwen.odailyquests.events.listeners.integrations.emf.EMFFishCaughtListener;
-import com.ordwen.odailyquests.events.listeners.integrations.pyrofishingpro.PyroFishCatchListener;
-import com.ordwen.odailyquests.events.listeners.integrations.npcs.CitizensHook;
-import com.ordwen.odailyquests.events.listeners.integrations.customsuite.CropBreakListener;
-import com.ordwen.odailyquests.events.listeners.integrations.itemsadder.CustomBlockBreakListener;
-import com.ordwen.odailyquests.events.listeners.integrations.itemsadder.ItemsAdderLoadDataListener;
-import com.ordwen.odailyquests.events.listeners.integrations.nexo.NexoItemsLoadedListener;
-import com.ordwen.odailyquests.events.listeners.integrations.npcs.FancyNpcsHook;
-import com.ordwen.odailyquests.events.listeners.integrations.oraxen.OraxenItemsLoadedListener;
-import com.ordwen.odailyquests.events.listeners.integrations.valhallammo.ValhallaMMOProgressListener;
-import com.ordwen.odailyquests.events.listeners.item.custom.CustomPlayerFishListener;
-import com.ordwen.odailyquests.events.listeners.item.custom.DropQueuePushListener;
-import com.ordwen.odailyquests.events.listeners.vote.VotifierListener;
 import com.ordwen.odailyquests.events.listeners.entity.*;
 import com.ordwen.odailyquests.events.listeners.entity.custom.mobs.EliteMobDeathListener;
-import com.ordwen.odailyquests.events.listeners.entity.custom.stackers.WildStackerListener;
 import com.ordwen.odailyquests.events.listeners.entity.custom.mobs.MythicMobDeathListener;
+import com.ordwen.odailyquests.events.listeners.entity.custom.stackers.RoseStackerListener;
+import com.ordwen.odailyquests.events.listeners.entity.custom.stackers.WildStackerListener;
 import com.ordwen.odailyquests.events.listeners.global.*;
+import com.ordwen.odailyquests.events.listeners.integrations.ExternalItemProgressListener;
+import com.ordwen.odailyquests.events.listeners.integrations.PylonInventoryGainListener;
+import com.ordwen.odailyquests.events.listeners.integrations.customsuite.CropBreakListener;
+import com.ordwen.odailyquests.events.listeners.integrations.customsuite.FishingLootSpawnListener;
+import com.ordwen.odailyquests.events.listeners.integrations.emf.EMFFishCaughtListener;
+import com.ordwen.odailyquests.events.listeners.integrations.itemsadder.CustomBlockBreakListener;
+import com.ordwen.odailyquests.events.listeners.integrations.itemsadder.ItemsAdderLoadDataListener;
+import com.ordwen.odailyquests.events.listeners.integrations.mcmmo.McMMOProgressListener;
+import com.ordwen.odailyquests.events.listeners.integrations.nexo.NexoItemsLoadedListener;
+import com.ordwen.odailyquests.events.listeners.integrations.npcs.CitizensHook;
+import com.ordwen.odailyquests.events.listeners.integrations.npcs.FancyNpcsHook;
+import com.ordwen.odailyquests.events.listeners.integrations.oraxen.OraxenItemsLoadedListener;
+import com.ordwen.odailyquests.events.listeners.integrations.pyrofishingpro.PyroFishCatchListener;
+import com.ordwen.odailyquests.events.listeners.integrations.slimefun.SlimefunItemListener;
+import com.ordwen.odailyquests.events.listeners.integrations.valhallammo.ValhallaMMOProgressListener;
 import com.ordwen.odailyquests.events.listeners.inventory.InventoryClickListener;
 import com.ordwen.odailyquests.events.listeners.inventory.InventoryCloseListener;
 import com.ordwen.odailyquests.events.listeners.item.*;
+import com.ordwen.odailyquests.events.listeners.item.custom.CustomPlayerFishListener;
+import com.ordwen.odailyquests.events.listeners.item.custom.DropQueuePushListener;
+import com.ordwen.odailyquests.events.listeners.vote.VotifierListener;
 import com.ordwen.odailyquests.tools.PluginLogger;
 import com.ordwen.odailyquests.tools.PluginUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 
 public class EventsManager {
-
     private final ODailyQuests oDailyQuests;
 
     public EventsManager(ODailyQuests oDailyQuests) {
@@ -57,7 +61,6 @@ public class EventsManager {
         pluginManager.registerEvents(new ShearEntityListener(), oDailyQuests);
         pluginManager.registerEvents(new EntityDeathListener(), oDailyQuests);
         pluginManager.registerEvents(new SpawnerSpawnListener(), oDailyQuests);
-
         pluginManager.registerEvents(new BucketFillListener(), oDailyQuests);
         pluginManager.registerEvents(new PlayerExpChangeListener(), oDailyQuests);
         pluginManager.registerEvents(new PlayerLevelChangeListener(), oDailyQuests);
@@ -65,7 +68,6 @@ public class EventsManager {
         pluginManager.registerEvents(new PlayerInteractEntityListener(), oDailyQuests);
         pluginManager.registerEvents(new PlayerDeathListener(), oDailyQuests);
         pluginManager.registerEvents(new PlayerRespawnListener(), oDailyQuests);
-
         pluginManager.registerEvents(new BlockBreakListener(), oDailyQuests);
         pluginManager.registerEvents(new BlockPlaceListener(), oDailyQuests);
         pluginManager.registerEvents(new CraftItemListener(), oDailyQuests);
@@ -77,19 +79,17 @@ public class EventsManager {
         pluginManager.registerEvents(new PlayerItemConsumeListener(), oDailyQuests);
         pluginManager.registerEvents(new ProjectileLaunchListener(), oDailyQuests);
         pluginManager.registerEvents(new InventoryClickListener(oDailyQuests.getInterfacesManager().getPlayerQuestsInterface()), oDailyQuests);
+        pluginManager.registerEvents(new DailyRerollMenu(), oDailyQuests);
         pluginManager.registerEvents(new BlockDropItemListener(), oDailyQuests);
         pluginManager.registerEvents(new PlayerHarvestBlockListener(), oDailyQuests);
         pluginManager.registerEvents(new PlayerDropItemListener(), oDailyQuests);
         pluginManager.registerEvents(new StructureGrowListener(), oDailyQuests);
-
         pluginManager.registerEvents(new InventoryCloseListener(), oDailyQuests);
     }
 
     private void registerCustomEvents(final PluginManager pluginManager) {
-        if (ItemsAdderEnabled.isEnabled()
-                || OraxenEnabled.isEnabled()
-                || NexoEnabled.isEnabled()
-                || CustomFurnaceResults.isEnabled()) {
+        if (ItemsAdderEnabled.isEnabled() || OraxenEnabled.isEnabled()
+                || NexoEnabled.isEnabled() || CustomFurnaceResults.isEnabled()) {
             pluginManager.registerEvents(new CustomFurnaceExtractListener(), oDailyQuests);
         }
     }
@@ -101,13 +101,21 @@ public class EventsManager {
                 pluginManager.registerEvents(new CustomBlockBreakListener(), oDailyQuests);
             }, "ItemsAdder");
         }
+        if (OraxenEnabled.isEnabled()) registerSafely(() ->
+                pluginManager.registerEvents(new OraxenItemsLoadedListener(oDailyQuests), oDailyQuests), "Oraxen");
+        if (NexoEnabled.isEnabled()) registerSafely(() ->
+                pluginManager.registerEvents(new NexoItemsLoadedListener(oDailyQuests), oDailyQuests), "Nexo");
 
-        if (OraxenEnabled.isEnabled()) {
-            registerSafely(() -> pluginManager.registerEvents(new OraxenItemsLoadedListener(oDailyQuests), oDailyQuests), "Oraxen");
+        boolean pylonAvailable = PluginUtils.isPluginEnabled("Pylon") || PluginUtils.isPluginEnabled("Rebar");
+        if (pylonAvailable || PluginUtils.isPluginEnabled("MMOItems") || PluginUtils.isPluginEnabled("ItemsAdder")) {
+            pluginManager.registerEvents(new ExternalItemProgressListener(), oDailyQuests);
         }
 
-        if (NexoEnabled.isEnabled()) {
-            registerSafely(() -> pluginManager.registerEvents(new NexoItemsLoadedListener(oDailyQuests), oDailyQuests), "Nexo");
+        // Pylon machines such as the Shimmer Altar can place finished products directly in a
+        // player's inventory. Paper's slot-change event lets us recognize the net new item while
+        // keeping the integration reflection-only and avoiding a hard Rebar/Pylon dependency.
+        if (pylonAvailable) {
+            PylonInventoryGainListener.register(pluginManager, oDailyQuests);
         }
     }
 
@@ -127,6 +135,8 @@ public class EventsManager {
         registerIfPluginEnabled("EvenMoreFish", () -> pluginManager.registerEvents(new EMFFishCaughtListener(), oDailyQuests));
         registerIfPluginEnabled("PyroFishingPro", () -> PyroFishCatchListener.register(pluginManager, oDailyQuests));
         registerIfPluginEnabled("ValhallaMMO", () -> ValhallaMMOProgressListener.register(pluginManager, oDailyQuests));
+        registerIfPluginEnabled("mcMMO", () -> McMMOProgressListener.register(pluginManager, oDailyQuests));
+        registerIfPluginEnabled("Slimefun", () -> SlimefunItemListener.register(pluginManager, oDailyQuests));
     }
 
     private void registerIfPluginEnabled(final String pluginName, final Runnable registerAction) {
@@ -137,9 +147,9 @@ public class EventsManager {
     private void registerSafely(final Runnable registerAction, final String prettyName) {
         try {
             registerAction.run();
-        } catch (NoClassDefFoundError e) {
-            PluginLogger.warn("Cannot hook into " + prettyName + " events. This is usually caused by an outdated " + prettyName + " version.");
-            PluginLogger.warn("If the problem persists, please contact the plugin developer.");
+        } catch (LinkageError e) {
+            PluginLogger.warn("Cannot hook into " + prettyName + " events. This is usually caused by an incompatible " + prettyName + " version.");
+            PluginLogger.warn("Details: " + e.getMessage());
         }
     }
 }

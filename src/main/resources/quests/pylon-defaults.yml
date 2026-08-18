@@ -1,0 +1,121 @@
+# Maintained exact-item Pylon/Rebar Tech defaults.
+# These are merged additively into a managed tech.yml and are dependency-gated by pylon-rebar.
+quests:
+  __pylon_shimmer_magnet:
+    name: '&#55FFFFDaily Tech: Shimmer Magnet'
+    menu_item: COMPASS
+    description:
+      - ' &7Category: &fTech'
+      - ''
+      - '&3Task:'
+      - ' &3&l| &7Craft a Shimmer Magnet'
+      - ''
+      - '&3Progress:'
+      - ' &3&l| %status%'
+      - ''
+      - '&3Rewards:'
+      - ' &3&l| &72200 Gold'
+      - ' &3&l| &7900 XP'
+      - ' &3&l| &73 Quest Points'
+    quest_type: REBAR_ITEM
+    required_amount: 1
+    pylon_keys:
+      - pylon:shimmer_magnet
+    # The Shimmer Altar gives its finished result directly to the player's inventory.
+    # Enable the Paper inventory-gain bridge for this machine-produced item only.
+    pylon_inventory_gain: true
+    reward:
+      reward_type: COMMAND
+      commands:
+        - eco give %player_name% 2200
+        - xp give %player_name% 900
+        - questadmin givepoints %player_name% 3
+    default_pack: pylon-rebar
+    weight: 1.0
+
+  __pylon_diamond_hammer:
+    name: '&#55FFFFDaily Tech: Diamond Hammer'
+    menu_item: DIAMOND_PICKAXE
+    description:
+      - ' &7Category: &fTech'
+      - ''
+      - '&3Task:'
+      - ' &3&l| &7Craft a Diamond Hammer'
+      - ''
+      - '&3Progress:'
+      - ' &3&l| %status%'
+      - ''
+      - '&3Rewards:'
+      - ' &3&l| &71400 Gold'
+      - ' &3&l| &7600 XP'
+      - ' &3&l| &72 Quest Points'
+    quest_type: REBAR_ITEM
+    required_amount: 1
+    pylon_keys:
+      - pylon:diamond_hammer
+    reward:
+      reward_type: COMMAND
+      commands:
+        - eco give %player_name% 1400
+        - xp give %player_name% 600
+        - questadmin givepoints %player_name% 2
+    default_pack: pylon-rebar
+    weight: 1.0
+
+  __pylon_elevator_1:
+    name: '&#55FFFFDaily Tech: Elevator I'
+    menu_item: IRON_BLOCK
+    description:
+      - ' &7Category: &fTech'
+      - ''
+      - '&3Task:'
+      - ' &3&l| &7Craft an Elevator I'
+      - ''
+      - '&3Progress:'
+      - ' &3&l| %status%'
+      - ''
+      - '&3Rewards:'
+      - ' &3&l| &71700 Gold'
+      - ' &3&l| &7700 XP'
+      - ' &3&l| &72 Quest Points'
+    quest_type: REBAR_ITEM
+    required_amount: 1
+    pylon_keys:
+      - pylon:elevator_1
+    reward:
+      reward_type: COMMAND
+      commands:
+        - eco give %player_name% 1700
+        - xp give %player_name% 700
+        - questadmin givepoints %player_name% 2
+    default_pack: pylon-rebar
+    weight: 1.0
+
+  __pylon_reactivated_wither_skull:
+    name: '&#55FFFFDaily Tech: Reactivated Wither Skull'
+    menu_item: WITHER_SKELETON_SKULL
+    description:
+      - ' &7Category: &fTech'
+      - ''
+      - '&3Task:'
+      - ' &3&l| &7Craft a Reactivated Wither Skull'
+      - ''
+      - '&3Progress:'
+      - ' &3&l| %status%'
+      - ''
+      - '&3Rewards:'
+      - ' &3&l| &73200 Gold'
+      - ' &3&l| &71200 XP'
+      - ' &3&l| &73 Quest Points'
+    quest_type: REBAR_ITEM
+    required_amount: 1
+    pylon_keys:
+      - pylon:reactivated_wither_skull
+    reward:
+      reward_type: COMMAND
+      commands:
+        - eco give %player_name% 3200
+        - xp give %player_name% 1200
+        - questadmin givepoints %player_name% 3
+    default_pack: pylon-rebar
+    weight: 1.0

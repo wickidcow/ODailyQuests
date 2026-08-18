@@ -7,6 +7,7 @@ import com.ordwen.odailyquests.tools.updater.config.updates.Update223to224;
 import com.ordwen.odailyquests.tools.updater.config.updates.Update225to230;
 import com.ordwen.odailyquests.tools.updater.config.updates.Update230to300;
 import com.ordwen.odailyquests.tools.updater.config.updates.Update301to302;
+import com.ordwen.odailyquests.tools.updater.config.updates.Update302to305;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -25,6 +26,7 @@ public class ConfigUpdateManager {
         updaters.put("2.2.5", new Update225to230(plugin));
         updaters.put("3.0.0", new Update230to300(plugin));
         updaters.put("3.0.2", new Update301to302(plugin));
+        updaters.put("3.0.5", new Update302to305(plugin));
     }
 
     public void runUpdates() {

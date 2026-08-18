@@ -6,6 +6,7 @@ import com.ordwen.odailyquests.configuration.essentials.QuestsPerCategory;
 import com.ordwen.odailyquests.configuration.essentials.SafetyMode;
 import com.ordwen.odailyquests.files.implementations.QuestsFiles;
 import com.ordwen.odailyquests.quests.QuestsLoader;
+import com.ordwen.odailyquests.quests.features.DefaultQuestPacks;
 import com.ordwen.odailyquests.tools.PluginLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -44,6 +45,18 @@ public class CategoriesLoader {
             }
 
             questsLoader.loadQuests(configFile, category, categoryName);
+
+            // Tech and Wild Card are dependency-driven. Their physical YAML contains tagged
+            // built-ins which are filtered out when the corresponding plugins are absent.
+            // If nothing remains (including administrator-owned custom quests), omit that
+            // optional category for this startup rather than tripping safety_mode.
+            if (DefaultQuestPacks.isOptionalCategory(categoryName) && category.size() == 0) {
+                categories.remove(categoryName);
+                PluginLogger.info("Skipping empty optional category '" + categoryName
+                        + "' because no matching dependency or custom quest is available.");
+                continue;
+            }
+
             if (!validateCategory(category, requiredAmount, categoryName, safetyMode, setting.isDynamic())) {
                 Bukkit.getPluginManager().disablePlugin(ODailyQuests.INSTANCE);
                 return;

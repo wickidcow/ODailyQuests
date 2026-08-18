@@ -2,6 +2,8 @@ package com.ordwen.odailyquests.files;
 
 import com.ordwen.odailyquests.ODailyQuests;
 import com.ordwen.odailyquests.files.implementations.*;
+import com.ordwen.odailyquests.quests.features.DefaultQuestPacks;
+import com.ordwen.odailyquests.quests.features.MaintainedQuestTypes;
 
 public class FilesManager {
 
@@ -21,11 +23,15 @@ public class FilesManager {
         this.progressionFile = new ProgressionFile(plugin);
     }
 
-    /**
-     * Load all files.
-     */
     public void load() {
+        MaintainedQuestTypes.register(plugin.getAPI().getQuestTypeRegistry());
+
         configurationFile.load();
+
+        if (DefaultQuestPacks.ensureConfig(configurationFile.getConfig(), configurationFile.getFile())) {
+            configurationFile.load();
+        }
+
         playerInterfaceFile.load();
         totalRewardsFile.load();
         progressionFile.load();

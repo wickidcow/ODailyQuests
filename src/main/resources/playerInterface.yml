@@ -3,7 +3,9 @@
 #
 # Never delete a %variable% unless you know what you're doing.
 # %achieved% is replaced by the number of completed quests.
+# %totalQuests% is replaced by the number of quests currently assigned to the player.
 # %drawIn% is replaced by the time remaining before the next quests draw.
+# %progressPercent% is replaced by the quest completion percentage.
 # ======================================================
 player_interface:
   size: 45
@@ -12,7 +14,7 @@ player_interface:
   disable_status: false
   # the 3 following lines will not be used if disable_status is set to true
   status: "&eStatus :"
-  progress: "&b%progress%&3/&b%required%"
+  progress: "&b%progress%&3/&b%required% &7(&f%progressPercent%%&7)"
   achieved: "&bCOMPLETED"
   # if you want to glow the item when the quest is achieved
   glowing_if_achieved: true
@@ -25,7 +27,7 @@ player_interface:
     item_name: '&b%player_name%'
     item_description:
       - '&3Status: '
-      - ' &3&l| &7Completed quests: &b%achieved%&3/&b9'
+      - ' &3&l| &7Completed quests: &b%achieved%&3/&b%totalQuests%'
       - ' &3&l| &7Total completed quests: &b%odailyquests_total%'
       - ' &3&l| &7New quests in: &b%drawIn%'
 
@@ -34,36 +36,30 @@ player_interface:
   # Placeholders : %player%
   # More info on Wiki.
   #
+  # Optional button dependency gate:
+  # requires_any_plugin: [Jobs, JobsReborn]
+  # The button is only loaded when at least one listed plugin is enabled.
+  #
   # SLOTS STARTS AT 1!
-
-  # Note: Items of type FILL will be displayed with an empty name and no lore, even if defined.
-  # If you want to display a name or lore, use PLAYER_COMMAND or CONSOLE_COMMAND types with an empty command list.
   # ========================================================
-  quests: # set the position of quests items
-    # Option 1: keep the legacy order-based positioning (quest 1 goes in slot 12, quest 2 in slot 21, etc.).
-    # 1: 12
-    # 2: 21
-    # 3: 30
-    # 4: 14
-    # 5: 23
-    # 6: 32
-    # 7: 16
-    # 8: 25
-    # 9: 34
-    # Option 2: define fixed slots per category (case-insensitive). Slots are consumed in the order quests are loaded.
+  quests:
+    # The maintained default is one quest from each loaded category.
+    # Optional Tech/Wild Card categories are simply absent when no provider is available.
     categories:
       easy:
         - 12
-        - 21
-        - 30
       medium:
         - 14
-        - 23
-        - 32
       hard:
         - 16
+      good:
+        - 21
+      tech:
+        - 23
+      evil:
         - 25
-        - 34
+      wildcard:
+        - 32
   items:
     0:
       type: CLOSE
@@ -76,7 +72,7 @@ player_interface:
       type: PLAYER_COMMAND
       item:
         material: CUSTOM_HEAD
-        name: '&b&lInformations'
+        name: '&b&lInformation'
         texture: cdcdee6d06df234b8e603328b96c57f3a312e79aabfc3be72a8b421878ed68cf
         lore:
           - ' &3&l| &7Everyday you get a new'
@@ -91,16 +87,21 @@ player_interface:
         slot: 1
     2:
       type: PLAYER_COMMAND
+      commands:
+        - 'dq reroll'
       item:
         material: CUSTOM_HEAD
-        name: "&b&lDaily reroll"
+        name: "&b&lDaily Reroll"
         texture: bc8def67a12622ead1decd3d89364257b531896d87e469813131ca235b5c7
         lore:
-          - ' &3&l| &7Everyday you can change'
-          - ' &3&l| &7one of your quests for'
-          - ' &3&l| &7a different one'
+          - ' &3&l| &7Reroll your daily quests.'
           - ''
-          - ' &8(&7!&8) &7/dq reroll <position>'
+          - ' &3&l| &7Choose to reroll one quest'
+          - ' &3&l| &7or your entire daily set.'
+          - ''
+          - ' &8(&7!&8) &7Available once per day.'
+          - ''
+          - ' &bClick to choose'
         slot: 9
     3:
       type: FILL
@@ -137,4 +138,21 @@ player_interface:
           - 20
           - 26
           - 29
+          - 30
+          - 34
           - 35
+    5:
+      type: PLAYER_COMMAND
+      requires_any_plugin:
+        - Jobs
+        - JobsReborn
+      commands:
+        - 'jobs quests'
+      item:
+        material: WRITABLE_BOOK
+        name: '&6&lJobs Quests'
+        lore:
+          - ' &6&l| &7Open your Jobs quests.'
+          - ''
+          - ' &eClick to open'
+        slot: 45

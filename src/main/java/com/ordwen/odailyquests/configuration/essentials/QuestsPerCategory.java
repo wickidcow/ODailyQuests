@@ -4,6 +4,8 @@ import com.ordwen.odailyquests.ODailyQuests;
 import com.ordwen.odailyquests.configuration.ConfigFactory;
 import com.ordwen.odailyquests.configuration.IConfigurable;
 import com.ordwen.odailyquests.files.implementations.ConfigurationFile;
+import com.ordwen.odailyquests.files.implementations.QuestsFiles;
+import com.ordwen.odailyquests.quests.features.DefaultQuestPacks;
 import com.ordwen.odailyquests.tools.PluginLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -36,6 +38,16 @@ public class QuestsPerCategory implements IConfigurable {
         }
 
         for (String category : section.getKeys(false)) {
+            // Tech and Wild Card are dependency-backed built-in categories. If none of their
+            // integrations are available, and the administrator has not added custom quests to
+            // the file, omit the category for this startup instead of failing safety mode.
+            if (DefaultQuestPacks.isOptionalCategory(category)
+                    && !DefaultQuestPacks.isOptionalCategoryAvailable(category)
+                    && !QuestsFiles.hasQuestEntries(category)) {
+                PluginLogger.info("Skipping optional " + category + " category: no active quest integrations were found.");
+                continue;
+            }
+
             final Object rawValue = section.get(category);
             if (rawValue == null) {
                 PluginLogger.error("Invalid quests_per_category entry for '" + category + "': value is missing.");

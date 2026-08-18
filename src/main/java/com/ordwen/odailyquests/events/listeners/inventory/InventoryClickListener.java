@@ -61,7 +61,6 @@ public class InventoryClickListener extends ClickableChecker implements Listener
             return;
         }
 
-        // do action related to the clicked item
         if (isPlayerInterface) {
             if (handlePlayerInterfaceClick(event, clickedItem, player)) return;
             processQuestCompletion(contextBuilder.build());
@@ -249,16 +248,25 @@ public class InventoryClickListener extends ClickableChecker implements Listener
     }
 
     private boolean handlePlayerCommandItem(Player player, int slot) {
-        if (playerQuestsInterface.isPlayerCommandItem(slot)) {
-            for (String cmd : playerQuestsInterface.getPlayerCommands(slot)) {
-                Bukkit.getServer().dispatchCommand(player, cmd);
-            }
-            if (playerQuestsInterface.shouldCloseOnClick(slot)) {
-                player.closeInventory();
-            }
-            return true;
+        if (!playerQuestsInterface.isPlayerCommandItem(slot)) return false;
+
+        // Close the ODailyQuests inventory first when requested. Closing it after the command
+        // would immediately close any GUI opened by the target command (for example /jobs quests).
+        if (playerQuestsInterface.shouldCloseOnClick(slot)) {
+            player.closeInventory();
         }
-        return false;
+
+        for (String rawCommand : playerQuestsInterface.getPlayerCommands(slot)) {
+            if (rawCommand == null) continue;
+            String command = rawCommand.trim();
+            if (command.startsWith("/")) command = command.substring(1);
+            if (!command.isBlank()) {
+                // Player.performCommand makes PLAYER_COMMAND semantics explicit and preserves the
+                // clicking player's permissions/context for commands such as /jobs quests.
+                player.performCommand(command);
+            }
+        }
+        return true;
     }
 
     private boolean handleConsoleCommandItem(Player player, int slot) {

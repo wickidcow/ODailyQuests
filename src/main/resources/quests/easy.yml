@@ -1,31 +1,31 @@
 # ==============================================================
 #                        EASY QUESTS FILE
 # ==============================================================
-# Quests must be numbered consecutively, increasing by 1.
-# Pay close attention to indentation and follow the existing structure.
-# Incorrect formatting can cause quest-loading problems.
+# Quests must be numbered and increment from 1 to 1.
+# Please be attentive to the indentation and respect the scheme.
+# This could cause several bugs.
 # ==============================================================
-# AVAILABLE QUEST TYPES:
+# AVAILABLE QUESTS TYPES :
 # https://ordwenplugins.gitbook.io/odailyquests/quests/quests-types
 # ==============================================================
-# AVAILABLE REWARD TYPES:
+# AVAILABLE REWARDS TYPES :
 # https://ordwenplugins.gitbook.io/odailyquests/quests/rewards-types
 # ==============================================================
-# AVAILABLE ENTITY TYPES:
+# AVAILABLE ENTITY TYPES :
 # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/Entity.html
 # ==============================================================
-# AVAILABLE ITEM TYPES:
+# AVAILABLE ITEM TYPES :
 # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 # ==============================================================
-# AVAILABLE PLUGIN PLACEHOLDERS FOR QUEST DESCRIPTIONS:
+# AVAILABLE PLUGIN PLACEHOLDERS FOR QUESTS DESCRIPTIONS :
 # %progressBar% is replaced by the progress bar defined in the configuration.
-# %progress% is replaced by the current quest progress.
-# %required% is replaced by the amount required to complete the quest.
+# %progress% is replaced by the progression of the quest.
+# %required% is replaced by the required amount to complete the quest.
 # ==============================================================
-# More tips are available on the Wiki:
+# More tips available on Wiki :
 # https://ordwenplugins.gitbook.io/odailyquests/
-# Need help? https://discord.com/invite/NPAUE7kTgJ
-# For additional supported objects or types, please make a suggestion.
+# Need help ? https://discord.com/invite/NPAUE7kTgJ
+# For more affected objects or types, please make suggestion.
 # ==============================================================
 quests:
   1:
@@ -44,7 +44,7 @@ quests:
       - " &3&l| &7250$"
       - ""
     quest_type: BREAK
-    required:
+    required: 
       - COBBLESTONE
       - STONE
     required_amount: 32
@@ -123,7 +123,7 @@ quests:
       - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &aᴇᴀꜱʏ"
       - ""
       - "&3Task:"
-      - " &3&l| &7Harvest %required% wheat"
+      - " &3&l| &7Farm %required% wheats"
       - ""
       - "&3Progress:"
       - " &3&l| %status%"
@@ -159,13 +159,13 @@ quests:
       reward_type: MONEY
       amount: 250
   6:
-    name: "&3Too many fish"
+    name: "&3Too many fishes"
     menu_item: FISHING_ROD
     description:
       - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &aᴇᴀꜱʏ"
       - ""
       - "&3Task:"
-      - " &3&l| &7Catch %required% cod"
+      - " &3&l| &7Fish %required% cods"
       - ""
       - "&3Progress:"
       - " &3&l| %status%"
@@ -174,7 +174,7 @@ quests:
       - " &3&l| &7250$"
       - ""
     quest_type: FISH
-    required:
+    required: 
       - COD
     required_amount: 4
     reward:
@@ -187,7 +187,7 @@ quests:
       - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &aᴇᴀꜱʏ"
       - ""
       - "&3Task:"
-      - " &3&l| &7Smelt %required% cobblestone or stone"
+      - " &3&l| &7Smelt %required% cobblestone/stone"
       - ""
       - "&3Progress:"
       - " &3&l| %status%"
@@ -196,7 +196,7 @@ quests:
       - " &3&l| &7250$"
       - ""
     quest_type: COOK
-    required:
+    required: 
       - STONE
       - SMOOTH_STONE
     required_amount: 16
@@ -210,8 +210,8 @@ quests:
       - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &aᴇᴀꜱʏ"
       - ""
       - "&3Task:"
-      - " &3&l| &7Deliver %required% cobblestone"
-      - " &8(&7!&8) &7Click the quest once you have enough"
+      - " &3&l| &7Deliver %required% cobblestones"
+      - " &8(&7!&8) &7Click on quest once you have enought"
       - ""
       - "&3Progress:"
       - " &3&l| %status%"
@@ -247,13 +247,13 @@ quests:
       reward_type: MONEY
       amount: 250
   10:
-    name: "&3Help the heavy sheep"
+    name: "&3Help heavy sheeps"
     menu_item: WHITE_WOOL
     description:
       - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &aᴇᴀꜱʏ"
       - ""
       - "&3Task:"
-      - " &3&l| &7Shear %required% sheep"
+      - " &3&l| &7Shear %required% sheeps"
       - ""
       - "&3Progress:"
       - " &3&l| %status%"
@@ -274,7 +274,7 @@ quests:
       - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &aᴇᴀꜱʏ"
       - ""
       - "&3Task:"
-      - " &3&l| &7Gain %required% XP levels"
+      - " &3&l| &7Farm %required% XP levels"
       - ""
       - "&3Progress:"
       - " &3&l| %status%"

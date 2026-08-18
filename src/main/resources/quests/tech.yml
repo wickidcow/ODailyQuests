@@ -1,0 +1,776 @@
+# Built-in Tech daily quest pool. Quests are filtered by default_pack and only load when that provider is installed/enabled.
+# Slimefun and addon quests intentionally share one Tech category; there is no Easy/Medium/Hard Tech label.
+quests:
+  1:
+    name: '&#55FFFFDaily Tech: Slimefun Talisman'
+    menu_item: EMERALD
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Craft a Common Talisman'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7700 Gold'
+    - ' &3&l| &7300 XP'
+    - ' &3&l| &71 Quest Point'
+    quest_type: SLIMEFUN_CRAFT
+    required_amount: 1
+    slimefun_ids:
+    - COMMON_TALISMAN
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 700
+      - xp give %player_name% 300
+      - questadmin givepoints %player_name% 1
+    default_pack: slimefun-core
+    weight: 1.0
+  2:
+    name: '&#55FFFFDaily Tech: Steel Works'
+    menu_item: IRON_INGOT
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Craft %required% Steel Ingots'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71400 Gold'
+    - ' &3&l| &7600 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_CRAFT
+    required_amount: 8
+    slimefun_ids:
+    - STEEL_INGOT
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1400
+      - xp give %player_name% 600
+      - questadmin givepoints %player_name% 2
+    default_pack: slimefun-core
+    weight: 1.0
+  3:
+    name: '&#55FFFFDaily Tech: Reinforced Alloy'
+    menu_item: NETHERITE_INGOT
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Craft %required% Reinforced Alloy Ingots'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &72800 Gold'
+    - ' &3&l| &71000 XP'
+    - ' &3&l| &73 Quest Points'
+    quest_type: SLIMEFUN_CRAFT
+    required_amount: 2
+    slimefun_ids:
+    - REINFORCED_ALLOY_INGOT
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 2800
+      - xp give %player_name% 1000
+      - questadmin givepoints %player_name% 3
+    default_pack: slimefun-core
+    weight: 1.0
+  4:
+    name: '&#55FFFFDaily Tech: Networks'
+    menu_item: REDSTONE
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Networks items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - Networks
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: networks
+    weight: 1.0
+  5:
+    name: '&#55FFFFDaily Tech: Networks Expansion'
+    menu_item: COMPARATOR
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Networks Expansion items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - NetworksExpansion
+    - Networks Expansion
+    - NetworkExpansion
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: networks-expansion
+    weight: 1.0
+  6:
+    name: '&#55FFFFDaily Tech: Infinity Expansion'
+    menu_item: NETHER_STAR
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Infinity Expansion items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - InfinityExpansion
+    - InfinityExpansion2
+    - Infinity Expansion
+    - Infinity Expansion 2
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: infinity-expansion
+    weight: 1.0
+  7:
+    name: '&#55FFFFDaily Tech: Fluffy Machines'
+    menu_item: PISTON
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Fluffy Machines items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - FluffyMachines
+    - Fluffy Machines
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: fluffy-machines
+    weight: 1.0
+  8:
+    name: '&#55FFFFDaily Tech: Foxy Machines'
+    menu_item: OBSERVER
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Foxy Machines items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - FoxyMachines
+    - Foxy Machines
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: foxy-machines
+    weight: 1.0
+  9:
+    name: '&#55FFFFDaily Tech: Magic Expansion'
+    menu_item: ENCHANTING_TABLE
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Magic Expansion items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - MagicExpansion
+    - Magic Expansion
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: magic-expansion
+    weight: 1.0
+  10:
+    name: '&#55FFFFDaily Tech: Military Arsenal'
+    menu_item: CROSSBOW
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Military Arsenal items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - MilitaryArsenal
+    - Military Arsenal
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: military-arsenal
+    weight: 1.0
+  11:
+    name: '&#55FFFFDaily Tech: Slimefun Warfare'
+    menu_item: TNT
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Slimefun Warfare items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - SlimefunWarfare
+    - Slimefun Warfare
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: slimefun-warfare
+    weight: 1.0
+  12:
+    name: '&#55FFFFDaily Tech: Mob Drops'
+    menu_item: ROTTEN_FLESH
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Mob Drops items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - MobDrops
+    - Mob Drops
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: mob-drops
+    weight: 1.0
+  13:
+    name: '&#55FFFFDaily Tech: Lucky Blocks'
+    menu_item: GOLD_BLOCK
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Lucky Blocks items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - LuckyBlocks
+    - Lucky Blocks
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: lucky-blocks
+    weight: 1.0
+  14:
+    name: '&#55FFFFDaily Tech: Alchimia Vitae'
+    menu_item: BREWING_STAND
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Alchimia Vitae items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - AlchimiaVitae
+    - Alchimia Vitae
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: alchimia-vitae
+    weight: 1.0
+  15:
+    name: '&#55FFFFDaily Tech: Dank Tech'
+    menu_item: ENDER_CHEST
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Dank Tech items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - DankTech
+    - Dank Tech
+    - DankStorage
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: dank-tech
+    weight: 1.0
+  16:
+    name: '&#55FFFFDaily Tech: Supreme'
+    menu_item: BEACON
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Supreme items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - Supreme
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: supreme
+    weight: 1.0
+  17:
+    name: '&#55FFFFDaily Tech: Gastronomicon'
+    menu_item: CAKE
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Gastronomicon items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - Gastronomicon
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: gastronomicon
+    weight: 1.0
+  18:
+    name: '&#55FFFFDaily Tech: Exotic Garden'
+    menu_item: GLOW_BERRIES
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Exotic Garden items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - ExoticGarden
+    - Exotic Garden
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: exotic-garden
+    weight: 1.0
+  19:
+    name: '&#55FFFFDaily Tech: Potion Expansion'
+    menu_item: POTION
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Potion Expansion items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - PotionExpansion
+    - Potion Expansion
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: potion-expansion
+    weight: 1.0
+  20:
+    name: '&#55FFFFDaily Tech: Flower Power'
+    menu_item: SUNFLOWER
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Flower Power items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - FlowerPower
+    - Flower Power
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: flower-power
+    weight: 1.0
+  21:
+    name: '&#55FFFFDaily Tech: Fast Machines'
+    menu_item: BLAST_FURNACE
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Fast Machines items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - FastMachines
+    - Fast Machines
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: fast-machines
+    weight: 1.0
+  22:
+    name: '&#55FFFFDaily Tech: Infernal Farm'
+    menu_item: BLAZE_POWDER
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Infernal Farm items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - InfernalFarm
+    - Infernal Farm
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: infernal-farm
+    weight: 1.0
+  23:
+    name: '&#55FFFFDaily Tech: IDOE'
+    menu_item: BARRIER
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% IDOE items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - IDOE
+    - IllegalDevItems
+    - Illegal Dev Items
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: idoe
+    weight: 1.0
+  24:
+    name: '&#55FFFFDaily Tech: SlimeGlue'
+    menu_item: SLIME_BALL
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% SlimeGlue items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71100 Gold'
+    - ' &3&l| &7450 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: SLIMEFUN_ITEM
+    required_amount: 4
+    slimefun_addons:
+    - SlimeGlue
+    - Slime Glue
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1100
+      - xp give %player_name% 450
+      - questadmin givepoints %player_name% 2
+    default_pack: slimeglue
+    weight: 1.0
+  25:
+    name: '&#55FFFFDaily Tech: Pylon / Rebar'
+    menu_item: COPPER_INGOT
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Pylon/Rebar technology items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &7800 Gold'
+    - ' &3&l| &7350 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: REBAR_ITEM
+    required_amount: 2
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 800
+      - xp give %player_name% 350
+      - questadmin givepoints %player_name% 2
+    default_pack: pylon-rebar
+    weight: 1.0
+  26:
+    name: '&#55FFFFDaily Tech: Pylon / Rebar'
+    menu_item: IRON_INGOT
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Pylon/Rebar technology items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &71600 Gold'
+    - ' &3&l| &7650 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: REBAR_ITEM
+    required_amount: 6
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 1600
+      - xp give %player_name% 650
+      - questadmin givepoints %player_name% 2
+    default_pack: pylon-rebar
+    weight: 1.0
+  27:
+    name: '&#55FFFFDaily Tech: Pylon / Rebar'
+    menu_item: NETHERITE_SCRAP
+    description:
+    - ' &7Category: &fTech'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Create or obtain %required% Pylon/Rebar technology items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &73000 Gold'
+    - ' &3&l| &71100 XP'
+    - ' &3&l| &72 Quest Points'
+    quest_type: REBAR_ITEM
+    required_amount: 12
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player_name% 3000
+      - xp give %player_name% 1100
+      - questadmin givepoints %player_name% 2
+    default_pack: pylon-rebar
+    weight: 1.0

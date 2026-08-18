@@ -5,13 +5,13 @@ api-version: 1.21.11
 prefix: "O'DailyQuests"
 authors: [ Ordwen ]
 description: Add more objectives and dynamize your server !
-website: https://modrinth.com/plugin/odailyquests
-softdepend: [ Vault, TokenManager, Citizens, FancyNpcs, PlaceholderAPI, PlayerPoints, MythicMobs, EliteMobs, WildStacker, RoseStacker, Multiverse-Core, MyWorlds, HeadDatabase, Oraxen, ItemsAdder, Nexo, CoinsEngine, ExcellentEconomy, Towny, PyroFishingPro, ValhallaMMO, Votifier, NuVotifier, KGenerators, CustomCrops, CustomFishing, EvenMoreFish, eco, ExcellentCrates, MMOItems, MMOCore, PlotSquared ]
+website: https://github.com/wickidcow/ODailyQuests
+softdepend: [ Vault, TokenManager, Citizens, FancyNpcs, PlaceholderAPI, PlayerPoints, MythicMobs, EliteMobs, WildStacker, RoseStacker, Multiverse-Core, MyWorlds, HeadDatabase, Oraxen, ItemsAdder, Nexo, CoinsEngine, ExcellentEconomy, Towny, PyroFishingPro, ValhallaMMO, Votifier, NuVotifier, KGenerators, CustomCrops, CustomFishing, EvenMoreFish, eco, ExcellentCrates, MMOItems, MMOCore, PlotSquared, Slimefun, mcMMO, Rebar, Pylon, Jobs, JobsReborn ]
 libraries:
-  - com.zaxxer:HikariCP:5.0.1
-  - org.xerial:sqlite-jdbc:3.49.1.0
+  - com.zaxxer:HikariCP:7.0.2
+  - org.xerial:sqlite-jdbc:3.53.0.0
   - com.jeff-media:custom-block-data:2.2.5
-  - com.h2database:h2:2.1.214
+  - com.h2database:h2:2.4.240
 
 commands:
   dquests:

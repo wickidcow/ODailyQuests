@@ -1,140 +1,130 @@
 package com.ordwen.odailyquests.quests.player.progression;
 
-import com.ordwen.odailyquests.configuration.essentials.*;
+import com.ordwen.odailyquests.configuration.essentials.Debugger;
+import com.ordwen.odailyquests.configuration.essentials.Logs;
+import com.ordwen.odailyquests.configuration.essentials.QuestsPerCategory;
+import com.ordwen.odailyquests.configuration.essentials.RenewInterval;
+import com.ordwen.odailyquests.configuration.essentials.TimestampMode;
 import com.ordwen.odailyquests.enums.QuestsMessages;
 import com.ordwen.odailyquests.enums.QuestsPermissions;
 import com.ordwen.odailyquests.quests.categories.CategoriesLoader;
 import com.ordwen.odailyquests.quests.categories.Category;
-import com.ordwen.odailyquests.quests.types.AbstractQuest;
+import com.ordwen.odailyquests.quests.features.QuestFeatures;
 import com.ordwen.odailyquests.quests.player.PlayerQuests;
 import com.ordwen.odailyquests.quests.player.QuestsManager;
+import com.ordwen.odailyquests.quests.types.AbstractQuest;
+import com.ordwen.odailyquests.tools.PluginLogger;
 import com.ordwen.odailyquests.tools.RenewSchedule;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import com.ordwen.odailyquests.tools.PluginLogger;
 import org.bukkit.entity.Player;
 
-import java.time.*;
-import java.util.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class QuestLoaderUtils {
 
-    private QuestLoaderUtils() {
-    }
+    private QuestLoaderUtils() {}
 
-    /**
-     * Check if it is time to redraw quests for a player.
-     *
-     * @param timestamp player timestamp.
-     * @return true if it's time to redraw quests.
-     */
     public static boolean checkTimestamp(long timestamp) {
         final int mode = TimestampMode.getTimestampMode();
         final Duration renewInterval = RenewInterval.getRenewInterval();
 
         switch (mode) {
             case 1 -> {
-                final RenewSchedule.Settings s = RenewSchedule.settings();
-                if (!RenewSchedule.isValid(s)) {
+                final RenewSchedule.Settings settings = RenewSchedule.settings();
+                if (!RenewSchedule.isValid(settings)) {
                     PluginLogger.error(ChatColor.RED + "Renew schedule is invalid.");
                     return false;
                 }
 
-                final ZonedDateTime lastRenew = Instant.ofEpochMilli(timestamp).atZone(s.zone());
-                final ZonedDateTime now = ZonedDateTime.now(s.zone());
-
-                return RenewSchedule.shouldRenewSince(lastRenew, now, s);
+                final ZonedDateTime lastRenew = Instant.ofEpochMilli(timestamp).atZone(settings.zone());
+                final ZonedDateTime now = ZonedDateTime.now(settings.zone());
+                return RenewSchedule.shouldRenewSince(lastRenew, now, settings);
             }
-
             case 2 -> {
                 if (renewInterval != null) {
                     return System.currentTimeMillis() - timestamp >= renewInterval.toMillis();
-                } else {
-                    PluginLogger.error(ChatColor.RED + "Impossible to check player quests timestamp. Renew interval is incorrect.");
                 }
+                PluginLogger.error(ChatColor.RED + "Impossible to check player quests timestamp. Renew interval is incorrect.");
             }
-
-            default ->
-                    PluginLogger.error(ChatColor.RED + "Impossible to load player quests timestamp. The selected mode is incorrect.");
+            default -> PluginLogger.error(ChatColor.RED + "Impossible to load player quests timestamp. The selected mode is incorrect.");
         }
-
         return false;
     }
 
     /**
-     * Load quests for a player with no data.
-     *
-     * @param playerName   player name.
-     * @param activeQuests all active quests.
+     * Draws a new period while keeping configured weekly-category assignments during the
+     * same ISO week. Historical completion totals are always retained.
      */
-    public static void loadNewPlayerQuests(String playerName, Map<String, PlayerQuests> activeQuests, Map<String, Integer> totalAchievedQuestsByCategory, int totalAchievedQuests) {
+    public static void loadNewPlayerQuests(
+            String playerName,
+            Map<String, PlayerQuests> activeQuests,
+            Map<String, Integer> totalAchievedQuestsByCategory,
+            int totalAchievedQuests
+    ) {
         Debugger.write("Entering loadNewPlayerQuests method for player " + playerName + ".");
-        activeQuests.remove(playerName);
 
         final Player player = Bukkit.getPlayer(playerName);
-        Debugger.write("Attempting to renew quests for player " + playerName + ".");
         if (player == null) {
             Debugger.write("Player " + playerName + " is null. Impossible to renew quests.");
             PluginLogger.warn("It seems that " + playerName + " disconnected before the end of the quest renewal.");
             return;
         }
 
-        final Map<AbstractQuest, Progression> quests = QuestsManager.selectRandomQuests(player);
-        final PlayerQuests playerQuests;
-
-        if (TimestampMode.getTimestampMode() == 1) {
-            playerQuests = new PlayerQuests(Calendar.getInstance().getTimeInMillis(), quests);
-        } else {
-            playerQuests = new PlayerQuests(System.currentTimeMillis(), quests);
+        final PlayerQuests previous = activeQuests.get(playerName);
+        final Map<AbstractQuest, Progression> preservedWeekly = new LinkedHashMap<>();
+        if (previous != null && QuestFeatures.shouldPreserveWeekly(previous.getTimestamp())) {
+            for (Map.Entry<AbstractQuest, Progression> entry : previous.getQuests().entrySet()) {
+                if (QuestFeatures.isWeeklyCategory(entry.getKey().getCategoryName())) {
+                    preservedWeekly.put(entry.getKey(), entry.getValue());
+                }
+            }
         }
+
+        final Map<AbstractQuest, Progression> quests = QuestsManager.selectRandomQuests(player, preservedWeekly);
+        final long timestamp = TimestampMode.getTimestampMode() == 1
+                ? Calendar.getInstance().getTimeInMillis()
+                : System.currentTimeMillis();
+        final PlayerQuests playerQuests = new PlayerQuests(timestamp, quests);
 
         playerQuests.setTotalAchievedQuests(totalAchievedQuests);
         playerQuests.setTotalAchievedQuestsByCategory(totalAchievedQuestsByCategory);
         playerQuests.setRecentRerolls(0);
 
+        activeQuests.put(playerName, playerQuests);
+
         final String msg = QuestsMessages.QUESTS_RENEWED.getMessage(player);
         if (msg != null && player.hasPermission(QuestsPermissions.QUESTS_PROGRESS.get())) {
             player.sendMessage(msg);
         }
-
-        activeQuests.put(playerName, playerQuests);
-        if (Logs.isEnabled()) {
-            PluginLogger.info(playerName + "'s quests have been renewed.");
-        }
-
+        if (Logs.isEnabled()) PluginLogger.info(playerName + "'s quests have been renewed.");
         Debugger.write("Quests of player " + playerName + " have been renewed.");
     }
 
-    /**
-     * Check if it's time to renew quests. If so, renew them.
-     *
-     * @param player       player.
-     * @param activeQuests all active quests.
-     * @return true if it's time to renew quests.
-     */
     public static boolean isTimeToRenew(Player player, Map<String, PlayerQuests> activeQuests) {
         if (TimestampMode.getTimestampMode() == 1) return false;
         final PlayerQuests playerQuests = activeQuests.get(player.getName());
+        if (playerQuests == null) return false;
 
         if (checkTimestamp(playerQuests.getTimestamp())) {
-            loadNewPlayerQuests(player.getName(), activeQuests, playerQuests.getTotalAchievedQuestsByCategory(), playerQuests.getTotalAchievedQuests());
+            loadNewPlayerQuests(
+                    player.getName(),
+                    activeQuests,
+                    playerQuests.getTotalAchievedQuestsByCategory(),
+                    playerQuests.getTotalAchievedQuests()
+            );
             return true;
         }
-
         return false;
     }
 
-    /**
-     * Find quest with index in arrays.
-     *
-     * @param playerName player name.
-     * @param questIndex index of quest in array.
-     * @param id         number of player quest.
-     * @return quest of index.
-     */
     public static AbstractQuest findQuest(String playerName, int questIndex, int id) {
         AbstractQuest quest = null;
-
         final Map<String, Category> categoryMap = CategoriesLoader.getAllCategories();
         int totalQuestsCount = 0;
 
@@ -147,7 +137,6 @@ public class QuestLoaderUtils {
                 quest = getQuestAtIndex(category, questIndex, playerName);
                 break;
             }
-
             totalQuestsCount += categoryQuestsAmount;
         }
 
@@ -155,7 +144,6 @@ public class QuestLoaderUtils {
             PluginLogger.warn("Quest ID " + id + " was not found. Player quests will be reset.");
             PluginLogger.warn("This can happen after a server reload or if the quest was deleted from the file.");
         }
-
         return quest;
     }
 
@@ -163,33 +151,23 @@ public class QuestLoaderUtils {
         if (categoryName != null && !categoryName.isEmpty()) {
             final Category category = CategoriesLoader.getCategoryByName(categoryName);
             if (category == null) {
-                PluginLogger.warn("Category '" + categoryName + "' referenced in player " + playerName + " data no longer exists. New quests will be drawn for the player.");
+                PluginLogger.warn("Category '" + categoryName + "' referenced in player " + playerName
+                        + " data no longer exists. New quests will be drawn for the player.");
                 return null;
             }
             return getQuestAtIndex(category, questIndex, playerName);
         }
-
         return findQuest(playerName, questIndex, id);
     }
 
-    /**
-     * Try to get quest from index.
-     *
-     * @param category   the array where find the quest.
-     * @param index      the supposed index of the quest in the array.
-     * @param playerName the name of the player for whom the quest is intended.
-     * @return the quest.
-     */
     public static AbstractQuest getQuestAtIndex(Category category, int index, String playerName) {
-        AbstractQuest quest = null;
         try {
-            quest = category.get(index);
-        } catch (IndexOutOfBoundsException e) {
+            return category.get(index);
+        } catch (IndexOutOfBoundsException exception) {
             if (!category.isEmpty()) playerQuestMissing(playerName);
             else noQuestsAvailable();
+            return null;
         }
-
-        return quest;
     }
 
     private static void playerQuestMissing(String playerName) {
