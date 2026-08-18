@@ -6,6 +6,13 @@ The project was **originally created by Ordwen and the original ODailyQuests con
 
 **ODailyQuests 3.0.5** targets Minecraft **1.21.11+**, uses **Java 21 bytecode**, and is built/tested with a **Java 25** CI toolchain.
 
+[![Release](https://img.shields.io/badge/Release-v3.0.5-2ea44f?logo=github)](https://github.com/wickidcow/ODailyQuests/releases/tag/v3.0.5)
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.11%2B-62b47a)](https://github.com/wickidcow/ODailyQuests/releases)
+[![Java](https://img.shields.io/badge/Java-21%20bytecode-orange?logo=openjdk)](https://github.com/wickidcow/ODailyQuests)
+[![License](https://img.shields.io/badge/License-GPL--3.0-blue)](LICENSE)
+
+### 📥 [Download the latest ODailyQuests release](https://github.com/wickidcow/ODailyQuests/releases/latest)
+
 > ❤️ **Project lineage:** Originally created by **Ordwen and contributors**. Current maintenance, modernization, compatibility work, integrations, and expansion are led by **wickidcow**. The project continues under the **GPL-3.0** license.
 
 ---
@@ -347,6 +354,8 @@ ODailyQuests3.0.5-Spigot-1.21.11+.jar
 ```
 
 The GitHub release ships the plugin as a **raw JAR** — no unnecessary extraction step.
+
+### 📥 [Go to GitHub Releases](https://github.com/wickidcow/ODailyQuests/releases)
 
 ---
 
