@@ -6,7 +6,7 @@ prefix: "O'DailyQuests"
 authors: [ Ordwen ]
 description: Add more objectives and dynamize your server !
 website: https://github.com/wickidcow/ODailyQuests
-softdepend: [ Vault, TokenManager, Citizens, FancyNpcs, PlaceholderAPI, PlayerPoints, MythicMobs, EliteMobs, WildStacker, RoseStacker, Multiverse-Core, MyWorlds, HeadDatabase, Oraxen, ItemsAdder, Nexo, CoinsEngine, ExcellentEconomy, Towny, PyroFishingPro, ValhallaMMO, Votifier, NuVotifier, KGenerators, CustomCrops, CustomFishing, EvenMoreFish, eco, ExcellentCrates, MMOItems, MMOCore, PlotSquared, Slimefun ]
+softdepend: [ Vault, TokenManager, Citizens, FancyNpcs, PlaceholderAPI, PlayerPoints, MythicMobs, EliteMobs, WildStacker, RoseStacker, Multiverse-Core, MyWorlds, HeadDatabase, Oraxen, ItemsAdder, Nexo, CoinsEngine, ExcellentEconomy, Towny, PyroFishingPro, ValhallaMMO, Votifier, NuVotifier, KGenerators, CustomCrops, CustomFishing, EvenMoreFish, eco, ExcellentCrates, MMOItems, MMOCore, PlotSquared, Slimefun, mcMMO, Rebar, Pylon ]
 libraries:
   - com.zaxxer:HikariCP:7.0.2
   - org.xerial:sqlite-jdbc:3.53.0.0
