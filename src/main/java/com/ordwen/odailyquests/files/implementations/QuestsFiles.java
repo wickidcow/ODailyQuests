@@ -10,6 +10,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,6 +68,13 @@ public class QuestsFiles {
         for (File file : questFiles) {
             final String category = file.getName().replace(".yml", "");
 
+            // A short-lived test build used different Fable faction wording. Migrate only the
+            // exact strings that build wrote, so existing Good/Evil server quest files are fixed
+            // without otherwise changing administrator-authored content.
+            if ("good".equalsIgnoreCase(category) || "evil".equalsIgnoreCase(category)) {
+                migrateLegacyFableTerminology(file);
+            }
+
             final FileConfiguration config = new YamlConfiguration();
             try {
                 config.load(file);
@@ -107,5 +116,25 @@ public class QuestsFiles {
         plugin.saveResource("quests/" + fileName, false);
         if (packKey != null) DefaultQuestPacks.tagDefaults(file, packKey);
         PluginLogger.info(fileName + " created as default.");
+    }
+
+    private void migrateLegacyFableTerminology(File file) {
+        try {
+            String original = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+            String migrated = original
+                    .replace("alignment.last_deed Concord", "alignment.last_deed Good")
+                    .replace("alignment.last_deed Dominion", "alignment.last_deed Evil")
+                    .replace("the Concord shrine", "a Good shrine")
+                    .replace("Let the smoke teach it Dominion silence.", "Let the smoke carry an Evil warning.")
+                    .replace("and prove Dominion takes what it wants.", "and prove Evil takes what it wants.")
+                    .replace("Raise soulflame for the Dominion altars", "Raise soulflame for the Evil altars");
+
+            if (!original.equals(migrated)) {
+                Files.writeString(file.toPath(), migrated, StandardCharsets.UTF_8);
+                PluginLogger.info("Migrated legacy Fable terminology in " + file.getName() + ".");
+            }
+        } catch (IOException exception) {
+            PluginLogger.warn("Unable to migrate legacy Fable terminology in " + file.getName() + ": " + exception.getMessage());
+        }
     }
 }
