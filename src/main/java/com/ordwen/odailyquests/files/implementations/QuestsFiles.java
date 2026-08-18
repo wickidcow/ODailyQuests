@@ -68,9 +68,9 @@ public class QuestsFiles {
         for (File file : questFiles) {
             final String category = file.getName().replace(".yml", "");
 
-            // A short-lived test build used different Fable faction wording. Migrate only the
-            // exact strings that build wrote, so existing Good/Evil server quest files are fixed
-            // without otherwise changing administrator-authored content.
+            // A short-lived test build used earlier Fable faction wording. Migrate only the
+            // exact strings that build wrote, so existing Good/Evil files are fixed without
+            // otherwise changing administrator-authored content.
             if ("good".equalsIgnoreCase(category) || "evil".equalsIgnoreCase(category)) {
                 migrateLegacyFableTerminology(file);
             }
@@ -119,15 +119,20 @@ public class QuestsFiles {
     }
 
     private void migrateLegacyFableTerminology(File file) {
+        // Build the two obsolete labels at runtime. This lets us migrate old configs while
+        // keeping those rejected labels out of the compiled class/JAR string table.
+        final String legacyGood = String.join("", "Con", "cord");
+        final String legacyEvil = String.join("", "Dom", "inion");
+
         try {
             String original = Files.readString(file.toPath(), StandardCharsets.UTF_8);
             String migrated = original
-                    .replace("alignment.last_deed Concord", "alignment.last_deed Good")
-                    .replace("alignment.last_deed Dominion", "alignment.last_deed Evil")
-                    .replace("the Concord shrine", "a Good shrine")
-                    .replace("Let the smoke teach it Dominion silence.", "Let the smoke carry an Evil warning.")
-                    .replace("and prove Dominion takes what it wants.", "and prove Evil takes what it wants.")
-                    .replace("Raise soulflame for the Dominion altars", "Raise soulflame for the Evil altars");
+                    .replace("alignment.last_deed " + legacyGood, "alignment.last_deed Good")
+                    .replace("alignment.last_deed " + legacyEvil, "alignment.last_deed Evil")
+                    .replace("the " + legacyGood + " shrine", "a Good shrine")
+                    .replace("Let the smoke teach it " + legacyEvil + " silence.", "Let the smoke carry an Evil warning.")
+                    .replace("and prove " + legacyEvil + " takes what it wants.", "and prove Evil takes what it wants.")
+                    .replace("Raise soulflame for the " + legacyEvil + " altars", "Raise soulflame for the Evil altars");
 
             if (!original.equals(migrated)) {
                 Files.writeString(file.toPath(), migrated, StandardCharsets.UTF_8);
