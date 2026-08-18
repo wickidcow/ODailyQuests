@@ -1,6 +1,7 @@
 package com.ordwen.odailyquests.quests.types.global;
 
 import com.ordwen.odailyquests.events.listeners.integrations.ExternalItemIntegration;
+import com.ordwen.odailyquests.events.listeners.integrations.PylonInventoryGainEvent;
 import com.ordwen.odailyquests.events.listeners.integrations.slimefun.SlimefunIntegration;
 import com.ordwen.odailyquests.quests.features.QuestFeatures;
 import com.ordwen.odailyquests.quests.player.progression.Progression;
@@ -26,6 +27,7 @@ public class CustomQuest extends AbstractQuest {
 
     private String requiredSkill = "ANY";
     private List<String> requiredPylonKeys = List.of();
+    private boolean allowPylonInventoryGain;
 
     public CustomQuest(BasicQuest base) {
         super(base);
@@ -46,21 +48,21 @@ public class CustomQuest extends AbstractQuest {
         boolean itemsAdderItemQuest = "ITEMSADDER_ITEM".equalsIgnoreCase(type);
         boolean mcMMOQuest = "MCMMO_EXP".equalsIgnoreCase(type);
 
-        // Command-completed/custom types keep the historical permissive behavior.
         if (!slimefunItemQuest && !slimefunCraftQuest && !rebarItemQuest
                 && !mmoItemQuest && !itemsAdderItemQuest && !mcMMOQuest) {
             return true;
         }
 
-        if (mcMMOQuest) {
-            return matchesMcMMOSkill(provided);
-        }
-
+        if (mcMMOQuest) return matchesMcMMOSkill(provided);
         if (provided == null) return false;
 
         if (slimefunCraftQuest
                 && !(provided instanceof CraftItemEvent)
                 && !MULTIBLOCK_CRAFT_EVENT.equals(provided.getClass().getName())) {
+            return false;
+        }
+
+        if (rebarItemQuest && provided instanceof PylonInventoryGainEvent && !allowPylonInventoryGain) {
             return false;
         }
 
@@ -106,6 +108,7 @@ public class CustomQuest extends AbstractQuest {
     private ItemStack extractStack(Event event) {
         if (event instanceof EntityPickupItemEvent pickup) return pickup.getItem().getItemStack();
         if (event instanceof CraftItemEvent craft) return craft.getCurrentItem();
+        if (event instanceof PylonInventoryGainEvent gain) return gain.getItemStack();
 
         if (MULTIBLOCK_CRAFT_EVENT.equals(event.getClass().getName())) {
             try {
@@ -123,6 +126,7 @@ public class CustomQuest extends AbstractQuest {
     public boolean loadParameters(ConfigurationSection section, String file, String index) {
         requiredSkill = section.getString(".skill", "ANY").trim().toUpperCase(Locale.ROOT);
         requiredPylonKeys = loadPylonKeys(section);
+        allowPylonInventoryGain = section.getBoolean(".pylon_inventory_gain", false);
         return true;
     }
 
