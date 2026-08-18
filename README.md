@@ -243,6 +243,8 @@ That layout can only display five assigned quests even when Tech and Wild Card a
 
 The newer category-based layout is also supported and migrated safely.
 
+If a legacy player-head line contains a hard-coded daily total such as `%achieved%/5`, the maintained migration changes that count to `%totalQuests%` so optional categories are represented correctly.
+
 Do **not** delete your entire ODailyQuests configuration folder just to upgrade.
 
 ---
