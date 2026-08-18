@@ -55,11 +55,12 @@ public class QuestsFiles {
         // Add missing maintained-fork category files without overwriting administrator files.
         ensureBuiltInQuestFiles();
 
-        // Two development builds created Tech/Wild Card as empty shells because their quests
-        // were generated only in memory. Replace only those exact empty maintained stubs with
-        // the now-populated bundled YAML. Any file containing a real quest is left untouched.
-        seedPreviouslyEmptyManagedCategory("tech.yml", "Tech is populated in memory");
-        seedPreviouslyEmptyManagedCategory("wildcard.yml", "Wild Card is populated in memory");
+        // Earlier development builds created Tech/Wild Card as empty shells because their
+        // quests were generated only in memory. If either managed category is still empty,
+        // replace it with the populated bundled YAML. A file containing even one quest is
+        // administrator-owned and is never overwritten here.
+        seedEmptyManagedCategory("tech.yml");
+        seedEmptyManagedCategory("wildcard.yml");
 
         final File[] questFiles = questsFolder.listFiles((dir, name) -> name.endsWith(".yml"));
         if (questFiles == null) {
@@ -79,7 +80,7 @@ public class QuestsFiles {
             try {
                 config.load(file);
 
-                // Built-in integration quests now live in the physical YAML files. Their
+                // Built-in integration quests live in the physical YAML files. Their
                 // default_pack value controls whether each quest survives dependency filtering.
                 // Untagged administrator quests remain custom and are never removed here.
                 DefaultQuestPacks.filterConfiguredDefaults(config);
@@ -115,21 +116,18 @@ public class QuestsFiles {
         PluginLogger.info(fileName + " created as default.");
     }
 
-    private void seedPreviouslyEmptyManagedCategory(String fileName, String legacyMarker) {
+    private void seedEmptyManagedCategory(String fileName) {
         final File file = new File(new File(plugin.getDataFolder(), "quests"), fileName);
         if (!file.isFile()) return;
 
         try {
-            final String original = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-            if (!original.contains(legacyMarker)) return;
-
             final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
             final ConfigurationSection quests = yaml.getConfigurationSection("quests");
             if (quests != null && !quests.getKeys(false).isEmpty()) return;
 
             Files.delete(file.toPath());
             plugin.saveResource("quests/" + fileName, false);
-            PluginLogger.info("Replaced legacy empty " + fileName + " with the populated built-in quest pool.");
+            PluginLogger.info("Replaced empty " + fileName + " with the populated built-in quest pool.");
         } catch (IOException exception) {
             PluginLogger.warn("Unable to seed populated " + fileName + ": " + exception.getMessage());
         }
