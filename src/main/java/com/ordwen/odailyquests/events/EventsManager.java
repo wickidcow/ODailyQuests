@@ -1,6 +1,7 @@
 package com.ordwen.odailyquests.events;
 
 import com.ordwen.odailyquests.ODailyQuests;
+import com.ordwen.odailyquests.commands.interfaces.playerinterface.reroll.DailyRerollMenu;
 import com.ordwen.odailyquests.configuration.essentials.CustomFurnaceResults;
 import com.ordwen.odailyquests.configuration.integrations.ItemsAdderEnabled;
 import com.ordwen.odailyquests.configuration.integrations.NexoEnabled;
@@ -78,6 +79,7 @@ public class EventsManager {
         pluginManager.registerEvents(new PlayerItemConsumeListener(), oDailyQuests);
         pluginManager.registerEvents(new ProjectileLaunchListener(), oDailyQuests);
         pluginManager.registerEvents(new InventoryClickListener(oDailyQuests.getInterfacesManager().getPlayerQuestsInterface()), oDailyQuests);
+        pluginManager.registerEvents(new DailyRerollMenu(), oDailyQuests);
         pluginManager.registerEvents(new BlockDropItemListener(), oDailyQuests);
         pluginManager.registerEvents(new PlayerHarvestBlockListener(), oDailyQuests);
         pluginManager.registerEvents(new PlayerDropItemListener(), oDailyQuests);
