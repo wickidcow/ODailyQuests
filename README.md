@@ -1,74 +1,64 @@
 # ODailyQuests – Maintained 1.21.11+ Fork
 
-A maintained fork of **O'DailyQuests by Ordwen**, focused on modern Paper/Purpur/Folia compatibility, stability, integrations, and expanded quest progression while preserving existing ODailyQuests configurations wherever possible.
+A maintained fork of **O'DailyQuests by Ordwen**, focused on modern Paper/Purpur/Folia compatibility, stability, wider plugin integration, and richer daily progression while preserving administrator-owned configuration wherever possible.
 
 > This project builds on the original work by Ordwen and the ODailyQuests contributors. Please give credit to the original project when redistributing or extending this fork.
 
 ## Downloads
 
-Use the raw JAR attached to this fork's GitHub Releases:
+Use the versioned raw JAR from this fork's GitHub Releases or GitHub Actions artifacts. Development artifacts are uploaded directly as `.jar` files rather than being wrapped in an extra ZIP.
 
-- https://github.com/wickidcow/ODailyQuests/releases
-
-The original documentation remains the best reference for standard quest configuration:
+The original documentation remains the best reference for standard ODailyQuests configuration:
 
 - https://ordwenplugins.gitbook.io/odailyquests/
 - https://github.com/Ordwen/ODailyQuests
 
-## 3.0.5 modernization
+## 3.0.5 — Wider Compatibility Expansion
 
 This maintained build adds:
 
 - Paper/Purpur 1.21.11+ compatibility with Java 21 bytecode
 - Java 25 build toolchain support
 - Folia-aware scheduling and concurrent active-player state
-- raw JAR GitHub release output
-- aligned runtime/compile database libraries
-- safer quest-type registration (no silent conflicting overrides)
-- weighted quest selection
-- permission-based quest pools
-- optional per-quest difficulty/reward scaling
-- quest chains
-- weekly quest categories that survive daily resets until the ISO week changes
-- configurable reroll costs with automatic refund on failed rerolls
-- optional completion streak rewards
-- optional server-wide/community goals
+- raw JAR GitHub output
+- weighted quest selection and permission-based pools
+- optional per-quest requirement/reward scaling
+- quest chains and weekly categories
+- configurable reroll costs with failed-reroll refunds
+- completion streak rewards
+- server-wide/community goals
 - seven maintained daily categories
-- true Slimefun multiblock crafting quests plus addon-aware Slimefun quests
-- Pylon/Rebar Tech quests
-- Fable Good and Fable Evil quest paths
+- true Slimefun multiblock crafting progression
+- addon-aware Slimefun objectives
+- Pylon/Rebar Tech objectives
+- Fable Good and Fable Evil daily paths
 - dependency-aware Wild Card integrations
+- provider-native rewards where a stable provider reward exists
 - `/dqadmin doctor` diagnostics
 - `%progressPercent%` placeholder
-- automated unit tests in CI
+- automated CI tests before JAR staging
 
 ## Seven daily categories
 
-The maintained defaults are designed around **one quest per category per day**:
+The maintained defaults are designed around **one daily quest from each loaded category**:
 
-1. **Easy**
-2. **Medium**
-3. **Hard**
-4. **Fable Good** (`good.yml`)
-5. **Fable Evil** (`evil.yml`)
-6. **Tech** (`tech.yml`)
-7. **Wild Card** (`wildcard.yml`)
+1. **Easy** — `easy.yml`
+2. **Medium** — `medium.yml`
+3. **Hard** — `hard.yml`
+4. **Fable Good** — `good.yml`
+5. **Fable Evil** — `evil.yml`
+6. **Tech** — `tech.yml`
+7. **Wild Card** — `wildcard.yml`
 
-Existing quest YAML is administrator-owned and is not overwritten. This means a server upgrading with already-tested Easy/Medium/Hard/Good/Evil pools keeps those exact files. Missing maintained category files are added automatically.
+The category files are real, readable YAML resources. **Tech and Wild Card are pre-generated in the JAR; they are not empty placeholder files and do not depend on invisible runtime-only quest definitions.** Every built-in integration quest stores a `default_pack` tag directly in YAML.
 
-**Tech is one category, not three difficulty categories.** It mixes Slimefun Core, installed Slimefun addons, and Pylon/Rebar. The rolled objective itself varies in complexity and reward while the player simply sees a Daily Tech quest.
+Existing server quest files are administrator-owned and are not blindly overwritten. Missing maintained category files are added automatically. Two short-lived development builds created empty Tech/Wild Card shell files; those exact empty managed stubs are migrated to the populated versions automatically, while any file containing real custom quests is preserved.
 
-**Wild Card** is the miscellaneous integration category. Its pool is built only from plugins that are actually installed. Built-in Wild Card providers include PyroFishingPro, EvenMoreFish, ValhallaMMO, mcMMO, MMOItems, and ItemsAdder. If no Wild Card provider is installed and the administrator has not added custom Wild Card quests, that category is safely skipped for the startup rather than failing safety mode. Tech behaves the same way when no Tech provider is available.
+## ⚙️ Tech — one technology category
 
-## Default quest packs
+Tech is intentionally **not** split into Easy / Medium / Hard. The player simply receives a Daily Tech objective; the rolled objective itself determines the workload and reward.
 
-The maintained fork adds a `default_quest_packs` section to `config.yml`. Every shipped pack has an `enabled` toggle. Dependency-backed packs default to enabled but only become active when the matching plugin/addon is actually installed. Setting `enabled: false` always wins.
-
-Fresh installations tag the bundled Easy/Medium/Hard Vanilla quests as the `vanilla` pack and the bundled Good/Evil pools as their Fable packs. Existing untagged server quest files remain custom content and are never silently disabled or overwritten.
-
-### Tech providers
-
-Tech may draw from:
+The bundled `tech.yml` contains physical quest definitions for:
 
 - Slimefun Core
 - Networks
@@ -94,38 +84,56 @@ Tech may draw from:
 - SlimeGlue
 - Pylon / Rebar
 
-Slimefun addon detection is based on the addon that registered an item rather than a hard compile dependency, with aliases for common/forked addon names. Pylon/Rebar item recognition is also reflection-based so those plugins remain optional.
+### Slimefun Core examples
 
-Examples of Slimefun objectives in the same **Tech** pool include:
+The physical Tech pool includes objectives such as:
 
-- craft **1 Common Talisman** — 500
-- craft **8 Steel Ingots** — 1,100
-- craft **2 Reinforced Alloy Ingots** — 2,500
+- craft **1 Common Talisman**
+- craft **8 Steel Ingots**
+- craft **2 Reinforced Alloy Ingots**
 
-These are deliberately mixed in one Tech category; they are not presented as Easy/Medium/Hard Tech quests.
+`SLIMEFUN_CRAFT` progresses from normal Bukkit crafting and Slimefun's multiblock craft event. `SLIMEFUN_ITEM` can match the addon that registered an item, allowing a single Tech pool to cover many maintained addon families without hard-linking ODailyQuests to every addon.
 
-`SLIMEFUN_CRAFT` listens to normal Bukkit crafting and Slimefun's multiblock craft event. `SLIMEFUN_ITEM` can additionally filter by the Slimefun addon that owns the item. Pylon/Rebar Tech objectives use optional Rebar item recognition and can progress through supported crafting/acquisition events.
+Pylon/Rebar objectives use optional item recognition and remain inactive when Pylon is not available.
 
-### Wild Card providers
+If all Tech providers are absent or disabled and there are no custom Tech quests, the empty optional category is skipped cleanly instead of causing `safety_mode` to disable the plugin.
 
-Wild Card providers activate only while their dependency is enabled:
+## 🎲 Wild Card — installed plugins join the rotation
 
-- **PyroFishingPro** — catch Pyro fish
-- **EvenMoreFish** — catch EMF fish
-- **ValhallaMMO** — earn Valhalla skill XP or levels
-- **mcMMO** — earn mcMMO skill XP
+The bundled `wildcard.yml` also contains physical quest definitions. A quest is eligible only while its `default_pack` dependency is enabled and detected.
+
+Built-in providers are:
+
+- **ValhallaMMO** — earn specific Valhalla skill experience; rewards include real spendable Valhalla skill points
+- **mcMMO** — earn specific mcMMO skill experience; rewards include mcMMO skill XP
+- **PyroFishingPro** — catch Pyro fish; rewards include Pyro Entropy and Pyro Fishing XP
+- **EvenMoreFish** — catch EMF fish; rewards include bundled EvenMoreFish bait
 - **MMOItems** — create or obtain MMOItems
 - **ItemsAdder** — create or obtain ItemsAdder custom items
 
-**MythicMobs is intentionally not included as an automatic/default Wild Card provider.** Existing manual MythicMobs quest support remains available for servers that explicitly configure it.
+MMOItems and ItemsAdder content IDs are deliberately not invented in the generic defaults because those IDs belong to each server's own item packs. Their built-in quests therefore use safe economy/XP/Quest Point rewards until an administrator chooses a server-specific MMOItems/ItemsAdder item reward.
 
-## Fable Good / Evil
+If no Wild Card provider is installed and no custom Wild Card quests exist, Wild Card is skipped for that startup. It does not become an impossible quest and does not break safety mode.
 
-Fable is split into two real daily categories: **Good** and **Evil**. The bundled pools are based on server-tested quest definitions and award the corresponding Good/Evil alignment points. Older short-lived Fable terminology is automatically migrated out of existing `good.yml` and `evil.yml` files.
+**MythicMobs is intentionally not injected automatically.** Existing manual MythicMobs quest support remains available for servers that explicitly configure it.
+
+## 🌿 Fable Good / 🔥 Fable Evil
+
+Fable is split into two real daily categories: **Good** and **Evil**. The bundled Good/Evil pools use the server-tested quest definitions and retain their Good/Evil scoreboard progression and configured rewards.
+
+Only Good/Evil terminology is used by the maintained Fable system. Migration code cleans the obsolete short-lived terminology from older test configs without changing unrelated administrator content.
+
+## Dependency packs and toggles
+
+`config.yml` contains a `default_quest_packs` section. Dependency-backed packs default to enabled, but a tagged quest survives loading only when its provider is present. Setting a pack to `enabled: false` always wins.
+
+This means `wildcard.yml` can safely contain ValhallaMMO, mcMMO, PyroFishingPro, EvenMoreFish, MMOItems, and ItemsAdder quests at the same time: a server only loads the subset it can actually complete.
+
+The same model is used by Tech for Slimefun/addon/Pylon content.
 
 ## Extended quest keys
 
-The following keys can be added directly to an individual quest entry:
+Individual quests can use maintained-fork features directly:
 
 ```yaml
 quests:
@@ -138,10 +146,10 @@ quests:
     # Relative chance inside the eligible category/pool.
     weight: 2.5
 
-    # Optional pool controlled from config.yml.
+    # Optional permission-controlled pool.
     pool: veteran
 
-    # Optional scaling without duplicating quest definitions.
+    # Optional scaling without duplicating the quest.
     difficulty:
       required_multiplier: 1.5
       reward_multiplier: 2.0
@@ -149,7 +157,7 @@ quests:
 
 ### Quest chains
 
-A chain-only quest is excluded from the normal random draw and replaces its predecessor when that predecessor is completed:
+A chain-only quest is excluded from the normal random draw and replaces its predecessor when that predecessor completes:
 
 ```yaml
 quests:
@@ -167,11 +175,9 @@ quests:
     chain_after: "20"
 ```
 
-You can also use a qualified ID such as `easy:20` in `chain_after`.
+A qualified chain ID such as `easy:20` is also supported.
 
-### Slimefun quests
-
-Slimefun itself remains a soft dependency.
+### Slimefun exact-item quest
 
 ```yaml
 quests:
@@ -183,7 +189,7 @@ quests:
       - REINFORCED_ALLOY_INGOT
 ```
 
-To target an addon family instead of exact IDs:
+### Slimefun addon-family quest
 
 ```yaml
 quests:
@@ -196,32 +202,24 @@ quests:
       - Networks Expansion
 ```
 
-## Optional config.yml additions
+## Optional progression features
 
-Missing extended sections retain legacy behavior. Built-in category and `default_quest_packs` entries are added without replacing values already chosen by the administrator.
+Missing extended sections retain legacy behavior. Examples include:
 
 ```yaml
-# Categories listed here keep their current assignment through daily resets
-# and redraw when the ISO week changes.
 weekly_categories:
   - weekly
 
-# Pools can require permissions and can be switched off without editing quest files.
 quest_pools:
   veteran:
     enabled: true
     permission: "odailyquests.pool.veteran"
 
-# Cost is charged only when enabled. Supported types: MONEY, EXP_LEVELS.
-# odailyquests.reroll.free bypasses the charge.
 reroll_cost:
   enabled: false
   type: MONEY
   amount: 1000
-  insufficient_message: "&cYou need %amount% %type% to reroll."
-  charged_message: "&eReroll cost: &6%amount% %type%&e."
 
-# Consecutive fully-completed quest periods.
 streak_rewards:
   enabled: false
   milestones:
@@ -232,7 +230,6 @@ streak_rewards:
       commands:
         - "eco give %player% 5000"
 
-# Server-wide counters. Each matching completed quest adds one point.
 community_quests:
   enabled: false
   goals:
@@ -254,13 +251,13 @@ Run:
 /dqadmin doctor
 ```
 
-The report includes the plugin/server/Java versions, runtime type, storage mode, loaded categories and quests, registered quest types, active player data, next reset, pack status, active pack names, optional feature state, and detected integrations.
+The report includes runtime/server/Java information, storage mode, loaded categories and quests, registered quest types, active player data, next reset, dependency-pack status, optional features, and detected integrations.
 
 ## Compatibility philosophy
 
-Optional integrations are loaded only when their plugin is present. Integrations that do not publish stable compile-time artifacts are isolated behind reflection where practical so a missing optional plugin does not prevent ODailyQuests from starting.
+Optional integrations activate only when their plugin is present. Integrations without a dependable compile-time API are isolated behind reflection where practical so missing optional plugins do not prevent ODailyQuests from starting.
 
-Folia support requires more than a `folia-supported` flag; this fork routes timed player mutations through entity-aware scheduling and uses concurrent storage for active player assignments.
+Folia support requires more than a metadata flag; this fork routes timed player mutations through entity-aware scheduling and uses concurrent storage for active player assignments.
 
 ## License and attribution
 
