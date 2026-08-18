@@ -57,7 +57,18 @@ jobs:
             fi
           done
 
+          # Catch the broader form of the old reset-quests packaging regression: production
+          # bytecode must never reference another ODailyQuests class that was omitted from the JAR.
+          INTERNAL_MISSING="$(jdeps --multi-release 21 --ignore-missing-deps -verbose:class "$JAR" 2>/dev/null \
+            | awk '/not found/ && $3 ~ /^com\.ordwen\.odailyquests/ {print}')"
+          if [[ -n "$INTERNAL_MISSING" ]]; then
+            echo "ERROR: Production JAR contains missing internal ODailyQuests class references:" >&2
+            echo "$INTERNAL_MISSING" >&2
+            exit 1
+          fi
+
           echo "Verified ${#REQUIRED_ENTRIES[@]} critical runtime classes/resources in ${JAR}."
+          echo "Verified no missing internal ODailyQuests class references."
       - name: Resolve version and stage JAR
         id: artifact
         shell: bash
