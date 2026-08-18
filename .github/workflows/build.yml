@@ -27,7 +27,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
       - name: Build JAR
         run: chmod +x ./gradlew && ./gradlew clean shadowJar --no-daemon
-      - name: Resolve version and stage JAR
+      - name: Resolve version and stage raw JAR
         id: artifact
         shell: bash
         run: |
@@ -41,13 +41,6 @@ jobs:
           sha256sum "dist/${NAME}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
-      - name: Upload CI artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: ODailyQuests${{ steps.artifact.outputs.version }}
-          path: dist/${{ steps.artifact.outputs.name }}
-          if-no-files-found: error
-          retention-days: 30
       - name: Publish raw JAR release asset
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         env:
