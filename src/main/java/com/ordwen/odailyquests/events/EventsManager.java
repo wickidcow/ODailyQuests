@@ -13,11 +13,13 @@ import com.ordwen.odailyquests.events.listeners.entity.custom.mobs.MythicMobDeat
 import com.ordwen.odailyquests.events.listeners.entity.custom.stackers.RoseStackerListener;
 import com.ordwen.odailyquests.events.listeners.entity.custom.stackers.WildStackerListener;
 import com.ordwen.odailyquests.events.listeners.global.*;
+import com.ordwen.odailyquests.events.listeners.integrations.ExternalItemProgressListener;
 import com.ordwen.odailyquests.events.listeners.integrations.customsuite.CropBreakListener;
 import com.ordwen.odailyquests.events.listeners.integrations.customsuite.FishingLootSpawnListener;
 import com.ordwen.odailyquests.events.listeners.integrations.emf.EMFFishCaughtListener;
 import com.ordwen.odailyquests.events.listeners.integrations.itemsadder.CustomBlockBreakListener;
 import com.ordwen.odailyquests.events.listeners.integrations.itemsadder.ItemsAdderLoadDataListener;
+import com.ordwen.odailyquests.events.listeners.integrations.mcmmo.McMMOProgressListener;
 import com.ordwen.odailyquests.events.listeners.integrations.nexo.NexoItemsLoadedListener;
 import com.ordwen.odailyquests.events.listeners.integrations.npcs.CitizensHook;
 import com.ordwen.odailyquests.events.listeners.integrations.npcs.FancyNpcsHook;
@@ -100,6 +102,13 @@ public class EventsManager {
                 pluginManager.registerEvents(new OraxenItemsLoadedListener(oDailyQuests), oDailyQuests), "Oraxen");
         if (NexoEnabled.isEnabled()) registerSafely(() ->
                 pluginManager.registerEvents(new NexoItemsLoadedListener(oDailyQuests), oDailyQuests), "Nexo");
+
+        // One lightweight listener handles generic item acquisition for the Tech/Wild Card
+        // integrations. Detection itself is reflection-only and returns false when a plugin is absent.
+        if (PluginUtils.isPluginEnabled("Pylon") || PluginUtils.isPluginEnabled("Rebar")
+                || PluginUtils.isPluginEnabled("MMOItems") || PluginUtils.isPluginEnabled("ItemsAdder")) {
+            pluginManager.registerEvents(new ExternalItemProgressListener(), oDailyQuests);
+        }
     }
 
     private void registerPluginListeners(final PluginManager pluginManager) {
@@ -118,6 +127,7 @@ public class EventsManager {
         registerIfPluginEnabled("EvenMoreFish", () -> pluginManager.registerEvents(new EMFFishCaughtListener(), oDailyQuests));
         registerIfPluginEnabled("PyroFishingPro", () -> PyroFishCatchListener.register(pluginManager, oDailyQuests));
         registerIfPluginEnabled("ValhallaMMO", () -> ValhallaMMOProgressListener.register(pluginManager, oDailyQuests));
+        registerIfPluginEnabled("mcMMO", () -> McMMOProgressListener.register(pluginManager, oDailyQuests));
         registerIfPluginEnabled("Slimefun", () -> SlimefunItemListener.register(pluginManager, oDailyQuests));
     }
 
