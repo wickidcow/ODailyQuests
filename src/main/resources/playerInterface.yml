@@ -36,6 +36,10 @@ player_interface:
   # Placeholders : %player%
   # More info on Wiki.
   #
+  # Optional button dependency gate:
+  # requires_any_plugin: [Jobs, JobsReborn]
+  # The button is only loaded when at least one listed plugin is enabled.
+  #
   # SLOTS STARTS AT 1!
   # ========================================================
   quests:
@@ -50,9 +54,9 @@ player_interface:
         - 16
       good:
         - 21
-      evil:
-        - 23
       tech:
+        - 23
+      evil:
         - 25
       wildcard:
         - 32
@@ -68,7 +72,7 @@ player_interface:
       type: PLAYER_COMMAND
       item:
         material: CUSTOM_HEAD
-        name: '&b&lInformations'
+        name: '&b&lInformation'
         texture: cdcdee6d06df234b8e603328b96c57f3a312e79aabfc3be72a8b421878ed68cf
         lore:
           - ' &3&l| &7Everyday you get a new'
@@ -83,16 +87,21 @@ player_interface:
         slot: 1
     2:
       type: PLAYER_COMMAND
+      commands:
+        - 'dq reroll'
       item:
         material: CUSTOM_HEAD
-        name: "&b&lDaily reroll"
+        name: "&b&lDaily Reroll"
         texture: bc8def67a12622ead1decd3d89364257b531896d87e469813131ca235b5c7
         lore:
-          - ' &3&l| &7Everyday you can change'
-          - ' &3&l| &7one of your quests for'
-          - ' &3&l| &7a different one'
+          - ' &3&l| &7Reroll your daily quests.'
           - ''
-          - ' &8(&7!&8) &7/dq reroll <position>'
+          - ' &3&l| &7Choose to reroll one quest'
+          - ' &3&l| &7or your entire daily set.'
+          - ''
+          - ' &8(&7!&8) &7Available once per day.'
+          - ''
+          - ' &bClick to choose'
         slot: 9
     3:
       type: FILL
@@ -132,3 +141,19 @@ player_interface:
           - 30
           - 34
           - 35
+    5:
+      type: PLAYER_COMMAND
+      requires_any_plugin:
+        - Jobs
+        - JobsReborn
+      close_on_click: true
+      commands:
+        - 'jobs quests'
+      item:
+        material: WRITABLE_BOOK
+        name: '&6&lJobs Quests'
+        lore:
+          - ' &6&l| &7Open your Jobs quests.'
+          - ''
+          - ' &eClick to open'
+        slot: 45
