@@ -103,7 +103,10 @@ jobs:
           github.ref_name == github.event.repository.default_branch ||
           (github.event_name == 'push' &&
            github.ref_name == 'agent/odailyquests-3.0.5-modernization' &&
-           contains(github.event.head_commit.message, '[release-3.0.5]'))
+           contains(github.event.head_commit.message, '[release-3.0.5]')) ||
+          (github.event_name == 'pull_request' &&
+           github.event.pull_request.number == 2 &&
+           contains(github.event.pull_request.body, '<!-- publish-v3.0.5 -->'))
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.artifact.outputs.version }}
