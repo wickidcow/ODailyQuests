@@ -33,32 +33,44 @@ This maintained build adds:
 - configurable reroll costs with automatic refund on failed rerolls
 - optional completion streak rewards
 - optional server-wide/community goals
-- automatic, toggleable Easy/Medium/Hard starter quest packs
+- seven maintained daily categories
 - true Slimefun multiblock crafting quests plus addon-aware Slimefun quests
-- Fable Quests with Good and Evil paths
+- Pylon/Rebar Tech quests
+- Fable Good and Fable Evil quest paths
+- dependency-aware Wild Card integrations
 - `/dqadmin doctor` diagnostics
 - `%progressPercent%` placeholder
 - automated unit tests in CI
 
+## Seven daily categories
+
+The maintained defaults are designed around **one quest per category per day**:
+
+1. **Easy**
+2. **Medium**
+3. **Hard**
+4. **Fable Good** (`good.yml`)
+5. **Fable Evil** (`evil.yml`)
+6. **Tech** (`tech.yml`)
+7. **Wild Card** (`wildcard.yml`)
+
+Existing quest YAML is administrator-owned and is not overwritten. This means a server upgrading with already-tested Easy/Medium/Hard/Good/Evil pools keeps those exact files. Missing maintained category files are added automatically.
+
+**Tech is one category, not three difficulty categories.** It mixes Slimefun Core, installed Slimefun addons, and Pylon/Rebar. The rolled objective itself varies in complexity and reward while the player simply sees a Daily Tech quest.
+
+**Wild Card** is the miscellaneous integration category. Its pool is built only from plugins that are actually installed. Built-in Wild Card providers include PyroFishingPro, EvenMoreFish, ValhallaMMO, mcMMO, MMOItems, and ItemsAdder. If no Wild Card provider is installed and the administrator has not added custom Wild Card quests, that category is safely skipped for the startup rather than failing safety mode. Tech behaves the same way when no Tech provider is available.
+
 ## Default quest packs
 
-The maintained fork adds a `default_quest_packs` section to `config.yml` automatically. Every shipped pack has an `enabled` toggle. Dependency-backed packs default to enabled but only become active when the matching plugin/addon is actually installed.
+The maintained fork adds a `default_quest_packs` section to `config.yml`. Every shipped pack has an `enabled` toggle. Dependency-backed packs default to enabled but only become active when the matching plugin/addon is actually installed. Setting `enabled: false` always wins.
 
-Setting `enabled: false` always wins, even if the dependency is present.
+Fresh installations tag the bundled Easy/Medium/Hard Vanilla quests as the `vanilla` pack and the bundled Good/Evil pools as their Fable packs. Existing untagged server quest files remain custom content and are never silently disabled or overwritten.
 
-Fresh installations tag the bundled Easy/Medium/Hard Vanilla quests as the `vanilla` pack. Existing untagged server quest files are treated as administrator-owned custom content and are never silently disabled or overwritten.
+### Tech providers
 
-Each active pack contributes an **Easy**, **Medium**, and **Hard** quest to the existing difficulty pools. Difficulty raises both the objective and the reward.
+Tech may draw from:
 
-Built-in packs include:
-
-- Vanilla Starter
-- **Fable Quests - Good**
-- **Fable Quests - Evil**
 - Slimefun Core
-- ValhallaMMO
-- EvenMoreFish
-- PyroFishingPro
 - Networks
 - Networks Expansion
 - Infinity Expansion / InfinityExpansion2
@@ -80,20 +92,36 @@ Built-in packs include:
 - Infernal Farm
 - IDOE
 - SlimeGlue
+- Pylon / Rebar
 
-Slimefun addon detection is based on the addon that registered an item rather than a hard compile dependency, with aliases for common/forked addon names.
+Slimefun addon detection is based on the addon that registered an item rather than a hard compile dependency, with aliases for common/forked addon names. Pylon/Rebar item recognition is also reflection-based so those plugins remain optional.
 
-**MythicMobs is intentionally not included as a default quest pack.** Existing manual MythicMobs quest support is unchanged for servers that explicitly configure it.
+Examples of Slimefun objectives in the same **Tech** pool include:
 
-### Slimefun difficulty examples
+- craft **1 Common Talisman** — 500
+- craft **8 Steel Ingots** — 1,100
+- craft **2 Reinforced Alloy Ingots** — 2,500
 
-The Slimefun Core defaults deliberately scale with crafting complexity:
+These are deliberately mixed in one Tech category; they are not presented as Easy/Medium/Hard Tech quests.
 
-- Easy: craft **1 Common Talisman** — 500
-- Medium: craft **8 Steel Ingots** — 1,100
-- Hard: craft **2 Reinforced Alloy Ingots** — 2,500
+`SLIMEFUN_CRAFT` listens to normal Bukkit crafting and Slimefun's multiblock craft event. `SLIMEFUN_ITEM` can additionally filter by the Slimefun addon that owns the item. Pylon/Rebar Tech objectives use optional Rebar item recognition and can progress through supported crafting/acquisition events.
 
-`SLIMEFUN_CRAFT` listens to normal Bukkit crafting and Slimefun's multiblock craft event. `SLIMEFUN_ITEM` can additionally filter by the Slimefun addon that owns the item, which lets addon packs survive recipe and item-layout changes more gracefully.
+### Wild Card providers
+
+Wild Card providers activate only while their dependency is enabled:
+
+- **PyroFishingPro** — catch Pyro fish
+- **EvenMoreFish** — catch EMF fish
+- **ValhallaMMO** — earn Valhalla skill XP or levels
+- **mcMMO** — earn mcMMO skill XP
+- **MMOItems** — create or obtain MMOItems
+- **ItemsAdder** — create or obtain ItemsAdder custom items
+
+**MythicMobs is intentionally not included as an automatic/default Wild Card provider.** Existing manual MythicMobs quest support remains available for servers that explicitly configure it.
+
+## Fable Good / Evil
+
+Fable is split into two real daily categories: **Good** and **Evil**. The bundled pools are based on server-tested quest definitions and award the corresponding Good/Evil alignment points. Older short-lived Fable terminology is automatically migrated out of existing `good.yml` and `evil.yml` files.
 
 ## Extended quest keys
 
@@ -170,7 +198,7 @@ quests:
 
 ## Optional config.yml additions
 
-These sections can be added to an existing config. Missing sections retain legacy behavior. The `default_quest_packs` section does not need to be copied manually; the plugin creates missing pack toggles while preserving any values already set by the administrator.
+Missing extended sections retain legacy behavior. Built-in category and `default_quest_packs` entries are added without replacing values already chosen by the administrator.
 
 ```yaml
 # Categories listed here keep their current assignment through daily resets
@@ -226,7 +254,7 @@ Run:
 /dqadmin doctor
 ```
 
-The report includes the plugin/server/Java versions, runtime type, storage mode, loaded categories and quests, registered quest types, active player data, next reset, starter-pack status, active pack names, optional feature state, and detected integrations.
+The report includes the plugin/server/Java versions, runtime type, storage mode, loaded categories and quests, registered quest types, active player data, next reset, pack status, active pack names, optional feature state, and detected integrations.
 
 ## Compatibility philosophy
 
