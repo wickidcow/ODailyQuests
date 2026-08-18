@@ -1,0 +1,533 @@
+quests:
+  1:
+    name: '#FFE680Dawn Over the Dunes'
+    menu_item: GOLDEN_SWORD
+    description:
+    - '&8Cleanse the sunburnt roads where husks'
+    - '&8crawl from the sand to harry new travelers.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Kill #FFE68015 &7Husk.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Light Weapons Skill EXP'
+    - '&7▪ #FFE680900 &7XPs'
+    - '&7▪ #FFE6803000 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: HUSK
+    required_amount: 15
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 900
+      - val exp light_weapons 4 %player_name%
+      - eco give %player_name% 3000
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  2:
+    name: '#FFE680Oath Against the Frost'
+    menu_item: IRON_SWORD
+    description:
+    - '&8Stand watch in the frozen wastes and end'
+    - '&8the arrows of the dead before they find villagers.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Kill #FFE68012 &7Stray.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Archery Skill EXP'
+    - '&7▪ #FFE680950 &7XPs'
+    - '&7▪ #FFE6803200 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: STRAY
+    required_amount: 12
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 950
+      - val exp archery 4 %player_name%
+      - eco give %player_name% 3200
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  3:
+    name: '#FFE680Marshlight Mercy'
+    menu_item: MANGROVE_ROOTS
+    description:
+    - '&8Drive the bogged dead from the marsh paths'
+    - '&8so the lost may return safely to Albion.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Kill #FFE68010 &7Bogged.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Light Weapons Skill EXP'
+    - '&7▪ #FFE6801000 &7XPs'
+    - '&7▪ #FFE6803500 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: BOGGED
+    required_amount: 10
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1000
+      - val exp light_weapons 4 %player_name%
+      - eco give %player_name% 3500
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  4:
+    name: '#FFE680Cobweb Confession'
+    menu_item: SHEARS
+    description:
+    - '&8Cut through the poison dens beneath old stone'
+    - '&8and spare miners from a slow and hidden death.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Kill #FFE68010 &7Cave Spider.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Light Weapons Skill EXP'
+    - '&7▪ #FFE6801000 &7XPs'
+    - '&7▪ #FFE6803500 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: CAVE_SPIDER
+    required_amount: 10
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1000
+      - val exp light_weapons 4 %player_name%
+      - eco give %player_name% 3500
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  5:
+    name: '#FFE680Nest Beneath the Chapel'
+    menu_item: STONE_BRICKS
+    description:
+    - '&8The chapel floor whispers with silver teeth.'
+    - '&8Clear the nest before the pilgrims arrive.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Kill #FFE68020 &7Silverfish.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Mining Skill EXP'
+    - '&7▪ #FFE6801000 &7XPs'
+    - '&7▪ #FFE6803600 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: SILVERFISH
+    required_amount: 20
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1000
+      - val exp mining 4 %player_name%
+      - eco give %player_name% 3600
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  6:
+    name: '#FFE680Ashen Souls Unbound'
+    menu_item: WITHER_SKELETON_SKULL
+    description:
+    - '&8In the black halls of the Nether, bound souls'
+    - '&8wait for a blade brave enough to free them.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Kill #FFE6808 &7Wither Skeleton.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+5 &7Heavy Weapons Skill EXP'
+    - '&7▪ #FFE6801250 &7XPs'
+    - '&7▪ #FFE6804500 &7Gold'
+    - '&7▪ #FFE68075 &7Elite Coins'
+    - '&7▪ #FFE6804 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: WITHER_SKELETON
+    required_amount: 8
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1250
+      - val exp heavy_weapons 5 %player_name%
+      - eco give %player_name% 4500
+      - em money add %player_name% 75
+      - questadmin givepoints %player_name% 4
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  7:
+    name: '#FFE680Trial of the Calm Wind'
+    menu_item: WIND_CHARGE
+    description:
+    - '&8Face the wind-born trial without cruelty'
+    - '&8and prove courage can stand without malice.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Kill #FFE6804 &7Breeze.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+5 &7Light Weapons Skill EXP'
+    - '&7▪ #FFE6801300 &7XPs'
+    - '&7▪ #FFE6804500 &7Gold'
+    - '&7▪ #FFE68075 &7Elite Coins'
+    - '&7▪ #FFE6804 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: BREEZE
+    required_amount: 4
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1300
+      - val exp light_weapons 5 %player_name%
+      - eco give %player_name% 4500
+      - em money add %player_name% 75
+      - questadmin givepoints %player_name% 4
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  8:
+    name: '#FFE680Shelter in the End'
+    menu_item: SHULKER_SHELL
+    description:
+    - '&8Break the violet sentries that trap wanderers'
+    - '&8among the End cities and bring them home.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Kill #FFE6804 &7Shulker.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+5 &7Heavy Weapons Skill EXP'
+    - '&7▪ #FFE6801400 &7XPs'
+    - '&7▪ #FFE6805000 &7Gold'
+    - '&7▪ #FFE68075 &7Elite Coins'
+    - '&7▪ #FFE6804 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: KILL
+    required_entity: SHULKER
+    required_amount: 4
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1400
+      - val exp heavy_weapons 5 %player_name%
+      - eco give %player_name% 5000
+      - em money add %player_name% 75
+      - questadmin givepoints %player_name% 4
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  9:
+    name: '#FFE680Lanterns for the Lost'
+    menu_item: LANTERN
+    description:
+    - '&8Forge lanterns for the roads beyond spawn'
+    - '&8so late travelers can follow the light home.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Craft #FFE68016 &7Lantern.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Smithing Skill EXP'
+    - '&7▪ #FFE680850 &7XPs'
+    - '&7▪ #FFE6803000 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: CRAFT
+    ignore_nbt: true
+    required_item: LANTERN
+    required_amount: 16
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 850
+      - val exp smithing 4 %player_name%
+      - eco give %player_name% 3000
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  10:
+    name: '#FFE680Shelves of the Scribe'
+    menu_item: BOOKSHELF
+    description:
+    - '&8Restore the public archives with fresh shelves'
+    - '&8for maps, laws, and stories of the realm.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Craft #FFE68016 &7Bookshelf.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Enchanting Skill EXP'
+    - '&7▪ #FFE680900 &7XPs'
+    - '&7▪ #FFE6803200 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: CRAFT
+    ignore_nbt: true
+    required_item: BOOKSHELF
+    required_amount: 16
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 900
+      - val exp enchanting 4 %player_name%
+      - eco give %player_name% 3200
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  11:
+    name: '#FFE680Eyes for the Watch'
+    menu_item: SPYGLASS
+    description:
+    - '&8Craft spyglasses for the wall-watchers'
+    - '&8who keep dragons and raiders in sight.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Craft #FFE6804 &7Spyglass.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Smithing Skill EXP'
+    - '&7▪ #FFE680950 &7XPs'
+    - '&7▪ #FFE6803400 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: CRAFT
+    ignore_nbt: true
+    required_item: SPYGLASS
+    required_amount: 4
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 950
+      - val exp smithing 4 %player_name%
+      - eco give %player_name% 3400
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  12:
+    name: '#FFE680Cure for the Cursed'
+    menu_item: FERMENTED_SPIDER_EYE
+    description:
+    - '&8Gather grim alchemy for healers who know'
+    - '&8even cursed villagers deserve another dawn.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Craft #FFE6808 &7Fermented Spider Eye.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Alchemy Skill EXP'
+    - '&7▪ #FFE680950 &7XPs'
+    - '&7▪ #FFE6803400 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: CRAFT
+    ignore_nbt: true
+    required_item: FERMENTED_SPIDER_EYE
+    required_amount: 8
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 950
+      - val exp alchemy 4 %player_name%
+      - eco give %player_name% 3400
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  13:
+    name: '#FFE680Honey for the Healers'
+    menu_item: HONEYCOMB
+    description:
+    - '&8Bring honeycomb for salves, candles, and balm'
+    - '&8for those wounded on Albion roads.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Gather #FFE68024 &7Honeycomb.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Farming Skill EXP'
+    - '&7▪ #FFE680900 &7XPs'
+    - '&7▪ #FFE6803200 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: GET
+    required_item: HONEYCOMB
+    required_amount: 24
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 900
+      - val exp farming 4 %player_name%
+      - eco give %player_name% 3200
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  14:
+    name: '#FFE680Amethyst for the Shrine'
+    menu_item: AMETHYST_SHARD
+    description:
+    - '&8Carry amethyst shards to a Good shrine'
+    - '&8where vows are sealed beneath gentle light.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Gather #FFE68032 &7Amethyst Shard.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Mining Skill EXP'
+    - '&7▪ #FFE6801000 &7XPs'
+    - '&7▪ #FFE6803600 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: GET
+    required_item: AMETHYST_SHARD
+    required_amount: 32
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 1000
+      - val exp mining 4 %player_name%
+      - eco give %player_name% 3600
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  15:
+    name: '#FFE680Fisher of the Needy'
+    menu_item: FISHING_ROD
+    description:
+    - '&8Fill the common table with river salmon'
+    - '&8so no traveler sleeps hungry.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Fish up #FFE68016 &7Salmon.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Fishing Skill EXP'
+    - '&7▪ #FFE680850 &7XPs'
+    - '&7▪ #FFE6803000 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: FISH
+    required_item: SALMON
+    required_amount: 16
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 850
+      - val exp fishing 4 %player_name%
+      - eco give %player_name% 3000
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
+  16:
+    name: '#FFE680Stablemasters Promise'
+    menu_item: SADDLE
+    description:
+    - '&8Help the stables raise strong horses for'
+    - '&8couriers, scouts, and stranded newcomers.'
+    - ''
+    - '#FFE680&lObjectives:'
+    - '&7▪ &7Breed #FFE6801 &7Horse.'
+    - ''
+    - '#FFE680&lRewards:'
+    - '&7▪ #FFE680+1 &7Good Point'
+    - '&7▪ #FFFFFF+4 &7Farming Skill EXP'
+    - '&7▪ #FFE680900 &7XPs'
+    - '&7▪ #FFE6803200 &7Gold'
+    - '&7▪ #FFE68050 &7Elite Coins'
+    - '&7▪ #FFE6803 &7Quest Points'
+    - '&7▪ #FFE6802 &7Daily Crate Keys'
+    quest_type: BREED
+    required_entity: HORSE
+    required_amount: 1
+    reward:
+      reward_type: COMMAND
+      commands:
+      - xp give %player_name% 900
+      - val exp farming 4 %player_name%
+      - eco give %player_name% 3200
+      - em money add %player_name% 50
+      - questadmin givepoints %player_name% 3
+      - crates key give %player_name% daily 2
+      - scoreboard players add %player_name% Good 1
+      - lp user %player_name% meta set alignment.last_deed Good
+      - lp user %player_name% meta set alignment.last_deed_type good
