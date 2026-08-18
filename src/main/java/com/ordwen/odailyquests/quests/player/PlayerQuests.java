@@ -66,11 +66,6 @@ public class PlayerQuests {
         increaseCategoryAchievedQuests(category, player, true);
     }
 
-    /**
-     * Records a completed quest. Chain stages pass {@code allowCompletionEvents=false} so
-     * a successor can replace the completed stage before all-daily/all-category rewards fire.
-     * Historical total-reward milestones still count every completed chain stage.
-     */
     public synchronized void increaseCategoryAchievedQuests(
             String category,
             Player player,
@@ -136,6 +131,56 @@ public class PlayerQuests {
         if (oldProgression != null && oldProgression.isAchieved()) {
             decrementCurrentAchievement(categoryName);
         }
+        return true;
+    }
+
+    /**
+     * Replaces every currently assigned quest as one atomic reroll action. All replacements are
+     * selected before the player's quest map is changed, so a missing replacement never leaves
+     * the player with a partially rerolled daily set. One successful reroll-all consumes one
+     * daily reroll, not one reroll per quest.
+     */
+    public synchronized boolean rerollAll(Player player, boolean bypassMax) {
+        if (quests.isEmpty()) return false;
+        if (!bypassMax && !isRerollAllowedMaximum(player)) return false;
+
+        final List<AbstractQuest> ordered = new ArrayList<>(quests.keySet());
+        if (RerollNotAchieved.isRerollIfNotAchieved()) {
+            for (AbstractQuest quest : ordered) {
+                if (!isRerollAllowedProgression(quests.get(quest), player)) return false;
+            }
+        }
+
+        final Set<AbstractQuest> excluded = new HashSet<>(quests.keySet());
+        final List<AbstractQuest> replacements = new ArrayList<>(ordered.size());
+
+        for (AbstractQuest oldQuest : ordered) {
+            final String categoryName = oldQuest.getCategoryName();
+            final Category category = CategoriesLoader.getCategoryByName(categoryName);
+            if (category == null) {
+                PluginLogger.error("An error occurred while rerolling all quests. Category " + categoryName + " is null.");
+                return false;
+            }
+
+            final AbstractQuest replacement = QuestsManager.getRandomQuestForPlayer(excluded, category, player);
+            if (replacement == null) {
+                final String msg = QuestsMessages.NO_AVAILABLE_QUESTS_IN_CATEGORY.toString();
+                if (msg != null) player.sendMessage(msg.replace("%category%", categoryName));
+                return false;
+            }
+            replacements.add(replacement);
+            excluded.add(replacement);
+        }
+
+        final LinkedHashMap<AbstractQuest, Progression> updated = new LinkedHashMap<>();
+        for (AbstractQuest replacement : replacements) {
+            updated.put(replacement, QuestsManager.createFreshProgression(replacement));
+        }
+        quests.clear();
+        quests.putAll(updated);
+        achievedQuests = 0;
+        achievedQuestsByCategory.clear();
+        if (!bypassMax) recentRerolls++;
         return true;
     }
 
