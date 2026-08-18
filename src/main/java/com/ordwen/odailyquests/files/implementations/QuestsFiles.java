@@ -2,6 +2,7 @@ package com.ordwen.odailyquests.files.implementations;
 
 import com.ordwen.odailyquests.ODailyQuests;
 import com.ordwen.odailyquests.quests.features.DefaultQuestPacks;
+import com.ordwen.odailyquests.quests.features.PylonQuestDefaults;
 import com.ordwen.odailyquests.tools.PluginLogger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -61,6 +62,10 @@ public class QuestsFiles {
         // administrator-owned and is never overwritten here.
         seedEmptyManagedCategory("tech.yml");
         seedEmptyManagedCategory("wildcard.yml");
+
+        // Expand the maintained Pylon/Rebar portion of Tech with exact-item defaults while
+        // leaving completely custom Tech files alone.
+        PylonQuestDefaults.seed(new File(questsFolder, "tech.yml"));
 
         final File[] questFiles = questsFolder.listFiles((dir, name) -> name.endsWith(".yml"));
         if (questFiles == null) {
