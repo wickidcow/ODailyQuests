@@ -15,10 +15,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Locale;
 
 public class CustomQuest extends AbstractQuest {
 
     private static final String MULTIBLOCK_CRAFT_EVENT = "io.github.thebusybiscuit.slimefun4.api.events.MultiBlockCraftEvent";
+    private static final String MCMMO_XP_EVENT = "com.gmail.nossr50.events.experience.McMMOPlayerXpGainEvent";
+
+    private String requiredSkill = "ANY";
 
     public CustomQuest(BasicQuest base) {
         super(base);
@@ -46,8 +50,7 @@ public class CustomQuest extends AbstractQuest {
         }
 
         if (mcMMOQuest) {
-            return provided != null
-                    && "com.gmail.nossr50.events.experience.McMMOPlayerXpGainEvent".equals(provided.getClass().getName());
+            return matchesMcMMOSkill(provided);
         }
 
         if (provided == null) return false;
@@ -75,6 +78,21 @@ public class CustomQuest extends AbstractQuest {
         return addonAliases.isEmpty() || SlimefunIntegration.matchesAddon(stack, addonAliases);
     }
 
+    private boolean matchesMcMMOSkill(@Nullable Event event) {
+        if (event == null || !MCMMO_XP_EVENT.equals(event.getClass().getName())) return false;
+        if (requiredSkill.isBlank() || "ANY".equals(requiredSkill)) return true;
+
+        try {
+            Method getSkill = event.getClass().getMethod("getSkill");
+            Object skill = getSkill.invoke(event);
+            if (skill == null) return false;
+            String actual = skill instanceof Enum<?> value ? value.name() : skill.toString();
+            return requiredSkill.equals(actual.trim().toUpperCase(Locale.ROOT));
+        } catch (ReflectiveOperationException ignored) {
+            return false;
+        }
+    }
+
     private ItemStack extractStack(Event event) {
         if (event instanceof EntityPickupItemEvent pickup) return pickup.getItem().getItemStack();
         if (event instanceof CraftItemEvent craft) return craft.getCurrentItem();
@@ -93,6 +111,7 @@ public class CustomQuest extends AbstractQuest {
 
     @Override
     public boolean loadParameters(ConfigurationSection section, String file, String index) {
+        requiredSkill = section.getString(".skill", "ANY").trim().toUpperCase(Locale.ROOT);
         return true;
     }
 }
