@@ -54,9 +54,40 @@ safety_mode: true
 # More information here: https://ordwenplugins.gitbook.io/odailyquests/quests/create-a-category
 quests_per_category:
   #examples: 9
-  easy: 3  # The player will receive 3 quests from the "easy.yml" file
-  medium: 3
-  hard: 3
+  easy: 1
+  medium: 1
+  hard: 1
+  good: 1
+  evil: 1
+  tech: 1       # Slimefun + Slimefun addons + Pylon/Rebar; skipped if unavailable
+  wildcard: 1   # Misc plugin integrations; skipped if unavailable
+
+# Built-in dependency-backed daily quest packs.
+# These toggles are preserved on update. Dependency-backed entries only activate when
+# their plugin/addon is actually installed. Full generated metadata is added automatically.
+default_quest_packs:
+  vanilla:
+    enabled: true
+  fable-good:
+    enabled: true
+  fable-evil:
+    enabled: true
+  slimefun-core:
+    enabled: true
+  pylon-rebar:
+    enabled: true
+  valhallammo:
+    enabled: true
+  evenmorefish:
+    enabled: true
+  pyrofishingpro:
+    enabled: true
+  mcmmo:
+    enabled: true
+  mmoitems:
+    enabled: true
+  itemsadder:
+    enabled: true
 
 # Select the mode of timestamp.
 # ============================================================================
@@ -269,6 +300,18 @@ interfaces:
   hard:
     inventory_name: "Quests - Hard"
     empty_item: RED_STAINED_GLASS_PANE
+  good:
+    inventory_name: "Quests - Fable Good"
+    empty_item: LIME_STAINED_GLASS_PANE
+  evil:
+    inventory_name: "Quests - Fable Evil"
+    empty_item: RED_STAINED_GLASS_PANE
+  tech:
+    inventory_name: "Quests - Tech"
+    empty_item: CYAN_STAINED_GLASS_PANE
+  wildcard:
+    inventory_name: "Quests - Wild Card"
+    empty_item: PURPLE_STAINED_GLASS_PANE
 
 # You can disable quest progression in certain worlds.
 # You must put here the name of the world (in theory the name of its directory).
@@ -292,6 +335,10 @@ npcs:
   easy: "&a&lEasy Quests"
   medium: "&6&lMedium Quests"
   hard: "&c&lHard Quests"
+  good: "&a&lFable Good Quests"
+  evil: "&4&lFable Evil Quests"
+  tech: "&b&lTech Quests"
+  wildcard: "&d&lWild Card Quests"
 
 # Here you can customize the output of some placeholders.
 placeholders:
