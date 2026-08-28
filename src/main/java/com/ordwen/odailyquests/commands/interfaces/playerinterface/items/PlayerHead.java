@@ -5,14 +5,15 @@ import com.ordwen.odailyquests.commands.interfaces.playerinterface.items.getters
 import com.ordwen.odailyquests.files.implementations.PlayerInterfaceFile;
 import com.ordwen.odailyquests.nms.NMSHandler;
 import com.ordwen.odailyquests.quests.player.PlayerQuests;
-import com.ordwen.odailyquests.tools.TextFormatter;
 import com.ordwen.odailyquests.tools.PluginLogger;
 import com.ordwen.odailyquests.tools.QuestPlaceholders;
+import com.ordwen.odailyquests.tools.TextFormatter;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.HashSet;
@@ -29,14 +30,18 @@ public class PlayerHead extends InterfaceItemGetter {
     private final Set<Integer> slots = new HashSet<>();
 
     private ItemStack head;
-    private SkullMeta meta;
+    private ItemMeta meta;
 
     public PlayerHead(PlayerInterfaceFile playerInterfaceFile) {
         this.playerInterfaceFile = playerInterfaceFile;
     }
 
     /**
-     * Init player head.
+     * Init player head / information item.
+     *
+     * <p>The configured material may be a normal player head or any supported external item
+     * such as Nexo, ItemsAdder, Oraxen, or MMOItems. Player ownership is only applied when the
+     * resulting item actually uses {@link SkullMeta}.</p>
      */
     public void load() {
         final ConfigurationSection section = playerInterfaceFile.getConfig().getConfigurationSection("player_interface.player_head");
@@ -47,6 +52,9 @@ public class PlayerHead extends InterfaceItemGetter {
         }
 
         enabled = section.getBoolean(".enabled");
+        slots.clear();
+        head = null;
+        meta = null;
         if (!enabled) return;
 
         if (section.isString(".material")) {
@@ -60,8 +68,9 @@ public class PlayerHead extends InterfaceItemGetter {
             head = new ItemStack(Material.PLAYER_HEAD, 1);
         }
 
-        meta = (SkullMeta) head.getItemMeta();
+        meta = head.getItemMeta();
         if (meta == null) {
+            PluginLogger.error("Unable to load metadata for the configured player information item.");
             return;
         }
 
@@ -79,9 +88,12 @@ public class PlayerHead extends InterfaceItemGetter {
             }
         }
 
-        slots.clear();
+        head.setItemMeta(meta);
+
         if (section.isList(SLOT_PARAMETER)) {
-            slots.addAll(section.getIntegerList(SLOT_PARAMETER));
+            for (int configuredSlot : section.getIntegerList(SLOT_PARAMETER)) {
+                slots.add(configuredSlot - 1);
+            }
         } else {
             slots.add(section.getInt(SLOT_PARAMETER) - 1);
         }
@@ -91,7 +103,7 @@ public class PlayerHead extends InterfaceItemGetter {
         if (!enabled) return inventory;
 
         for (int slot : slots) {
-            if (slot >= 0 && slot <= size) {
+            if (slot >= 0 && slot < size) {
                 inventory.setItem(slot, getPlayerHead(player));
             } else {
                 PluginLogger.error("An error occurred when loading the player interface.");
@@ -103,25 +115,36 @@ public class PlayerHead extends InterfaceItemGetter {
     }
 
     public ItemStack getPlayerHead(Player player) {
-        final SkullMeta clone = this.meta.clone();
-        clone.setDisplayName(TextFormatter.format(player, clone.getDisplayName()
-                .replace("%player_name%", player.getName())));
-
-        clone.setOwningPlayer(player);
-        final List<String> lore = clone.getLore();
-        if (lore == null) return head;
-
-        for (String string : lore) {
-            int index = lore.indexOf(string);
-            string = TextFormatter.format(player, string);
-
-            final PlayerQuests playerQuests = ODailyQuestsAPI.getPlayerQuests(player.getName());
-            lore.set(index, QuestPlaceholders.replaceQuestPlaceholders(TextFormatter.format(string), player, null, null, playerQuests, null));
+        if (head == null || meta == null) {
+            return new ItemStack(Material.PLAYER_HEAD, 1);
         }
 
-        clone.setLore(lore);
-        head.setItemMeta(clone);
-        return head;
+        final ItemStack rendered = head.clone();
+        final ItemMeta clone = meta.clone();
+
+        if (clone.hasDisplayName()) {
+            clone.setDisplayName(TextFormatter.format(player, clone.getDisplayName()
+                    .replace("%player_name%", player.getName())));
+        }
+
+        if (clone instanceof SkullMeta skullMeta) {
+            skullMeta.setOwningPlayer(player);
+        }
+
+        final List<String> lore = clone.getLore();
+        if (lore != null) {
+            final PlayerQuests playerQuests = ODailyQuestsAPI.getPlayerQuests(player.getName());
+            for (int index = 0; index < lore.size(); index++) {
+                String line = TextFormatter.format(player, lore.get(index));
+                line = QuestPlaceholders.replaceQuestPlaceholders(
+                        TextFormatter.format(line), player, null, null, playerQuests, null);
+                lore.set(index, line);
+            }
+            clone.setLore(lore);
+        }
+
+        rendered.setItemMeta(clone);
+        return rendered;
     }
 
     public boolean isEnabled() {

@@ -11,7 +11,8 @@ import java.util.Objects;
  * Represents the amount of quests assigned for a category.
  * <p>
  * The amount can either be a fixed integer defined in the configuration or a
- * PlaceholderAPI expression evaluated per player.
+ * PlaceholderAPI expression evaluated per player. A fixed value of {@code 0}
+ * disables the category.
  */
 public final class QuestAmountSetting {
 
@@ -43,9 +44,9 @@ public final class QuestAmountSetting {
 
         if (trimmed.matches("^-?\\d+$")) {
             final int amount = Integer.parseInt(trimmed);
-            if (amount <= 0) {
-                PluginLogger.error("Invalid quests_per_category entry for '" + categoryName + "': value must be > 0.");
-                throw new IllegalArgumentException("Quest amount must be positive");
+            if (amount < 0) {
+                PluginLogger.error("Invalid quests_per_category entry for '" + categoryName + "': value must be >= 0.");
+                throw new IllegalArgumentException("Quest amount cannot be negative");
             }
             return new QuestAmountSetting(categoryName, trimmed, amount);
         }
