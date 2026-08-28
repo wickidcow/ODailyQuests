@@ -100,13 +100,7 @@ jobs:
         if: >-
           github.event_name == 'workflow_dispatch' ||
           startsWith(github.ref, 'refs/tags/') ||
-          github.ref_name == github.event.repository.default_branch ||
-          (github.event_name == 'push' &&
-           github.ref_name == 'agent/odailyquests-3.0.5-modernization' &&
-           contains(github.event.head_commit.message, '[release-3.0.5]')) ||
-          (github.event_name == 'pull_request' &&
-           github.event.pull_request.number == 2 &&
-           contains(github.event.pull_request.body, '<!-- publish-v3.0.5 -->'))
+          github.ref_name == github.event.repository.default_branch
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.artifact.outputs.version }}
@@ -121,8 +115,9 @@ jobs:
             TAG="v${RELEASE_VERSION}"
           fi
           JAR="dist/${NAME}"
-          TITLE="🚀 ODailyQuests ${RELEASE_VERSION} — Wider Compatibility Expansion"
-          NOTES="RELEASE_NOTES_3.0.5.md"
+          TITLE="🚀 ODailyQuests ${RELEASE_VERSION} — Compatibility Update"
+          NOTES="RELEASE_NOTES_${RELEASE_VERSION}.md"
+          test -s "$NOTES"
 
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release edit "$TAG" --title "$TITLE" --notes-file "$NOTES"

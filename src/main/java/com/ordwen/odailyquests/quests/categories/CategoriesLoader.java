@@ -34,6 +34,15 @@ public class CategoriesLoader {
             final QuestAmountSetting setting = entry.getValue();
             final Integer requiredAmount = setting.getStaticAmount();
 
+            // A static amount of zero is an explicit administrator opt-out. Do not load the
+            // category, require its quest file, expose its category interface, or validate it
+            // against safety_mode. Placeholder-backed categories remain loaded because their
+            // amount can vary per player and may resolve above zero.
+            if (requiredAmount != null && requiredAmount == 0) {
+                PluginLogger.info("Category '" + categoryName + "' disabled because quests_per_category is set to 0.");
+                continue;
+            }
+
             final Category category = new Category(categoryName);
             categories.put(categoryName, category);
 
