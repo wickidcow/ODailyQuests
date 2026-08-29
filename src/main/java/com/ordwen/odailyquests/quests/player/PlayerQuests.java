@@ -118,7 +118,10 @@ public class PlayerQuests {
 
         final Set<AbstractQuest> currentWithoutOld = new HashSet<>(quests.keySet());
         currentWithoutOld.remove(oldQuest);
+        final long selectionStarted = System.nanoTime();
         final AbstractQuest replacement = QuestsManager.getRandomQuestForPlayer(currentWithoutOld, category, player);
+        Debugger.write("PlayerQuests: reroll selection for " + player.getName() + " in category " + categoryName
+                + " completed in " + ((System.nanoTime() - selectionStarted) / 1_000_000.0D) + " ms.");
         if (replacement == null) {
             final String msg = QuestsMessages.NO_AVAILABLE_QUESTS_IN_CATEGORY.toString();
             if (msg != null) player.sendMessage(msg.replace("%category%", categoryName));
@@ -139,6 +142,9 @@ public class PlayerQuests {
      * selected before the player's quest map is changed, so a missing replacement never leaves
      * the player with a partially rerolled daily set. One successful reroll-all consumes one
      * daily reroll, not one reroll per quest.
+     *
+     * <p>Eligibility is evaluated once per category and then reused for every replacement from
+     * that category. This avoids repeating permission and PlaceholderAPI checks for every slot.</p>
      */
     public synchronized boolean rerollAll(Player player, boolean bypassMax) {
         if (quests.isEmpty()) return false;
@@ -151,8 +157,10 @@ public class PlayerQuests {
             }
         }
 
-        final Set<AbstractQuest> excluded = new HashSet<>(quests.keySet());
+        final Set<AbstractQuest> currentAssignments = new HashSet<>(quests.keySet());
+        final Map<String, List<AbstractQuest>> candidatesByCategory = new HashMap<>();
         final List<AbstractQuest> replacements = new ArrayList<>(ordered.size());
+        final long selectionStarted = System.nanoTime();
 
         for (AbstractQuest oldQuest : ordered) {
             final String categoryName = oldQuest.getCategoryName();
@@ -162,15 +170,26 @@ public class PlayerQuests {
                 return false;
             }
 
-            final AbstractQuest replacement = QuestsManager.getRandomQuestForPlayer(excluded, category, player);
+            List<AbstractQuest> candidates = candidatesByCategory.get(categoryName);
+            if (candidates == null) {
+                candidates = QuestsManager.getEligibleQuestsForPlayer(currentAssignments, category, player);
+                candidatesByCategory.put(categoryName, candidates);
+            }
+
+            final AbstractQuest replacement = QuestsManager.weightedPick(candidates);
             if (replacement == null) {
                 final String msg = QuestsMessages.NO_AVAILABLE_QUESTS_IN_CATEGORY.toString();
                 if (msg != null) player.sendMessage(msg.replace("%category%", categoryName));
                 return false;
             }
+
             replacements.add(replacement);
-            excluded.add(replacement);
+            candidates.remove(replacement);
         }
+
+        Debugger.write("PlayerQuests: reroll-all selected " + replacements.size() + " replacements across "
+                + candidatesByCategory.size() + " categories for " + player.getName() + " in "
+                + ((System.nanoTime() - selectionStarted) / 1_000_000.0D) + " ms.");
 
         final LinkedHashMap<AbstractQuest, Progression> updated = new LinkedHashMap<>();
         for (AbstractQuest replacement : replacements) {
