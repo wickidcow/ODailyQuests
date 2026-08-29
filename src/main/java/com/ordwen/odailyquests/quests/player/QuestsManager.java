@@ -176,16 +176,28 @@ public class QuestsManager implements Listener {
             List<AbstractQuest> availableQuests,
             Player player
     ) {
+        return weightedPick(getEligibleQuestsForPlayer(currentQuests, availableQuests, player));
+    }
+
+    /**
+     * Builds the eligible quest pool once so callers that need several selections from the same
+     * category can reuse it without repeating permission and PlaceholderAPI checks.
+     */
+    static List<AbstractQuest> getEligibleQuestsForPlayer(
+            Set<AbstractQuest> excludedQuests,
+            List<AbstractQuest> availableQuests,
+            Player player
+    ) {
         final List<AbstractQuest> filteredQuests = new ArrayList<>();
         for (AbstractQuest quest : availableQuests) {
+            if (excludedQuests != null && excludedQuests.contains(quest)) continue;
             if (QuestFeatures.isChainOnly(quest)) continue;
             if (!QuestFeatures.isPoolAllowed(player, quest)) continue;
             if (!hasAllPermissions(player, quest.getRequiredPermissions())) continue;
-            if (currentQuests.contains(quest)) continue;
             if (!PlaceholderRuleSetEvaluator.evaluate(player, quest.getPlaceholderConditions(), false)) continue;
             filteredQuests.add(quest);
         }
-        return weightedPick(filteredQuests);
+        return filteredQuests;
     }
 
     /**
@@ -212,7 +224,7 @@ public class QuestsManager implements Listener {
         return weightedPick(candidates);
     }
 
-    private static AbstractQuest weightedPick(List<AbstractQuest> quests) {
+    static AbstractQuest weightedPick(List<AbstractQuest> quests) {
         if (quests == null || quests.isEmpty()) return null;
 
         double totalWeight = 0.0D;
