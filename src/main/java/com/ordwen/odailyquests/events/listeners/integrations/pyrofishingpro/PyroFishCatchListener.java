@@ -1,4 +1,3 @@
-
 package com.ordwen.odailyquests.events.listeners.integrations.pyrofishingpro;
 
 import com.ordwen.odailyquests.ODailyQuests;
@@ -18,7 +17,9 @@ import java.lang.reflect.Method;
 
 public final class PyroFishCatchListener extends PlayerProgressor implements Listener, EventExecutor {
 
-    public static final String EVENT_CLASS_NAME = "me.arsmagica.API.PyroFishCatchEvent";
+    private static final String PYRO_API_PLUGIN_NAME = "PyroAPI";
+    private static final String CURRENT_EVENT_CLASS_NAME = "me.PyroAPI.Events.PyroFishingPro.PyroFishCatchEvent";
+    private static final String LEGACY_EVENT_CLASS_NAME = "me.arsmagica.API.PyroFishCatchEvent";
 
     private final Method getPlayerMethod;
 
@@ -29,12 +30,16 @@ public final class PyroFishCatchListener extends PlayerProgressor implements Lis
         }
 
         try {
-            final Class<?> rawEventClass = pyroFishingPro.getClass().getClassLoader().loadClass(EVENT_CLASS_NAME);
-            final Class<? extends Event> eventClass = rawEventClass.asSubclass(Event.class);
-            final PyroFishCatchListener listener = new PyroFishCatchListener(eventClass);
+            final EventBinding binding = findSupportedEvent(pluginManager, pyroFishingPro);
+            if (binding == null) {
+                Debugger.write("[PyroFishCatchListener] PyroFishingPro is enabled, but no supported fish-catch event is available. PYRO_FISH integration was skipped.");
+                return;
+            }
+
+            final PyroFishCatchListener listener = new PyroFishCatchListener(binding.eventClass());
 
             pluginManager.registerEvent(
-                    eventClass,
+                    binding.eventClass(),
                     listener,
                     EventPriority.NORMAL,
                     listener,
@@ -42,14 +47,52 @@ public final class PyroFishCatchListener extends PlayerProgressor implements Lis
                     true
             );
 
-            PluginLogger.info("Hooked into PyroFishingPro for PYRO_FISH quests.");
-        } catch (ClassNotFoundException exception) {
-            PluginLogger.warn("Cannot hook into PyroFishingPro: PyroFishCatchEvent was not found.");
-            PluginLogger.warn("Your PyroFishingPro version may not expose me.arsmagica.API.PyroFishCatchEvent.");
+            PluginLogger.info("Hooked into PyroFishingPro for PYRO_FISH quests using " + binding.eventClassName() + ".");
         } catch (ClassCastException exception) {
-            PluginLogger.warn("Cannot hook into PyroFishingPro: PyroFishCatchEvent is not a Bukkit Event.");
+            PluginLogger.warn("Cannot hook into PyroFishingPro: the detected fish-catch event is not a Bukkit Event.");
         } catch (ReflectiveOperationException exception) {
             PluginLogger.warn("Cannot hook into PyroFishingPro: required event methods were not found.");
+        }
+    }
+
+    public static boolean isSupportedEvent(final Event event) {
+        if (event == null) {
+            return false;
+        }
+
+        final String eventClassName = event.getClass().getName();
+        return CURRENT_EVENT_CLASS_NAME.equals(eventClassName) || LEGACY_EVENT_CLASS_NAME.equals(eventClassName);
+    }
+
+    private static EventBinding findSupportedEvent(final PluginManager pluginManager, final Plugin pyroFishingPro) {
+        final Plugin pyroApi = pluginManager.getPlugin(PYRO_API_PLUGIN_NAME);
+        if (pyroApi != null && pyroApi.isEnabled()) {
+            final Class<? extends Event> currentEvent = loadEventClass(pyroApi, CURRENT_EVENT_CLASS_NAME);
+            if (currentEvent != null) {
+                return new EventBinding(CURRENT_EVENT_CLASS_NAME, currentEvent);
+            }
+        }
+
+        // Some PyroFishingPro builds can expose dependency classes through their own class loader.
+        // Try that path too before falling back to the pre-PyroAPI event package.
+        final Class<? extends Event> currentEventFromPyroFishing = loadEventClass(pyroFishingPro, CURRENT_EVENT_CLASS_NAME);
+        if (currentEventFromPyroFishing != null) {
+            return new EventBinding(CURRENT_EVENT_CLASS_NAME, currentEventFromPyroFishing);
+        }
+
+        final Class<? extends Event> legacyEvent = loadEventClass(pyroFishingPro, LEGACY_EVENT_CLASS_NAME);
+        if (legacyEvent != null) {
+            return new EventBinding(LEGACY_EVENT_CLASS_NAME, legacyEvent);
+        }
+
+        return null;
+    }
+
+    private static Class<? extends Event> loadEventClass(final Plugin owner, final String className) {
+        try {
+            return owner.getClass().getClassLoader().loadClass(className).asSubclass(Event.class);
+        } catch (ClassNotFoundException ignored) {
+            return null;
         }
     }
 
@@ -72,5 +115,8 @@ public final class PyroFishCatchListener extends PlayerProgressor implements Lis
         } catch (ReflectiveOperationException exception) {
             throw new EventException(exception);
         }
+    }
+
+    private record EventBinding(String eventClassName, Class<? extends Event> eventClass) {
     }
 }
