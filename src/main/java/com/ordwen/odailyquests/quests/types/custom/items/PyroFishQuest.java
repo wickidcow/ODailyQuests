@@ -28,7 +28,7 @@ public class PyroFishQuest extends AbstractQuest {
 
     @Override
     public boolean canProgress(final Event provided, final Progression progression) {
-        if (provided == null || !provided.getClass().getName().equals(PyroFishCatchListener.EVENT_CLASS_NAME)) {
+        if (!PyroFishCatchListener.isSupportedEvent(provided)) {
             return false;
         }
 
@@ -68,19 +68,27 @@ public class PyroFishQuest extends AbstractQuest {
     private String getCaughtFishKey(final Event event) {
         try {
             final Method getTier = event.getClass().getMethod("getTier");
-            final Method getFishNumber = event.getClass().getMethod("getFishNumber");
+            final Method getFishIdentifier = getFishIdentifierMethod(event.getClass());
 
             final Object tierObject = getTier.invoke(event);
-            final Object fishNumberObject = getFishNumber.invoke(event);
+            final Object fishIdentifierObject = getFishIdentifier.invoke(event);
 
-            if (tierObject == null || fishNumberObject == null) {
+            if (tierObject == null || fishIdentifierObject == null) {
                 return null;
             }
 
-            return tierObject.toString().toLowerCase() + ":" + fishNumberObject;
+            return tierObject.toString().toLowerCase() + ":" + fishIdentifierObject.toString().toLowerCase();
         } catch (ReflectiveOperationException exception) {
             PluginLogger.warn("Unable to read PyroFishingPro fish data from PyroFishCatchEvent.");
             return null;
+        }
+    }
+
+    private Method getFishIdentifierMethod(final Class<?> eventClass) throws NoSuchMethodException {
+        try {
+            return eventClass.getMethod("getFishId");
+        } catch (NoSuchMethodException ignored) {
+            return eventClass.getMethod("getFishNumber");
         }
     }
 
@@ -90,16 +98,9 @@ public class PyroFishQuest extends AbstractQuest {
             return false;
         }
 
-        final String[] split = fish.split(":");
+        final String[] split = fish.split(":", 2);
         if (split.length != 2 || split[0].isBlank() || split[1].isBlank()) {
             PluginLogger.configurationError(file, index, "required", "Invalid fish format: " + fish + ". Expected format: <tier>:<id>");
-            return false;
-        }
-
-        try {
-            Integer.parseInt(split[1]);
-        } catch (NumberFormatException exception) {
-            PluginLogger.configurationError(file, index, "required", "Invalid fish id in: " + fish + ". The id must be a number.");
             return false;
         }
 
