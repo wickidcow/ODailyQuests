@@ -55,6 +55,15 @@ public final class PyroFishCatchListener extends PlayerProgressor implements Lis
         }
     }
 
+    public static boolean isSupportedEvent(final Event event) {
+        if (event == null) {
+            return false;
+        }
+
+        final String eventClassName = event.getClass().getName();
+        return CURRENT_EVENT_CLASS_NAME.equals(eventClassName) || LEGACY_EVENT_CLASS_NAME.equals(eventClassName);
+    }
+
     private static EventBinding findSupportedEvent(final PluginManager pluginManager, final Plugin pyroFishingPro) {
         final Plugin pyroApi = pluginManager.getPlugin(PYRO_API_PLUGIN_NAME);
         if (pyroApi != null && pyroApi.isEnabled()) {
