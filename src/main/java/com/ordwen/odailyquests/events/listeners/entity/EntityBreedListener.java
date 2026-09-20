@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntityBreedEvent;
 
 public class EntityBreedListener extends PlayerProgressor implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityBreadEvent(EntityBreedEvent event) {
         if (event.isCancelled()) return;
 
