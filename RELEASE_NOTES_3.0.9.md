@@ -6,7 +6,7 @@ ODailyQuests 3.0.9 updates the maintained build target to the current Paper 26.3
 
 - Build and test against `io.papermc.paper:paper-api:26.3.build.+`.
 - Continue using the Java 25 build toolchain required by the modern Paper development environment.
-- Keep Java 21 bytecode for compatibility with the existing maintained runtime target.
+- Target Java 25 bytecode, matching the requirement of the Paper 26.3 API and Minecraft 26.3 servers.
 - Keep `api-version: 1.21.11` so the plugin is not unnecessarily locked to 26.3-only servers.
 - Preserve Paper, Purpur, and Folia-aware scheduling support.
 
