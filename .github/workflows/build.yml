@@ -49,6 +49,7 @@ jobs:
             "com/ordwen/odailyquests/commands/interfaces/playerinterface/reroll/DailyRerollMenu.class"
             "com/ordwen/odailyquests/events/listeners/integrations/PylonInventoryGainEvent.class"
             "com/ordwen/odailyquests/events/listeners/integrations/PylonInventoryGainListener.class"
+            "com/ordwen/odailyquests/events/listeners/item/PaperItemCraftedListener.class"
             "quests/easy.yml"
             "quests/medium.yml"
             "quests/hard.yml"
