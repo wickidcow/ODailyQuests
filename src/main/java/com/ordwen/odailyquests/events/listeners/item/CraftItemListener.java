@@ -20,7 +20,7 @@ public class CraftItemListener extends PlayerProgressor implements Listener {
      *
      * @param event the craft item event
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCraftItemEvent(CraftItemEvent event) {
         if (event.isCancelled()) {
             Debugger.write("CraftItemEvent cancelled");
@@ -157,7 +157,7 @@ public class CraftItemListener extends PlayerProgressor implements Listener {
         int maxCraftable = getMaxCraftAmount(event.getInventory());
         int capacity = fits(sample, player.getInventory().getStorageContents());
         if (capacity < maxCraftable) {
-            maxCraftable = ((capacity + baseAmount - 1) / baseAmount) * baseAmount;
+            maxCraftable = (capacity / baseAmount) * baseAmount;
         }
         return maxCraftable;
     }
