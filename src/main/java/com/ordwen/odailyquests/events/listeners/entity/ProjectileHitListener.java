@@ -15,7 +15,7 @@ import org.bukkit.projectiles.ProjectileSource;
 
 public class ProjectileHitListener extends PlayerProgressor implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onProjectileHit(ProjectileHitEvent event) {
         if (event.isCancelled()) return;
 

@@ -15,7 +15,7 @@ import java.util.List;
 
 public class PlayerHarvestBlockListener extends PlayerProgressor implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerHarvestBlock(PlayerHarvestBlockEvent event) {
         Debugger.write("PlayerHarvestBlockListener: onPlayerHarvestBlockEvent summoned.");
 

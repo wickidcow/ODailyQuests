@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 
 public class PlayerFishListener extends PlayerProgressor implements Listener {
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerFishEvent(PlayerFishEvent event) {
         if (event.isCancelled()) {
             Debugger.write("PlayerFishListener: onPlayerFishEvent cancelled for " + event.getPlayer().getName() + ".");

@@ -12,14 +12,14 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 public class PlayerItemConsumeListener extends PlayerProgressor implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onItemConsumeEvent(PlayerItemConsumeEvent event) {
         if (event.isCancelled()) return;
         Debugger.write("PlayerItemConsumeListener: onItemConsumeEvent summoned by " + event.getPlayer().getName() + " for " + event.getItem().getType() + ".");
         setPlayerQuestProgression(event, event.getPlayer(), 1, "CONSUME");
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResurrect(EntityResurrectEvent event) {
         if (event.isCancelled()) {
             Debugger.write("PlayerItemConsumeListener: onResurrect cancelled.");

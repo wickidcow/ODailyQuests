@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 
 public class ShearEntityListener extends PlayerProgressor implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onShearEntityEvent(PlayerShearEntityEvent event) {
         if (event.isCancelled()) {
             return;

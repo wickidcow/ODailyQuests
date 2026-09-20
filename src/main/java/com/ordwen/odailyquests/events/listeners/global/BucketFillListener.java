@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class BucketFillListener extends PlayerProgressor implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
         if (event.isCancelled()) return;
 

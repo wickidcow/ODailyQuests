@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntityTameEvent;
 
 public class EntityTameListener extends PlayerProgressor implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityTameEvent(EntityTameEvent event) {
         if (event.isCancelled()) return;
 
