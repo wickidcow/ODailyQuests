@@ -100,9 +100,9 @@ dependencies {
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.7'
     compileOnly 'com.palmergames.bukkit.towny:towny:0.100.3.1'
 
-    implementation platform("com.intellectualsites.bom:bom-newest:1.55")
-    compileOnly "com.intellectualsites.plotsquared:plotsquared-core"
-    compileOnly("com.intellectualsites.plotsquared:plotsquared-bukkit") {
+    /* PlotSquared API pinned directly so its BOM cannot force an obsolete Paper API. */
+    compileOnly "com.intellectualsites.plotsquared:plotsquared-core:7.5.12"
+    compileOnly("com.intellectualsites.plotsquared:plotsquared-bukkit:7.5.12") {
         transitive = false
     }
 
