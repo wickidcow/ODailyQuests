@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ordwen'
-version = "3.0.8-Spigot-1.21.11+"
+version = "3.0.9"
 
 def ciVersion = System.getenv("ORG_GRADLE_PROJECT_version")
 if (ciVersion != null && !ciVersion.trim().isEmpty()) {
@@ -39,7 +39,8 @@ repositories {
     maven { url = 'https://repo.auxilor.io/repository/maven-public/' }
     maven { url = 'https://repo.fancyinnovations.com/releases' }
     maven { url = 'https://repo.codemc.io/repository/EvenMoreFish/' }
-    maven { url = 'https://maven.devs.beer/' }
+    // Stable mirror for the ItemsAdder API; avoids relying on maven.devs.beer availability.
+    maven { url = 'https://repo.loohpjames.com/repository/' }
     maven { url = 'https://jitpack.io' }
 }
 
@@ -49,8 +50,8 @@ dependencies {
     compileOnly 'org.xerial:sqlite-jdbc:3.53.0.0'
     compileOnly 'com.h2database:h2:2.4.240'
 
-    /* Spigot */
-    compileOnly 'org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT'
+    /* Paper 26.3 API; plugin.yml keeps 1.21.11 as the minimum supported API level. */
+    compileOnly 'io.papermc.paper:paper-api:26.3.build.25-alpha'
 
     /* Folia/Paper scheduling compatibility */
     implementation 'space.arim.morepaperlib:morepaperlib:0.4.3'
@@ -100,9 +101,9 @@ dependencies {
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.7'
     compileOnly 'com.palmergames.bukkit.towny:towny:0.100.3.1'
 
-    implementation platform("com.intellectualsites.bom:bom-newest:1.55")
-    compileOnly "com.intellectualsites.plotsquared:plotsquared-core"
-    compileOnly("com.intellectualsites.plotsquared:plotsquared-bukkit") {
+    /* PlotSquared API pinned directly so its BOM cannot force an obsolete Paper API. */
+    compileOnly "com.intellectualsites.plotsquared:plotsquared-core:7.5.12"
+    compileOnly("com.intellectualsites.plotsquared:plotsquared-bukkit:7.5.12") {
         transitive = false
     }
 
@@ -121,7 +122,7 @@ dependencies {
 }
 
 def buildJavaVersion = 25
-def bytecodeJavaVersion = 21
+def bytecodeJavaVersion = 25
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(buildJavaVersion)
