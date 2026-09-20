@@ -40,8 +40,10 @@ quests:
       - "&3Progress:"
       - " &3&l| %status%"
       - ""
-      - "&3Reward:"
-      - " &3&l| &7250$"
+      - "&3Rewards:"
+      - " &3&l| &71000 Gold"
+      - " &3&l| &7550 XP"
+      - " &3&l| &71 Quest Point"
       - ""
     quest_type: BREAK
     required: 
@@ -49,8 +51,11 @@ quests:
       - STONE
     required_amount: 32
     reward:
-      reward_type: MONEY
-      amount: 250
+      reward_type: COMMAND
+      commands:
+        - "eco give %player% 1000"
+        - "xp give %player% 550"
+        - "questadmin givepoints %player% 1"
   2:
     name: "&3Let’s get lumber-jacked!"
     menu_item: STONE_AXE
@@ -63,8 +68,10 @@ quests:
       - "&3Progress:"
       - " &3&l| %status%"
       - ""
-      - "&3Reward:"
-      - " &3&l| &7250$"
+      - "&3Rewards:"
+      - " &3&l| &71000 Gold"
+      - " &3&l| &7550 XP"
+      - " &3&l| &71 Quest Point"
       - ""
     quest_type: BREAK
     required:
@@ -94,7 +101,9 @@ quests:
     reward:
       reward_type: COMMAND
       commands:
-        - "eco give %player% 250"
+        - "eco give %player% 1000"
+        - "xp give %player% 550"
+        - "questadmin givepoints %player% 1"
   3:
     name: "&3Too many zombies"
     menu_item: ZOMBIE_SPAWN_EGG
@@ -107,15 +116,20 @@ quests:
       - "&3Progress:"
       - " &3&l| %status%"
       - ""
-      - "&3Reward:"
-      - " &3&l| &7250$"
+      - "&3Rewards:"
+      - " &3&l| &71000 Gold"
+      - " &3&l| &7550 XP"
+      - " &3&l| &71 Quest Point"
       - ""
     quest_type: KILL
     required: ZOMBIE
     required_amount: 10
     reward:
-      reward_type: MONEY
-      amount: 250
+      reward_type: COMMAND
+      commands:
+        - "eco give %player% 1000"
+        - "xp give %player% 550"
+        - "questadmin givepoints %player% 1"
   4:
     name: "&3Call me a crop star"
     menu_item: STONE_HOE
@@ -128,15 +142,20 @@ quests:
       - "&3Progress:"
       - " &3&l| %status%"
       - ""
-      - "&3Reward:"
-      - " &3&l| &7250$"
+      - "&3Rewards:"
+      - " &3&l| &71000 Gold"
+      - " &3&l| &7550 XP"
+      - " &3&l| &71 Quest Point"
       - ""
     quest_type: FARMING
     required: WHEAT
     required_amount: 12
     reward:
-      reward_type: MONEY
-      amount: 250
+      reward_type: COMMAND
+      commands:
+        - "eco give %player% 1000"
+        - "xp give %player% 550"
+        - "questadmin givepoints %player% 1"
   5:
     name: "&3Crafting is a work of heart"
     menu_item: BREAD
@@ -149,15 +168,20 @@ quests:
       - "&3Progress:"
       - " &3&l| %status%"
       - ""
-      - "&3Reward:"
-      - " &3&l| &7250$"
+      - "&3Rewards:"
+      - " &3&l| &71000 Gold"
+      - " &3&l| &7550 XP"
+      - " &3&l| &71 Quest Point"
       - ""
     quest_type: CRAFT
     required: BREAD
     required_amount: 5
     reward:
-      reward_type: MONEY
-      amount: 250
+      reward_type: COMMAND
+      commands:
+        - "eco give %player% 1000"
+        - "xp give %player% 550"
+        - "questadmin givepoints %player% 1"
   6:
     name: "&3Too many fishes"
     menu_item: FISHING_ROD
@@ -170,16 +194,21 @@ quests:
       - "&3Progress:"
       - " &3&l| %status%"
       - ""
-      - "&3Reward:"
-      - " &3&l| &7250$"
+      - "&3Rewards:"
+      - " &3&l| &71000 Gold"
+      - " &3&l| &7550 XP"
+      - " &3&l| &71 Quest Point"
       - ""
     quest_type: FISH
     required: 
       - COD
     required_amount: 4
     reward:
-      reward_type: MONEY
-      amount: 250
+      reward_type: COMMAND
+      commands:
+        - "eco give %player% 1000"
+        - "xp give %player% 550"
+        - "questadmin givepoints %player% 1"
   7:
     name: "&3Heat up the furnace!"
     menu_item: FURNACE
@@ -192,8 +221,10 @@ quests:
       - "&3Progress:"
       - " &3&l| %status%"
       - ""
-      - "&3Reward:"
-      - " &3&l| &7250$"
+      - "&3Rewards:"
+      - " &3&l| &71000 Gold"
+      - " &3&l| &7550 XP"
+      - " &3&l| &71 Quest Point"
       - ""
     quest_type: COOK
     required: 
@@ -201,8 +232,11 @@ quests:
       - SMOOTH_STONE
     required_amount: 16
     reward:
-      reward_type: MONEY
-      amount: 250
+      reward_type: COMMAND
+      commands:
+        - "eco give %player% 1000"
+        - "xp give %player% 550"
+        - "questadmin givepoints %player% 1"
   8:
     name: "&3Delivery guy"
     menu_item: CHEST
@@ -216,15 +250,20 @@ quests:
       - "&3Progress:"
       - " &3&l| %status%"
       - ""
-      - "&3Reward:"
-      - " &3&l| &7250$"
+      - "&3Rewards:"
+      - " &3&l| &71000 Gold"
+      - " &3&l| &7550 XP"
+      - " &3&l| &71 Quest Point"
       - ""
     quest_type: GET
     required: COBBLESTONE
     required_amount: 20
     reward:
-      reward_type: MONEY
-      amount: 250
+      reward_type: COMMAND
+      commands:
+        - "eco give %player% 1000"
+        - "xp give %player% 550"
+        - "questadmin givepoints %player% 1"
   9:
     name: "&3Snowball Fight"
     menu_item: SNOWBALL
@@ -237,15 +276,20 @@ quests:
       - "&3Progress:"
       - " &3&l| %status%"
       - ""
-      - "&3Reward:"
-      - " &3&l| &7250$"
+      - "&3Rewards:"
+      - " &3&l| &71000 Gold"
+      - " &3&l| &7550 XP"
+      - " &3&l| &71 Quest Point"
       - ""
     quest_type: LAUNCH
     required: SNOWBALL
     required_amount: 12
     reward:
-      reward_type: MONEY
-      amount: 250
+      reward_type: COMMAND
+      commands:
+        - "eco give %player% 1000"
+        - "xp give %player% 550"
+        - "questadmin givepoints %player% 1"
   10:
     name: "&3Help heavy sheeps"
     menu_item: WHITE_WOOL
@@ -258,15 +302,20 @@ quests:
       - "&3Progress:"
       - " &3&l| %status%"
       - ""
-      - "&3Reward:"
-      - " &3&l| &7250$"
+      - "&3Rewards:"
+      - " &3&l| &71000 Gold"
+      - " &3&l| &7550 XP"
+      - " &3&l| &71 Quest Point"
       - ""
     quest_type: SHEAR
     required: SHEEP
     required_amount: 2
     reward:
-      reward_type: MONEY
-      amount: 250
+      reward_type: COMMAND
+      commands:
+        - "eco give %player% 1000"
+        - "xp give %player% 550"
+        - "questadmin givepoints %player% 1"
   11:
     name: "&3Need some knowledge"
     menu_item: EXPERIENCE_BOTTLE
@@ -279,14 +328,19 @@ quests:
       - "&3Progress:"
       - " &3&l| %status%"
       - ""
-      - "&3Reward:"
-      - " &3&l| &7250$"
+      - "&3Rewards:"
+      - " &3&l| &71000 Gold"
+      - " &3&l| &7550 XP"
+      - " &3&l| &71 Quest Point"
       - ""
     quest_type: EXP_LEVELS
     required_amount: 3
     reward:
-      reward_type: MONEY
-      amount: 250
+      reward_type: COMMAND
+      commands:
+        - "eco give %player% 1000"
+        - "xp give %player% 550"
+        - "questadmin givepoints %player% 1"
   12:
     name: "&3Stay healthy"
     menu_item: APPLE
@@ -299,12 +353,17 @@ quests:
       - "&3Progress:"
       - " &3&l| %status%"
       - ""
-      - "&3Reward:"
-      - " &3&l| &7250$"
+      - "&3Rewards:"
+      - " &3&l| &71000 Gold"
+      - " &3&l| &7550 XP"
+      - " &3&l| &71 Quest Point"
       - ""
     quest_type: CONSUME
     required: APPLE
     required_amount: 2
     reward:
-      reward_type: MONEY
-      amount: 250
+      reward_type: COMMAND
+      commands:
+        - "eco give %player% 1000"
+        - "xp give %player% 550"
+        - "questadmin givepoints %player% 1"
