@@ -11,7 +11,7 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 
 public class ProjectileLaunchListener extends PlayerProgressor implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         if (event.isCancelled()) return;
 
