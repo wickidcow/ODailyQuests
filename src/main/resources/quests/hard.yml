@@ -28,325 +28,396 @@
 # For more affected objects or types, please make suggestion.
 # ==============================================================
 quests:
-  1:
-    name: "&3Can’t see the ore for the rocks"
+  '1':
+    name: '&3Can’t see the ore for the rocks'
     menu_item: DIAMOND_PICKAXE
     description:
-      - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
-      - ""
-      - "&3Task:"
-      - " &3&l| &7Mine %required% ancient debris"
-      - ""
-      - "&3Progress:"
-      - " &3&l| %status%"
-      - ""
-      - "&3Reward:"
-      - " &3&l| &7750$"
-      - ""
-    quest_type: BREAK
-    required: 
-      - ANCIENT_DEBRIS
-    required_amount: 2
-    reward:
-      reward_type: MONEY
-      amount: 750
-  2:
-    name: "&3Let’s get lumber-jacked!"
-    menu_item: DIAMOND_AXE
-    description:
-      - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
-      - ""
-      - "&3Task:"
-      - " &3&l| &7Cut down %required% logs"
-      - ""
-      - "&3Progress:"
-      - " &3&l| %status%"
-      - ""
-      - "&3Reward:"
-      - " &3&l| &7750$"
-      - ""
+    - ' &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Mine %required% ancient debris'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &74000 Gold'
+    - ' &3&l| &78670 XP'
+    - ' &3&l| &71 Quest Point'
+    - ''
     quest_type: BREAK
     required:
-      - OAK_LOG
-      - SPRUCE_LOG
-      - BIRCH_LOG
-      - JUNGLE_LOG
-      - ACACIA_LOG
-      - CHERRY_LOG
-      - PALE_OAK_LOG
-      - DARK_OAK_LOG
-      - MANGROVE_LOG
-      - CRIMSON_HYPHAE
-      - WARPED_HYPHAE
-      - STRIPPED_OAK_LOG
-      - STRIPPED_SPRUCE_LOG
-      - STRIPPED_BIRCH_LOG
-      - STRIPPED_JUNGLE_LOG
-      - STRIPPED_ACACIA_LOG
-      - STRIPPED_CHERRY_LOG
-      - STRIPPED_PALE_OAK_LOG
-      - STRIPPED_DARK_OAK_LOG
-      - STRIPPED_MANGROVE_LOG
-      - STRIPPED_CRIMSON_HYPHAE
-      - STRIPPED_WARPED_HYPHAE
+    - ANCIENT_DEBRIS
+    required_amount: 2
+    reward:
+      reward_type: COMMAND
+      commands:
+      - eco give %player% 4000
+      - xp give %player% 8670
+      - questadmin givepoints %player% 1
+    default_pack: vanilla
+  '2':
+    name: '&3Let’s get lumber-jacked!'
+    menu_item: DIAMOND_AXE
+    description:
+    - ' &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Cut down %required% logs'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &74000 Gold'
+    - ' &3&l| &78670 XP'
+    - ' &3&l| &71 Quest Point'
+    - ''
+    quest_type: BREAK
+    required:
+    - OAK_LOG
+    - SPRUCE_LOG
+    - BIRCH_LOG
+    - JUNGLE_LOG
+    - ACACIA_LOG
+    - CHERRY_LOG
+    - PALE_OAK_LOG
+    - DARK_OAK_LOG
+    - MANGROVE_LOG
+    - CRIMSON_HYPHAE
+    - WARPED_HYPHAE
+    - STRIPPED_OAK_LOG
+    - STRIPPED_SPRUCE_LOG
+    - STRIPPED_BIRCH_LOG
+    - STRIPPED_JUNGLE_LOG
+    - STRIPPED_ACACIA_LOG
+    - STRIPPED_CHERRY_LOG
+    - STRIPPED_PALE_OAK_LOG
+    - STRIPPED_DARK_OAK_LOG
+    - STRIPPED_MANGROVE_LOG
+    - STRIPPED_CRIMSON_HYPHAE
+    - STRIPPED_WARPED_HYPHAE
     required_amount: 112
     reward:
       reward_type: COMMAND
       commands:
-        - "eco give %player% 750"
-  3:
-    name: "&3Too many withers"
+      - eco give %player% 4000
+      - xp give %player% 8670
+      - questadmin givepoints %player% 1
+    default_pack: vanilla
+  '3':
+    name: '&3Too many withers'
     menu_item: WITHER_SKELETON_SPAWN_EGG
     description:
-      - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
-      - ""
-      - "&3Task:"
-      - " &3&l| &7Kill %required% wither skeletons"
-      - ""
-      - "&3Progress:"
-      - " &3&l| %status%"
-      - ""
-      - "&3Reward:"
-      - " &3&l| &7750$"
-      - ""
+    - ' &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Kill %required% wither skeletons'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &74000 Gold'
+    - ' &3&l| &78670 XP'
+    - ' &3&l| &71 Quest Point'
+    - ''
     quest_type: KILL
     required: WITHER_SKELETON
     required_amount: 20
     reward:
-      reward_type: MONEY
-      amount: 750
-  4:
-    name: "&3Call me a crop star"
+      reward_type: COMMAND
+      commands:
+      - eco give %player% 4000
+      - xp give %player% 8670
+      - questadmin givepoints %player% 1
+    default_pack: vanilla
+  '4':
+    name: '&3Call me a crop star'
     menu_item: DIAMOND_HOE
     description:
-      - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
-      - ""
-      - "&3Task:"
-      - " &3&l| &7Farm %required% crops (any)"
-      - ""
-      - "&3Progress:"
-      - " &3&l| %status%"
-      - ""
-      - "&3Reward:"
-      - " &3&l| &7750$"
-      - ""
+    - ' &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Farm %required% crops (any)'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &74000 Gold'
+    - ' &3&l| &78670 XP'
+    - ' &3&l| &71 Quest Point'
+    - ''
     quest_type: FARMING
-    required: 
-      - WHEAT
-      - BEETROOT
-      - CARROT
-      - POTATO
-      - POISONOUS_POTATO
-      - MELON_SLICE
-      - PUMPKIN
-      - TORCHFLOWER
-      - PITCHER_PLANT
-      - BAMBOO
-      - COCOA_BEANS
-      - SUGAR_CANE
-      - SWEET_BERRIES
-      - CACTUS
-      - KELP
-      - SEA_PICKLE
-      - GLOW_BERRIES
-      - NETHER_WART
-      - CHORUS_FRUIT
-      - CRIMSON_FUNGUS
-      - WARPED_FUNGUS
-      - BROWN_MUSHROOM
-      - RED_MUSHROOM
+    required:
+    - WHEAT
+    - BEETROOT
+    - CARROT
+    - POTATO
+    - POISONOUS_POTATO
+    - MELON_SLICE
+    - PUMPKIN
+    - TORCHFLOWER
+    - PITCHER_PLANT
+    - BAMBOO
+    - COCOA_BEANS
+    - SUGAR_CANE
+    - SWEET_BERRIES
+    - CACTUS
+    - KELP
+    - SEA_PICKLE
+    - GLOW_BERRIES
+    - NETHER_WART
+    - CHORUS_FRUIT
+    - CRIMSON_FUNGUS
+    - WARPED_FUNGUS
+    - BROWN_MUSHROOM
+    - RED_MUSHROOM
     required_amount: 200
     reward:
-      reward_type: MONEY
-      amount: 750
-  5:
-    name: "&3Crafting is a work of heart"
+      reward_type: COMMAND
+      commands:
+      - eco give %player% 4000
+      - xp give %player% 8670
+      - questadmin givepoints %player% 1
+    default_pack: vanilla
+  '5':
+    name: '&3Crafting is a work of heart'
     menu_item: FIREWORK_ROCKET
     description:
-      - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
-      - ""
-      - "&3Task:"
-      - " &3&l| &7Craft %required% fireworks"
-      - ""
-      - "&3Progress:"
-      - " &3&l| %status%"
-      - ""
-      - "&3Reward:"
-      - " &3&l| &7750$"
-      - ""
+    - ' &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Craft %required% fireworks'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &74000 Gold'
+    - ' &3&l| &78670 XP'
+    - ' &3&l| &71 Quest Point'
+    - ''
     quest_type: CRAFT
     required: FIREWORK_ROCKET
     required_amount: 32
     reward:
-      reward_type: MONEY
-      amount: 750
-  6:
-    name: "&3One man's trash is another man's treasure"
+      reward_type: COMMAND
+      commands:
+      - eco give %player% 4000
+      - xp give %player% 8670
+      - questadmin givepoints %player% 1
+    default_pack: vanilla
+  '6':
+    name: '&3One man''s trash is another man''s treasure'
     menu_item: FISHING_ROD
     description:
-      - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
-      - ""
-      - "&3Task:"
-      - " &3&l| &7Fish %required% items (any)"
-      - ""
-      - "&3Progress:"
-      - " &3&l| %status%"
-      - ""
-      - "&3Reward:"
-      - " &3&l| &7750$"
-      - ""
+    - ' &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Fish %required% items (any)'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &74000 Gold'
+    - ' &3&l| &78670 XP'
+    - ' &3&l| &71 Quest Point'
+    - ''
     quest_type: FISH
-    required: 
-      - BOW
-      - ENCHANTED_BOOK
-      - FISHING_ROD
-      - NAME_TAG
-      - NAUTILUS_SHELL
-      - SADDLE
-      - LILY_PAD
-      - BOWL
-      - LEATHER
-      - LEATHER_BOOTS
-      - ROTTEN_FLESH
-      - STICK
-      - STRING
-      - POTION
-      - BONE
-      - INK_SAC
-      - TRIPWIRE_HOOK
-      - BAMBOO
-      - COCOA_BEANS
+    required:
+    - BOW
+    - ENCHANTED_BOOK
+    - FISHING_ROD
+    - NAME_TAG
+    - NAUTILUS_SHELL
+    - SADDLE
+    - LILY_PAD
+    - BOWL
+    - LEATHER
+    - LEATHER_BOOTS
+    - ROTTEN_FLESH
+    - STICK
+    - STRING
+    - POTION
+    - BONE
+    - INK_SAC
+    - TRIPWIRE_HOOK
+    - BAMBOO
+    - COCOA_BEANS
     required_amount: 30
     reward:
-      reward_type: MONEY
-      amount: 750
-  7:
-    name: "&3Heat up the furnace!"
+      reward_type: COMMAND
+      commands:
+      - eco give %player% 4000
+      - xp give %player% 8670
+      - questadmin givepoints %player% 1
+    default_pack: vanilla
+  '7':
+    name: '&3Heat up the furnace!'
     menu_item: FURNACE
     description:
-      - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
-      - ""
-      - "&3Task:"
-      - " &3&l| &7Smelt %required% ores (any)"
-      - ""
-      - "&3Progress:"
-      - " &3&l| %status%"
-      - ""
-      - "&3Reward:"
-      - " &3&l| &7750$"
-      - ""
+    - ' &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Smelt %required% ores (any)'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &74000 Gold'
+    - ' &3&l| &78670 XP'
+    - ' &3&l| &71 Quest Point'
+    - ''
     quest_type: COOK
-    required: 
-      - IRON_INGOT
-      - GOLD_INGOT
-      - COPPER_INGOT
-      - NETHERITE_SCRAP
+    required:
+    - IRON_INGOT
+    - GOLD_INGOT
+    - COPPER_INGOT
+    - NETHERITE_SCRAP
     required_amount: 16
     reward:
-      reward_type: MONEY
-      amount: 750
-  8:
-    name: "&3Delivery guy"
+      reward_type: COMMAND
+      commands:
+      - eco give %player% 4000
+      - xp give %player% 8670
+      - questadmin givepoints %player% 1
+    default_pack: vanilla
+  '8':
+    name: '&3Delivery guy'
     menu_item: CHEST
     description:
-      - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
-      - ""
-      - "&3Task:"
-      - " &3&l| &7Deliver %required% emeralds"
-      - " &8(&7!&8) &7Click on quest once you have enought"
-      - ""
-      - "&3Progress:"
-      - " &3&l| %status%"
-      - ""
-      - "&3Reward:"
-      - " &3&l| &7750$"
-      - ""
+    - ' &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Deliver %required% emeralds'
+    - ' &8(&7!&8) &7Click on quest once you have enought'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &74000 Gold'
+    - ' &3&l| &78670 XP'
+    - ' &3&l| &71 Quest Point'
+    - ''
     quest_type: GET
     required: EMERALD
     required_amount: 8
     reward:
-      reward_type: MONEY
-      amount: 750
-  9:
-    name: "&3It's a WAR!"
+      reward_type: COMMAND
+      commands:
+      - eco give %player% 4000
+      - xp give %player% 8670
+      - questadmin givepoints %player% 1
+    default_pack: vanilla
+  '9':
+    name: '&3It''s a WAR!'
     menu_item: WIND_CHARGE
     description:
-      - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
-      - ""
-      - "&3Task:"
-      - " &3&l| &7Throw %required% fire charges"
-      - ""
-      - "&3Progress:"
-      - " &3&l| %status%"
-      - ""
-      - "&3Reward:"
-      - " &3&l| &7750$"
-      - ""
+    - ' &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Throw %required% fire charges'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &74000 Gold'
+    - ' &3&l| &78670 XP'
+    - ' &3&l| &71 Quest Point'
+    - ''
     quest_type: LAUNCH
     required: FIRE_CHARGE
     required_amount: 4
     reward:
-      reward_type: MONEY
-      amount: 750
-  10:
-    name: "&3Help heavy sheeps"
+      reward_type: COMMAND
+      commands:
+      - eco give %player% 4000
+      - xp give %player% 8670
+      - questadmin givepoints %player% 1
+    default_pack: vanilla
+  '10':
+    name: '&3Help heavy sheeps'
     menu_item: WHITE_WOOL
     description:
-      - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
-      - ""
-      - "&3Task:"
-      - " &3&l| &7Shear %required% sheeps"
-      - ""
-      - "&3Progress:"
-      - " &3&l| %status%"
-      - ""
-      - "&3Reward:"
-      - " &3&l| &7750$"
-      - ""
+    - ' &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Shear %required% sheeps'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &74000 Gold'
+    - ' &3&l| &78670 XP'
+    - ' &3&l| &71 Quest Point'
+    - ''
     quest_type: SHEAR
     required: SHEEP
     required_amount: 12
     reward:
-      reward_type: MONEY
-      amount: 750
-  11:
-    name: "&3Use your knowledge"
+      reward_type: COMMAND
+      commands:
+      - eco give %player% 4000
+      - xp give %player% 8670
+      - questadmin givepoints %player% 1
+    default_pack: vanilla
+  '11':
+    name: '&3Use your knowledge'
     menu_item: ENCHANTING_TABLE
     description:
-      - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
-      - ""
-      - "&3Task:"
-      - " &3&l| &7Enchant %required% items"
-      - ""
-      - "&3Progress:"
-      - " &3&l| %status%"
-      - ""
-      - "&3Reward:"
-      - " &3&l| &7750$"
-      - ""
+    - ' &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Enchant %required% items'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &74000 Gold'
+    - ' &3&l| &78670 XP'
+    - ' &3&l| &71 Quest Point'
+    - ''
     quest_type: ENCHANT
     required_amount: 2
     reward:
-      reward_type: MONEY
-      amount: 750
-  12:
-    name: "&3Stay healthy"
+      reward_type: COMMAND
+      commands:
+      - eco give %player% 4000
+      - xp give %player% 8670
+      - questadmin givepoints %player% 1
+    default_pack: vanilla
+  '12':
+    name: '&3Stay healthy'
     menu_item: GOLDEN_APPLE
     description:
-      - " &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
-      - ""
-      - "&3Task:"
-      - " &3&l| &7Eat %required% golden apples"
-      - ""
-      - "&3Progress:"
-      - " &3&l| %status%"
-      - ""
-      - "&3Reward:"
-      - " &3&l| &7750$"
-      - ""
+    - ' &7ᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ'
+    - ''
+    - '&3Task:'
+    - ' &3&l| &7Eat %required% golden apples'
+    - ''
+    - '&3Progress:'
+    - ' &3&l| %status%'
+    - ''
+    - '&3Rewards:'
+    - ' &3&l| &74000 Gold'
+    - ' &3&l| &78670 XP'
+    - ' &3&l| &71 Quest Point'
+    - ''
     quest_type: CONSUME
     required: GOLDEN_APPLE
     required_amount: 1
     reward:
-      reward_type: MONEY
-      amount: 750
+      reward_type: COMMAND
+      commands:
+      - eco give %player% 4000
+      - xp give %player% 8670
+      - questadmin givepoints %player% 1
+    default_pack: vanilla
