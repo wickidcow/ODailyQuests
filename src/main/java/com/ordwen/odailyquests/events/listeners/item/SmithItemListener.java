@@ -27,13 +27,13 @@ public class SmithItemListener extends PlayerProgressor implements Listener {
      *
      * @param event the smithing inventory click event
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSmithItemEvent(SmithItemEvent event) {
         if (event.isCancelled() || event.getCurrentItem() == null) {
             return;
         }
 
-        final ItemStack result = event.getCurrentItem();
+        final ItemStack result = event.getCurrentItem().clone();
         final Player player = (Player) event.getWhoClicked();
         final ClickType click = event.getClick();
 
@@ -118,7 +118,7 @@ public class SmithItemListener extends PlayerProgressor implements Listener {
 
         if (capacity < maxCraftable) {
             // Round up to the next multiple of recipeAmount (keeps batch consistency)
-            maxCraftable = ((capacity + recipeAmount - 1) / recipeAmount) * recipeAmount;
+            maxCraftable = (capacity / recipeAmount) * recipeAmount;
         }
 
         return maxCraftable;
