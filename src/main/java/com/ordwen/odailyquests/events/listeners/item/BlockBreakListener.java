@@ -21,7 +21,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 
 public class BlockBreakListener extends PlayerProgressor implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreakEvent(BlockBreakEvent event) {
         Debugger.write("BlockBreakListener: onBlockBreakEvent summoned.");
         if (event.isCancelled()) {
