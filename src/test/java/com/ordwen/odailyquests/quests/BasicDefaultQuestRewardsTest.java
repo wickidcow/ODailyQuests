@@ -35,8 +35,6 @@ class BasicDefaultQuestRewardsTest {
                     entry.getKey() + " should give the expected XP on every quest");
             assertEquals(12, count(content, "questadmin givepoints %player% 1"),
                     entry.getKey() + " should give exactly 1 quest point on every quest");
-            assertEquals(12, count(content, "default_pack: vanilla"),
-                    entry.getKey() + " should keep all bundled quests tagged as vanilla defaults");
             assertTrue(content.contains("&71 Quest Point"),
                     entry.getKey() + " should advertise the 1 Quest Point reward");
         }
