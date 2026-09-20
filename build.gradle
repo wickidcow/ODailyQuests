@@ -39,7 +39,8 @@ repositories {
     maven { url = 'https://repo.auxilor.io/repository/maven-public/' }
     maven { url = 'https://repo.fancyinnovations.com/releases' }
     maven { url = 'https://repo.codemc.io/repository/EvenMoreFish/' }
-    maven { url = 'https://maven.devs.beer/' }
+    // Stable mirror for the ItemsAdder API; avoids relying on maven.devs.beer availability.
+    maven { url = 'https://repo.loohpjames.com/repository/' }
     maven { url = 'https://jitpack.io' }
 }
 
@@ -121,7 +122,7 @@ dependencies {
 }
 
 def buildJavaVersion = 25
-def bytecodeJavaVersion = 21
+def bytecodeJavaVersion = 25
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(buildJavaVersion)
