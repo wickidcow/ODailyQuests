@@ -117,7 +117,7 @@ public class SmithItemListener extends PlayerProgressor implements Listener {
         final int capacity = fits(result, player.getInventory().getStorageContents());
 
         if (capacity < maxCraftable) {
-            // Round up to the next multiple of recipeAmount (keeps batch consistency)
+            // Clamp to the largest whole result batch that fits in the player's inventory
             maxCraftable = (capacity / recipeAmount) * recipeAmount;
         }
 
