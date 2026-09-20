@@ -70,7 +70,9 @@ public class EventsManager {
         pluginManager.registerEvents(new PlayerRespawnListener(), oDailyQuests);
         pluginManager.registerEvents(new BlockBreakListener(), oDailyQuests);
         pluginManager.registerEvents(new BlockPlaceListener(), oDailyQuests);
-        if (!PaperItemCraftedListener.register(pluginManager, oDailyQuests)) {\n            pluginManager.registerEvents(new CraftItemListener(), oDailyQuests);\n        }
+        if (!PaperItemCraftedListener.register(pluginManager, oDailyQuests)) {
+            pluginManager.registerEvents(new CraftItemListener(), oDailyQuests);
+        }
         pluginManager.registerEvents(new SmithItemListener(), oDailyQuests);
         pluginManager.registerEvents(new EnchantItemListener(), oDailyQuests);
         pluginManager.registerEvents(new FurnaceExtractListener(), oDailyQuests);
