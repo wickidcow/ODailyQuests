@@ -113,18 +113,30 @@ public class CraftQuest extends ItemQuest {
             return false;
         }
 
-        if (required.getType() != provided.getType()) {
+        final boolean matches = isPlainMaterialMatch(
+                required.getType(),
+                required.hasItemMeta(),
+                provided.getType()
+        );
+
+        if (matches) {
+            Debugger.write("CraftQuest: accepting metadata-modified crafted result by material: "
+                    + provided.getType() + ".");
+        }
+        return matches;
+    }
+
+    static boolean isPlainMaterialMatch(Material requiredType, boolean requiredHasMeta, Material providedType) {
+        if (requiredType == null || providedType == null) {
+            return false;
+        }
+
+        if (requiredType != providedType) {
             return false;
         }
 
         // Preserve strict matching for custom/model/PDC/potion/meta-specific requirements.
-        if (required.hasItemMeta()) {
-            return false;
-        }
-
-        Debugger.write("CraftQuest: accepting metadata-modified crafted result by material: "
-                + provided.getType() + ".");
-        return true;
+        return !requiredHasMeta;
     }
 
     private ItemStack getPaperCraftedItem(Event event) {
