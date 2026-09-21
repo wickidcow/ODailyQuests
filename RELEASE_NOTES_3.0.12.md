@@ -10,9 +10,11 @@ Paper 26.3 craft progression fix plus default basic quest reward updates.
 - Keeps the older `CraftItemEvent` fallback for runtimes where Paper's post-craft event is unavailable.
 - The Paper event remains reflection-based so ODailyQuests does not gain a hard runtime dependency on a specific Paper event class.
 
-## ValhallaMMO compatibility note
-- ODailyQuests counts the actual material produced by the craft and does not require ValhallaMMO quality, tier, lore, or stat metadata for a normal `CRAFT` objective.
-- This prevents ValhallaMMO item-quality configuration from making otherwise valid vanilla-material craft quests impossible.
+## ValhallaMMO and modified-item compatibility
+- Plain vanilla-material craft requirements now match by material when another plugin adds metadata to the crafted result.
+- A quest configured simply as `CROSSBOW` will therefore count a crossbow even if ValhallaMMO adds lore, PDC data, quality data, attributes, or other metadata.
+- Exact custom-item requirements remain strict. If the configured required item contains custom metadata/model data, ODailyQuests still requires that specific item rather than accepting every item of the same material.
+- The same protection applies to other plugin-modified vanilla equipment craft results, not only bows and crossbows.
 
 ## Easy / Medium / Hard defaults
 - Easy quests now grant 1,000 Gold, 550 XP points, and 1 Quest Point.
@@ -25,7 +27,7 @@ Paper 26.3 craft progression fix plus default basic quest reward updates.
 ## Upgrade behavior
 - The reward-file changes are fresh-install/default-file changes only.
 - Existing server quest files are not overwritten by ODailyQuests, so customized Easy/Medium/Hard rewards stay intact unless the server owner replaces those files manually.
-- The crafting compatibility fix is code-side and applies immediately after replacing the plugin JAR.
+- The crafting compatibility fixes are code-side and apply immediately after replacing the plugin JAR.
 
 ## Compatibility
 - Retains the Paper 26.3 compatibility and quest-event hardening from 3.0.11.
