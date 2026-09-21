@@ -108,7 +108,7 @@ public class CraftQuest extends ItemQuest {
         return false;
     }
 
-    private boolean isPlainMaterialMatch(ItemStack required, ItemStack provided) {
+    static boolean isPlainMaterialMatch(ItemStack required, ItemStack provided) {
         if (required == null || provided == null) {
             return false;
         }
