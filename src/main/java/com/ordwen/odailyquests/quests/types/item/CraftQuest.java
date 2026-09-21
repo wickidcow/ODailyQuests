@@ -12,6 +12,8 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.SmithItemEvent;
 import org.bukkit.inventory.*;
 
+import java.util.List;
+
 public class CraftQuest extends ItemQuest {
 
     private static final String PAPER_ITEM_CRAFTED_EVENT =
@@ -37,7 +39,7 @@ public class CraftQuest extends ItemQuest {
                 if (result == null) return false;
                 item = result.clone();
             }
-            return super.isRequiredItem(item, progression);
+            return isRequiredCraftResult(item, progression);
         }
 
         /*
@@ -51,20 +53,78 @@ public class CraftQuest extends ItemQuest {
          */
         if (PAPER_ITEM_CRAFTED_EVENT.equals(provided.getClass().getName())) {
             final ItemStack item = getPaperCraftedItem(provided);
-            return item != null && super.isRequiredItem(item, progression);
+            return item != null && isRequiredCraftResult(item, progression);
         }
 
         if (provided instanceof SmithItemEvent event) {
             final ItemStack item = event.getCurrentItem();
-            return super.isRequiredItem(item, progression);
+            return item != null && isRequiredCraftResult(item, progression);
         }
 
 //        if (PluginUtils.isPluginEnabled("MMOItems") && provided instanceof CraftMMOItemEvent event) {
 //            final ItemStack item = event.getResult();
-//            return  super.isRequiredItem(item, progression);
+//            return  isRequiredCraftResult(item, progression);
 //        }
 
         return false;
+    }
+
+    /**
+     * Craft quests are allowed to match a plain material requirement even when
+     * another plugin decorates the crafted result with lore, PDC data, quality,
+     * attributes, or other metadata.
+     *
+     * <p>This matters for integrations such as ValhallaMMO, which can transform
+     * a vanilla equipment result after crafting. A quest configured simply as
+     * CROSSBOW should still mean "craft a crossbow", not "craft a pristine
+     * metadata-free crossbow". Custom/meta-specific quest requirements remain
+     * strict because the material-only fallback is only used when the configured
+     * required ItemStack has no item metadata.</p>
+     */
+    private boolean isRequiredCraftResult(ItemStack provided, Progression progression) {
+        if (super.isRequiredItem(provided, progression)) {
+            return true;
+        }
+
+        final List<ItemStack> requiredItems = getRequiredItems();
+        if (requiredItems == null || requiredItems.isEmpty()) {
+            return true;
+        }
+
+        if (isRandomRequired()) {
+            final int selected = progression.getSelectedRequiredIndex();
+            if (selected < 0 || selected >= requiredItems.size()) {
+                return false;
+            }
+            return isPlainMaterialMatch(requiredItems.get(selected), provided);
+        }
+
+        for (ItemStack required : requiredItems) {
+            if (isPlainMaterialMatch(required, provided)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isPlainMaterialMatch(ItemStack required, ItemStack provided) {
+        if (required == null || provided == null) {
+            return false;
+        }
+
+        if (required.getType() != provided.getType()) {
+            return false;
+        }
+
+        // Preserve strict matching for custom/model/PDC/potion/meta-specific requirements.
+        if (required.hasItemMeta()) {
+            return false;
+        }
+
+        Debugger.write("CraftQuest: accepting metadata-modified crafted result by material: "
+                + provided.getType() + ".");
+        return true;
     }
 
     private ItemStack getPaperCraftedItem(Event event) {
