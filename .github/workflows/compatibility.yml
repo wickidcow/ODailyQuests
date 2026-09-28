@@ -1,0 +1,68 @@
+name: Minecraft Compatibility
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'src/**'
+      - 'build.gradle'
+      - 'gradle/**'
+      - '.github/workflows/compatibility.yml'
+  pull_request:
+    branches: ['**']
+    paths:
+      - 'src/**'
+      - 'build.gradle'
+      - 'gradle/**'
+      - '.github/workflows/compatibility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  primary-26-3:
+    name: Primary compile — Paper 26.3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: gradle
+      - name: Compile primary target
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean compileJava --no-daemon --stacktrace
+      - name: Verify Java 21 bytecode
+        run: |
+          javap -verbose build/classes/java/main/com/ordwen/odailyquests/ODailyQuests.class             | grep -Fq 'major version: 65'
+
+  backwards-compatibility:
+    name: Compile compatibility — ${{ matrix.label }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: Paper 1.21.11
+            paper_api: 1.21.11-R0.1-SNAPSHOT
+          - label: Paper 26.2
+            paper_api: 26.2.build.+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: gradle
+      - name: Compile against compatibility API
+        env:
+          PAPER_API_VERSION: ${{ matrix.paper_api }}
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean compileJava             -PpaperApiVersion="$PAPER_API_VERSION"             --no-daemon --stacktrace
+      - name: Verify Java 21 bytecode
+        run: |
+          javap -verbose build/classes/java/main/com/ordwen/odailyquests/ODailyQuests.class             | grep -Fq 'major version: 65'

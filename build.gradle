@@ -1,3 +1,5 @@
+import org.gradle.api.attributes.java.TargetJvmVersion
+
 plugins {
     id 'java'
     id 'com.gradleup.shadow' version '9.4.1'
@@ -5,7 +7,12 @@ plugins {
 }
 
 group = 'com.ordwen'
-version = "3.0.12"
+version = "3.0.13"
+
+// Build against the newest supported Paper API by default while allowing CI
+// to compile the same source against older supported APIs.
+def defaultPaperApiVersion = '26.3.build.+'
+def paperApiVersion = providers.gradleProperty('paperApiVersion').orElse(defaultPaperApiVersion).get()
 
 def ciVersion = System.getenv("ORG_GRADLE_PROJECT_version")
 if (ciVersion != null && !ciVersion.trim().isEmpty()) {
@@ -50,8 +57,14 @@ dependencies {
     compileOnly 'org.xerial:sqlite-jdbc:3.53.0.0'
     compileOnly 'com.h2database:h2:2.4.240'
 
-    /* Paper 26.3 API; plugin.yml keeps 1.21.11 as the minimum supported API level. */
-    compileOnly 'io.papermc.paper:paper-api:26.3.build.25-alpha'
+    /* Paper 26.3 is the primary API target; plugin.yml keeps 1.21.11 as the support floor. */
+    compileOnly("io.papermc.paper:paper-api:${paperApiVersion}") {
+        attributes {
+            // Paper 26.x publishes Java 25 API variants. Resolve those with the
+            // Java 25 build toolchain while still emitting Java 21 plugin bytecode.
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
+        }
+    }
 
     /* Folia/Paper scheduling compatibility */
     implementation 'space.arim.morepaperlib:morepaperlib:0.4.3'
@@ -118,12 +131,17 @@ dependencies {
     /* tests */
     testImplementation platform('org.junit:junit-bom:5.12.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation 'io.papermc.paper:paper-api:26.3.build.25-alpha'
+    testImplementation("io.papermc.paper:paper-api:${defaultPaperApiVersion}") {
+        attributes {
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
+        }
+    }
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 def buildJavaVersion = 25
-def bytecodeJavaVersion = 25
+// Keep distributable classes runnable on the Java 21 floor used by Minecraft 1.21.11.
+def bytecodeJavaVersion = 21
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(buildJavaVersion)
