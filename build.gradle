@@ -1,3 +1,5 @@
+import org.gradle.api.attributes.java.TargetJvmVersion
+
 plugins {
     id 'java'
     id 'com.gradleup.shadow' version '9.4.1'
@@ -56,7 +58,13 @@ dependencies {
     compileOnly 'com.h2database:h2:2.4.240'
 
     /* Paper 26.3 is the primary API target; plugin.yml keeps 1.21.11 as the support floor. */
-    compileOnly "io.papermc.paper:paper-api:${paperApiVersion}"
+    compileOnly("io.papermc.paper:paper-api:${paperApiVersion}") {
+        attributes {
+            // Paper 26.x publishes Java 25 API variants. Resolve those with the
+            // Java 25 build toolchain while still emitting Java 21 plugin bytecode.
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
+        }
+    }
 
     /* Folia/Paper scheduling compatibility */
     implementation 'space.arim.morepaperlib:morepaperlib:0.4.3'
@@ -123,7 +131,11 @@ dependencies {
     /* tests */
     testImplementation platform('org.junit:junit-bom:5.12.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation "io.papermc.paper:paper-api:${defaultPaperApiVersion}"
+    testImplementation("io.papermc.paper:paper-api:${defaultPaperApiVersion}") {
+        attributes {
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
+        }
+    }
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
