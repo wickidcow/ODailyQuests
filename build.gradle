@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.ordwen'
-version = "3.0.12"
+version = "3.0.13"
 
 // Build against the newest supported Paper API by default while allowing CI
 // to compile the same source against older supported APIs.
