@@ -24,6 +24,10 @@ public class BreedQuest extends EntityQuest {
             return super.isRequiredEntity(event.getEntity().getType(), progression);
         }
 
+        if (provided instanceof BreedProgressEvent event) {
+            return super.isRequiredEntity(event.getEntityType(), progression);
+        }
+
         return false;
     }
 }
