@@ -15,6 +15,7 @@ import com.ordwen.odailyquests.events.listeners.entity.custom.stackers.RoseStack
 import com.ordwen.odailyquests.events.listeners.entity.custom.stackers.WildStackerListener;
 import com.ordwen.odailyquests.events.listeners.global.*;
 import com.ordwen.odailyquests.events.listeners.integrations.ExternalItemProgressListener;
+import com.ordwen.odailyquests.events.listeners.integrations.betterhorses.BetterHorsesBreedListener;
 import com.ordwen.odailyquests.events.listeners.integrations.PylonInventoryGainListener;
 import com.ordwen.odailyquests.events.listeners.integrations.customsuite.CropBreakListener;
 import com.ordwen.odailyquests.events.listeners.integrations.customsuite.FishingLootSpawnListener;
@@ -122,6 +123,7 @@ public class EventsManager {
     }
 
     private void registerPluginListeners(final PluginManager pluginManager) {
+        registerIfPluginEnabled("BetterHorses", () -> BetterHorsesBreedListener.register(pluginManager, oDailyQuests));
         registerIfPluginEnabled("EliteMobs", () -> pluginManager.registerEvents(new EliteMobDeathListener(), oDailyQuests));
         registerIfPluginEnabled("MythicMobs", () -> pluginManager.registerEvents(new MythicMobDeathListener(), oDailyQuests));
         registerIfPluginEnabled("WildStacker", () -> pluginManager.registerEvents(new WildStackerListener(), oDailyQuests));

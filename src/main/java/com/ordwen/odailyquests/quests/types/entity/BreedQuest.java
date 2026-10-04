@@ -1,5 +1,6 @@
 package com.ordwen.odailyquests.quests.types.entity;
 
+import com.ordwen.odailyquests.events.listeners.entity.BreedProgressEvent;
 import com.ordwen.odailyquests.quests.player.progression.Progression;
 import com.ordwen.odailyquests.quests.types.shared.BasicQuest;
 import com.ordwen.odailyquests.quests.types.shared.EntityQuest;
@@ -21,6 +22,10 @@ public class BreedQuest extends EntityQuest {
     public boolean canProgress(Event provided, Progression progression) {
         if (provided instanceof EntityBreedEvent event) {
             return super.isRequiredEntity(event.getEntity().getType(), progression);
+        }
+
+        if (provided instanceof BreedProgressEvent event) {
+            return super.isRequiredEntity(event.getEntityType(), progression);
         }
 
         return false;
