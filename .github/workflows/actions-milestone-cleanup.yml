@@ -89,15 +89,19 @@ jobs:
     permissions:
       contents: write
     steps:
-    - name: Remove only the temporary branch created for this cleanup
+    - name: Remove the temporary branch only when branch protection permits
       env:
         GH_TOKEN: ${{ github.token }}
         CLEANUP_BRANCH: maintenance/actions-milestones-20261004-0210
-      run: "python3 - <<'PY'\nimport json, os, urllib.request\nrepo = os.environ['GITHUB_REPOSITORY']\nbranch = os.environ['CLEANUP_BRANCH']\n\
-        assert repo.startswith('wickidcow/') and branch == 'maintenance/actions-milestones-20261004-0210'\nurl = 'https://api.github.com/repos/'\
-        \ + repo + '/git/refs/heads/' + branch\nheaders = {'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept':\
-        \ 'application/vnd.github+json'}\nwith urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=60)\
-        \ as response:\n    ref = json.load(response)\nassert ref['object']['sha'] == os.environ['GITHUB_SHA'], 'Maintenance\
-        \ branch changed; leaving it intact'\nwith urllib.request.urlopen(urllib.request.Request(url, headers=headers, method='DELETE'),\
-        \ timeout=60) as response:\n    assert response.status == 204\nprint('Removed the temporary maintenance branch; default\
-        \ branch is unchanged.')\n\nPY\n"
+      run: "python3 - <<'PY'\nimport json, os, sys, urllib.parse, urllib.request\nrepo = os.environ['GITHUB_REPOSITORY']\n\
+        branch = os.environ['CLEANUP_BRANCH']\nassert repo.startswith('wickidcow/') and branch == 'maintenance/actions-milestones-20261004-0210'\n\
+        url = 'https://api.github.com/repos/' + repo + '/git/refs/heads/' + branch\nheaders = {'Authorization': 'Bearer '\
+        \ + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'}\nbranch_url = 'https://api.github.com/repos/'\
+        \ + repo + '/branches/' + urllib.parse.quote(branch, safe='')\nwith urllib.request.urlopen(urllib.request.Request(branch_url,\
+        \ headers=headers), timeout=60) as response:\n    details = json.load(response)\nif details.get('protected'):\n  \
+        \  print('History cleanup completed. The protected maintenance branch is retained; branch protection is unchanged.')\n\
+        \    sys.exit(0)\nwith urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=60) as response:\n\
+        \    ref = json.load(response)\nassert ref['object']['sha'] == os.environ['GITHUB_SHA'], 'Maintenance branch changed;\
+        \ leaving it intact'\nwith urllib.request.urlopen(urllib.request.Request(url, headers=headers, method='DELETE'), timeout=60)\
+        \ as response:\n    assert response.status == 204\nprint('Removed the temporary maintenance branch; default branch\
+        \ is unchanged.')\n\nPY\n"
