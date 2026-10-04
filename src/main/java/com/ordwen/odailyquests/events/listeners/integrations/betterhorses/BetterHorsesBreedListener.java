@@ -28,11 +28,11 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Optional BetterHorses bridge.
  *
- * <p>Bukkit's EntityBreedEvent remains the primary progression source. The
- * BetterHorses custom event is only used as a delayed fallback when a
- * successful BetterHorses breed cannot be attributed through the vanilla
- * event. This prevents double progression while still supporting custom
- * BetterHorses breeding flows.</p>
+ * <p>For breeds BetterHorses approves through BetterHorseBreedEvent, that
+ * custom event becomes the authoritative quest signal. The native Bukkit
+ * EntityBreedEvent is still used for every other breed. Progression is delayed
+ * by one tick so the outer Bukkit event can finish and any cancellation can be
+ * honored before the quest advances.</p>
  */
 public final class BetterHorsesBreedListener extends PlayerProgressor implements Listener {
 
@@ -114,8 +114,8 @@ public final class BetterHorsesBreedListener extends PlayerProgressor implements
     }
 
     /**
-     * Record the final Bukkit event state. A cancelled breed must never progress,
-     * and a normal player-attributed breed is already handled by EntityBreedListener.
+     * Record the final Bukkit event state. BetterHorses progression is delayed
+     * until this outer event has completed so cancelled breeding never counts.
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onVanillaBreedFinalized(EntityBreedEvent event) {
@@ -214,7 +214,10 @@ public final class BetterHorsesBreedListener extends PlayerProgressor implements
 
         ODailyQuests.morePaperLib.scheduling().entitySpecificScheduler(player).runDelayed(
                 () -> runFallback(childId, player),
-                () -> pendingBreeds.remove(childId),
+                () -> {
+                    pendingBreeds.remove(childId);
+                    BETTER_HORSES_CHILDREN.remove(childId);
+                },
                 1L
         );
     }
