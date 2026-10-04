@@ -21,6 +21,7 @@ import org.bukkit.plugin.PluginManager;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,19 +40,20 @@ public final class BetterHorsesBreedListener extends PlayerProgressor implements
             "me.luisgamedev.betterhorses.api.events.BetterHorseBreedEvent";
     private static final long FEEDER_TTL_MILLIS = 120_000L;
 
-    private final ODailyQuests plugin;
+    private static final Set<UUID> BETTER_HORSES_CHILDREN = ConcurrentHashMap.newKeySet();
+
     private final Map<UUID, PendingBreed> pendingBreeds = new ConcurrentHashMap<>();
     private final Map<UUID, RecentFeeder> recentFeeders = new ConcurrentHashMap<>();
 
-    private BetterHorsesBreedListener(ODailyQuests plugin) {
-        this.plugin = plugin;
+    private BetterHorsesBreedListener() {
     }
 
     public static void register(PluginManager pluginManager, ODailyQuests plugin) {
         final Plugin betterHorses = pluginManager.getPlugin("BetterHorses");
         if (betterHorses == null || !betterHorses.isEnabled()) return;
 
-        final BetterHorsesBreedListener bridge = new BetterHorsesBreedListener(plugin);
+        BETTER_HORSES_CHILDREN.clear();
+        final BetterHorsesBreedListener bridge = new BetterHorsesBreedListener();
         pluginManager.registerEvents(bridge, plugin);
 
         try {
@@ -81,6 +83,16 @@ public final class BetterHorsesBreedListener extends PlayerProgressor implements
             PluginLogger.warn("BetterHorses is installed, but its breed event API could not be hooked.");
             PluginLogger.warn("Details: " + e.getMessage());
         }
+    }
+
+    /**
+     * Returns true when BetterHorses has already approved this foal through
+     * BetterHorseBreedEvent. The native listener then defers progression to
+     * this bridge so the same breed cannot be counted twice.
+     */
+    public static boolean handles(EntityBreedEvent event) {
+        return event.getEntity() instanceof AbstractHorse child
+                && BETTER_HORSES_CHILDREN.contains(child.getUniqueId());
     }
 
     /**
@@ -115,15 +127,9 @@ public final class BetterHorsesBreedListener extends PlayerProgressor implements
                 return null;
             }
 
-            final boolean hasVanillaPlayer = event.getBreeder() instanceof Player;
-            final VanillaResult result;
-            if (event.isCancelled()) {
-                result = VanillaResult.CANCELLED;
-            } else if (hasVanillaPlayer) {
-                result = VanillaResult.NORMAL_PLAYER;
-            } else {
-                result = VanillaResult.SUCCESS_NO_PLAYER;
-            }
+            final VanillaResult result = event.isCancelled()
+                    ? VanillaResult.CANCELLED
+                    : VanillaResult.SUCCESS;
 
             UUID breederId = current.playerId();
             if (event.getBreeder() instanceof Player player) {
@@ -188,6 +194,7 @@ public final class BetterHorsesBreedListener extends PlayerProgressor implements
                     childId,
                     new PendingBreed(breederId, childType, currentResult, true, true)
             );
+            BETTER_HORSES_CHILDREN.add(childId);
 
             if (!alreadyScheduled) {
                 scheduleFallback(childId, breederId);
@@ -201,6 +208,7 @@ public final class BetterHorsesBreedListener extends PlayerProgressor implements
         final Player player = Bukkit.getPlayer(breederId);
         if (player == null) {
             pendingBreeds.remove(childId);
+            BETTER_HORSES_CHILDREN.remove(childId);
             return;
         }
 
@@ -213,14 +221,12 @@ public final class BetterHorsesBreedListener extends PlayerProgressor implements
 
     private void runFallback(UUID childId, Player player) {
         final PendingBreed pending = pendingBreeds.remove(childId);
+        BETTER_HORSES_CHILDREN.remove(childId);
+
         if (pending == null || !pending.customApproved() || !player.isOnline()) return;
+        if (pending.vanillaResult() == VanillaResult.CANCELLED) return;
 
-        if (pending.vanillaResult() == VanillaResult.CANCELLED
-                || pending.vanillaResult() == VanillaResult.NORMAL_PLAYER) {
-            return;
-        }
-
-        Debugger.write("BetterHorses fallback progressing BREED quest for "
+        Debugger.write("BetterHorses progressing BREED quest for "
                 + player.getName() + " with " + pending.entityType() + ".");
         setPlayerQuestProgression(
                 new BreedProgressEvent(pending.entityType(), "BetterHorses"),
@@ -261,8 +267,7 @@ public final class BetterHorsesBreedListener extends PlayerProgressor implements
     private enum VanillaResult {
         PENDING,
         NO_VANILLA_EVENT,
-        NORMAL_PLAYER,
-        SUCCESS_NO_PLAYER,
+        SUCCESS,
         CANCELLED
     }
 
