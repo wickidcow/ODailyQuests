@@ -1,6 +1,7 @@
 package com.ordwen.odailyquests.events.listeners.entity;
 
 import com.ordwen.odailyquests.configuration.essentials.Debugger;
+import com.ordwen.odailyquests.events.listeners.integrations.betterhorses.BetterHorsesBreedListener;
 
 import com.ordwen.odailyquests.quests.player.progression.PlayerProgressor;
 import org.bukkit.entity.Player;
@@ -14,6 +15,11 @@ public class EntityBreedListener extends PlayerProgressor implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityBreadEvent(EntityBreedEvent event) {
         if (event.isCancelled()) return;
+
+        if (BetterHorsesBreedListener.handles(event)) {
+            Debugger.write("EntityBreedEvent: progression delegated to BetterHorses compatibility bridge.");
+            return;
+        }
 
         if (event.getBreeder() != null && event.getBreeder() instanceof Player player) {
             Debugger.write("=========================================================================================");
