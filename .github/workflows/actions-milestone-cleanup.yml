@@ -1,0 +1,103 @@
+name: Actions milestone cleanup
+'on':
+  push:
+    branches:
+    - maintenance/actions-milestones-20261004-0210
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: one-time-actions-milestone-cleanup
+  cancel-in-progress: false
+jobs:
+  prune:
+    if: github.repository_owner == 'wickidcow'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+      matrix:
+        batch:
+        - 1
+    steps:
+    - name: Preserve milestones and delete eligible completed runs
+      env:
+        GH_TOKEN: ${{ github.token }}
+        DRY_RUN: 'false'
+        DELETE_LIMIT: '450'
+        BASE_SHA: 3872b4567edbdb0671d3f7d580924c2d4704a2f0
+      run: "python3 - <<'PY'\n\"\"\"One-time, owner-scoped Actions history cleanup. Never changes release assets.\"\"\"\n\
+        import json\nimport os\nimport time\nimport urllib.error\nimport urllib.parse\nimport urllib.request\n\n\ndef classify(runs,\
+        \ release_shas, pr_shas, current_run):\n    latest = {}\n    for run in runs:\n        if run['status'] == 'completed'\
+        \ and run['conclusion'] == 'success':\n            key = run['workflow_id']\n            if key not in latest or (run['created_at'],\
+        \ run['id']) > (latest[key]['created_at'], latest[key]['id']):\n                latest[key] = run\n    latest_ids\
+        \ = {run['id'] for run in latest.values()}\n    keep, delete = [], []\n    for run in runs:\n        reasons = []\n\
+        \        if run['id'] == current_run:\n            reasons.append('this cleanup run')\n        if run['status'] !=\
+        \ 'completed':\n            reasons.append('active or queued')\n        if run['head_sha'] in release_shas:\n    \
+        \        reasons.append('published release commit')\n        if run['head_sha'] in pr_shas:\n            reasons.append('current\
+        \ branch or open pull-request head')\n        if run['id'] in latest_ids:\n            reasons.append('latest success\
+        \ for workflow')\n        (keep if reasons else delete).append((run, reasons))\n    return keep, delete\n\n\ndef main():\n\
+        \    repo = os.environ['GITHUB_REPOSITORY']\n    if repo.split('/')[0] != 'wickidcow':\n        raise RuntimeError('Cleanup\
+        \ is restricted to wickidcow-owned repositories')\n    token = os.environ['GH_TOKEN']\n    current_run = int(os.environ['GITHUB_RUN_ID'])\n\
+        \    limit = int(os.environ.get('DELETE_LIMIT', '450'))\n    dry_run = os.environ.get('DRY_RUN', 'true') == 'true'\n\
+        \    base = 'https://api.github.com/repos/' + repo\n\n    def api(path, method='GET', missing_ok=False):\n       \
+        \ for attempt in range(15):\n            req = urllib.request.Request(base + '/' + path, method=method, headers={\n\
+        \                'Authorization': 'Bearer ' + token,\n                'Accept': 'application/vnd.github+json',\n \
+        \               'X-GitHub-Api-Version': '2022-11-28',\n                'User-Agent': 'wickidcow-actions-milestone-cleanup',\n\
+        \            })\n            try:\n                with urllib.request.urlopen(req, timeout=60) as response:\n   \
+        \                 data = response.read()\n                    return json.loads(data) if data else None\n        \
+        \    except urllib.error.HTTPError as exc:\n                body = exc.read().decode('utf-8', errors='replace')\n\
+        \                if missing_ok and exc.code == 404:\n                    return None\n                rate_limited\
+        \ = exc.code == 429 or (exc.code == 403 and\n                    ('rate limit' in body.lower() or exc.headers.get('X-RateLimit-Remaining')\
+        \ == '0'))\n                if rate_limited:\n                    reset = int(exc.headers.get('X-RateLimit-Reset',\
+        \ '0'))\n                    delay = max(int(exc.headers.get('Retry-After', '60')), reset - int(time.time()) + 5)\n\
+        \                    delay = min(3700, max(delay, 60 * (attempt + 1)))\n                    print(f'Rate limited;\
+        \ pausing {delay}s before continuing.', flush=True)\n                    time.sleep(delay)\n                elif exc.code\
+        \ >= 500:\n                    time.sleep(min(120, 10 * (attempt + 1)))\n                else:\n                 \
+        \   raise RuntimeError(f'{method} {path}: HTTP {exc.code}: {body[:500]}') from exc\n        raise RuntimeError('API\
+        \ retry limit reached; remaining runs were not touched')\n\n    def pages(path, key=None):\n        result = []\n\
+        \        for page in range(1, 1001):\n            sep = '&' if '?' in path else '?'\n            data = api(f'{path}{sep}per_page=100&page={page}')\n\
+        \            items = data[key] if key else data\n            result.extend(items)\n            if len(items) < 100:\n\
+        \                if key and data.get('total_count', len(result)) > len(result):\n                    # History may\
+        \ grow while paging. Do not prune an incomplete snapshot.\n                    raise RuntimeError('Incomplete workflow\
+        \ history; no deletion from this snapshot')\n                return result\n        raise RuntimeError('Pagination\
+        \ limit reached')\n\n    releases = [r for r in pages('releases') if not r['draft'] and r.get('published_at')]\n \
+        \   tags = {t['name']: t['commit']['sha'] for t in pages('tags')}\n    missing = [r['tag_name'] for r in releases\
+        \ if r['tag_name'] not in tags]\n    if missing:\n        raise RuntimeError('Cannot safely resolve published release\
+        \ tags: ' + ', '.join(missing))\n    release_shas = {tags[r['tag_name']] for r in releases}\n    pr_shas = {p['head']['sha']\
+        \ for p in pages('pulls?state=open')}\n    if os.environ.get('BASE_SHA'):\n        pr_shas.add(os.environ['BASE_SHA'])\n\
+        \    runs = pages('actions/runs', 'workflow_runs')\n    keep, candidates = classify(runs, release_shas, pr_shas, current_run)\n\
+        \    print(json.dumps({'repository': repo, 'dry_run': dry_run, 'runs': len(runs),\n        'published_releases': len(releases),\
+        \ 'preserved': len(keep),\n        'eligible': len(candidates), 'batch_limit': limit}), flush=True)\n    for run,\
+        \ reasons in keep:\n        print(f'KEEP {run[\"id\"]}: {run[\"name\"]}: {\", \".join(reasons)}', flush=True)\n\n\
+        \    removed = skipped = 0\n    # Newest first: old history beyond a rate-limited batch can safely wait for the next\
+        \ job.\n    for run, _ in candidates[:limit]:\n        if dry_run:\n            print(f'WOULD DELETE {run[\"id\"]}:\
+        \ {run[\"name\"]} ({run[\"conclusion\"]})', flush=True)\n            continue\n        live = api('actions/runs/'\
+        \ + str(run['id']), missing_ok=True)\n        if live is None:\n            skipped += 1\n            continue\n \
+        \       if live['status'] != 'completed' or live['updated_at'] != run['updated_at']:\n            print(f'SKIP {run[\"\
+        id\"]}: changed since snapshot', flush=True)\n            skipped += 1\n            continue\n        api('actions/runs/'\
+        \ + str(run['id']), method='DELETE', missing_ok=True)\n        removed += 1\n        print(f'DELETED {run[\"id\"]}:\
+        \ {run[\"name\"]}', flush=True)\n        time.sleep(0.85)\n    result = {'repository': repo, 'dry_run': dry_run, 'preserved':\
+        \ len(keep),\n              'deleted': removed, 'skipped': skipped, 'eligible_before_batch': len(candidates)}\n  \
+        \  print('CLEANUP_RESULT ' + json.dumps(result), flush=True)\n    with open(os.environ['GITHUB_STEP_SUMMARY'], 'a')\
+        \ as summary:\n        summary.write('## Actions milestone cleanup\\n\\n```json\\n' + json.dumps(result, indent=2)\
+        \ + '\\n```\\n')\n\n\nif __name__ == '__main__':\n    main()\n\nPY\n"
+  remove-maintenance-branch:
+    needs: prune
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Remove only the temporary branch created for this cleanup
+      env:
+        GH_TOKEN: ${{ github.token }}
+        CLEANUP_BRANCH: maintenance/actions-milestones-20261004-0210
+      run: "python3 - <<'PY'\nimport json, os, urllib.request\nrepo = os.environ['GITHUB_REPOSITORY']\nbranch = os.environ['CLEANUP_BRANCH']\n\
+        assert repo.startswith('wickidcow/') and branch == 'maintenance/actions-milestones-20261004-0210'\nurl = 'https://api.github.com/repos/'\
+        \ + repo + '/git/refs/heads/' + branch\nheaders = {'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept':\
+        \ 'application/vnd.github+json'}\nwith urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=60)\
+        \ as response:\n    ref = json.load(response)\nassert ref['object']['sha'] == os.environ['GITHUB_SHA'], 'Maintenance\
+        \ branch changed; leaving it intact'\nwith urllib.request.urlopen(urllib.request.Request(url, headers=headers, method='DELETE'),\
+        \ timeout=60) as response:\n    assert response.status == 204\nprint('Removed the temporary maintenance branch; default\
+        \ branch is unchanged.')\n\nPY\n"
