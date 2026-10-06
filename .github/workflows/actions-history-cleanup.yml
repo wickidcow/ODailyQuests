@@ -1,0 +1,70 @@
+name: Milestone Actions History Cleanup
+
+on:
+  push:
+    paths:
+      - ".github/workflows/actions-history-cleanup.yml"
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Remove tester and non-milestone workflow runs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          : > /tmp/release-tags
+          : > /tmp/version-tags
+          : > /tmp/all-tags
+          : > /tmp/keep-tags
+          : > /tmp/keep-shas
+          gh api --paginate "repos/$REPO/releases?per_page=100" --jq '.[] | select(.draft == false) | .tag_name' > /tmp/release-tags || true
+          gh api --paginate "repos/$REPO/tags?per_page=100" --jq '.[] | [.name, .commit.sha] | @tsv' > /tmp/all-tags || true
+          awk -F '\t' '$1 ~ /^v?[0-9]+([.][0-9A-Za-z]+)*([_-][0-9A-Za-z.-]+)?$/ { print $1 }' /tmp/all-tags > /tmp/version-tags || true
+          cat /tmp/release-tags /tmp/version-tags | sed '/^$/d' | sort -u > /tmp/keep-tags
+          awk -F '\t' 'NR==FNR { keep[$1]=1; next } ($1 in keep) { print $2 }' /tmp/keep-tags /tmp/all-tags | sed '/^$/d' | sort -u > /tmp/keep-shas
+
+          is_tester_name() {
+            printf '%s\n' "$1" | grep -Eiq 'test|smoke|compat|validat|verif|audit|check|doctor|runtime|regression|lint|benchmark|coverage|matrix|compile|cleanup|clean[[:space:]_-]*asset|(^|[^a-z])ci([^a-z]|$)'
+          }
+          is_milestone_name() {
+            printf '%s\n' "$1" | grep -Eiq 'release|publish|version|milestone|build|bundle|package'
+          }
+          is_milestone() {
+            local status="$1" conclusion="$2" event="$3" branch="$4" sha="$5" name="$6"
+            [[ "$status" == "completed" && "$conclusion" == "success" ]] || return 1
+            is_tester_name "$name" && return 1
+            [[ "$event" == "release" ]] && return 0
+            local tagged=false
+            [[ -n "$branch" ]] && grep -Fxq -- "$branch" /tmp/keep-tags && tagged=true
+            [[ -n "$sha" ]] && grep -Fxq -- "$sha" /tmp/keep-shas && tagged=true
+            [[ "$tagged" == "true" ]] || return 1
+            is_milestone_name "$name"
+          }
+          list_runs() {
+            gh api --paginate "repos/$REPO/actions/runs?per_page=100" --jq '.workflow_runs[] | [.id, .status, (.conclusion // ""), .event, (.head_branch // ""), (.head_sha // ""), (.name // "")] | @tsv'
+          }
+
+          while IFS=$'\t' read -r id status conclusion event branch sha name; do
+            [[ -z "$id" || "$id" == "$CURRENT_RUN_ID" ]] && continue
+            is_milestone "$status" "$conclusion" "$event" "$branch" "$sha" "$name" && continue
+            if [[ "$status" != "completed" ]]; then
+              gh api --method POST "repos/$REPO/actions/runs/$id/force-cancel" >/dev/null 2>&1 || gh api --method POST "repos/$REPO/actions/runs/$id/cancel" >/dev/null 2>&1 || true
+            fi
+          done < <(list_runs)
+
+          sleep 15
+          while IFS=$'\t' read -r id status conclusion event branch sha name; do
+            [[ -z "$id" || "$id" == "$CURRENT_RUN_ID" ]] && continue
+            is_milestone "$status" "$conclusion" "$event" "$branch" "$sha" "$name" && continue
+            gh api --method DELETE "repos/$REPO/actions/runs/$id" >/dev/null 2>&1 || true
+          done < <(list_runs)
