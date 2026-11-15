@@ -89,6 +89,7 @@ public final class BedrockQuestForms {
                 .title("Daily Quests")
                 .content("Completed: " + quests.getAchievedQuests() + "/" + entries.size()
                         + "\nChoose a quest for details and rewards.");
+        final List<Runnable> actions = new ArrayList<>();
 
         for (int i = 0; i < entries.size(); i++) {
             final AbstractQuest quest = entries.get(i).getKey();
@@ -97,16 +98,19 @@ public final class BedrockQuestForms {
             final String status = progress.isAchieved() ? "Completed"
                     : Math.min(progress.getAdvancement(), progress.getRequiredAmount())
                     + "/" + progress.getRequiredAmount();
-            form.button((i + 1) + ". " + name + "\n" + quest.getCategoryName() + " • " + status,
-                    response -> schedule(player, () -> showQuest(player, quest)));
+            form.button((i + 1) + ". " + name + "\n" + quest.getCategoryName() + " • " + status);
+            actions.add(() -> showQuest(player, quest));
         }
 
         if (player.hasPermission(REROLL)) {
-            form.button("Reroll Quests", response -> schedule(player, () -> showReroll(player)));
+            form.button("Reroll Quests");
+            actions.add(() -> showReroll(player));
         }
-        form.button("Refresh", response -> schedule(player, () -> showMain(player)));
+        form.button("Refresh");
+        actions.add(() -> showMain(player));
         form.button("Close");
-        return send(player, form);
+        actions.add(() -> {});
+        return send(player, form, actions);
     }
 
     private static void showQuest(Player player, AbstractQuest quest) {
@@ -133,13 +137,16 @@ public final class BedrockQuestForms {
         final SimpleForm.Builder form = SimpleForm.builder()
                 .title(display(player, quest.getQuestName(), quest, progress, quests))
                 .content(content.toString());
-
+        final List<Runnable> actions = new ArrayList<>();
         if (!progress.isAchieved() && isCheckable(quest, progress)) {
-            form.button("Check / Claim Quest", response -> schedule(player, () -> claim(player, quest)));
+            form.button("Check / Claim Quest");
+            actions.add(() -> claim(player, quest));
         }
-        form.button("Back to Daily Quests", response -> schedule(player, () -> showMain(player)));
+        form.button("Back to Daily Quests");
+        actions.add(() -> showMain(player));
         form.button("Close");
-        send(player, form);
+        actions.add(() -> {});
+        send(player, form, actions);
     }
 
     private static boolean isCheckable(AbstractQuest quest, Progression progress) {
@@ -180,11 +187,16 @@ public final class BedrockQuestForms {
                 .title("Daily Reroll")
                 .content("Replace one quest or your entire current set.\n"
                         + "Reroll All counts as one action and uses the configured cost.")
-                .button("Reroll One Quest", response -> schedule(player, () -> showRerollSelection(player)))
-                .button("Reroll All Quests", response -> schedule(player, () -> confirmRerollAll(player)))
-                .button("Back", response -> schedule(player, () -> showMain(player)))
+                .button("Reroll One Quest")
+                .button("Reroll All Quests")
+                .button("Back")
                 .button("Close");
-        return send(player, form);
+        return send(player, form, List.of(
+                () -> showRerollSelection(player),
+                () -> confirmRerollAll(player),
+                () -> showMain(player),
+                () -> {}
+        ));
     }
 
     private static void showRerollSelection(Player player) {
@@ -196,28 +208,31 @@ public final class BedrockQuestForms {
         final SimpleForm.Builder form = SimpleForm.builder()
                 .title("Choose Quest to Reroll")
                 .content("Select a quest to replace (uses one reroll action).");
+        final List<Runnable> actions = new ArrayList<>();
         for (int i = 0; i < snapshot.size(); i++) {
             final int index = i;
             final AbstractQuest quest = snapshot.get(i);
             final Progression progress = quests.getQuests().get(quest);
-            form.button((i + 1) + ". " + display(player, quest.getQuestName(), quest, progress, quests),
-                    response -> schedule(player, () -> {
-                        final PlayerQuests current = active(player);
-                        if (current == null) return;
-                        final List<AbstractQuest> now = new ArrayList<>(current.getQuests().keySet());
-                        // Reject stale forms rather than rerolling a different quest by index.
-                        if (index >= now.size() || now.get(index) != quest) {
-                            player.sendMessage(ChatColor.YELLOW + "Your quests changed. Please choose again.");
-                            showMain(player);
-                            return;
-                        }
-                        RerollService.rerollOne(player, index + 1);
-                        showMain(player);
-                    }));
+            form.button((i + 1) + ". " + display(player, quest.getQuestName(), quest, progress, quests));
+            actions.add(() -> {
+                final PlayerQuests current = active(player);
+                if (current == null) return;
+                final List<AbstractQuest> now = new ArrayList<>(current.getQuests().keySet());
+                // Reject stale forms rather than rerolling a different quest by index.
+                if (index >= now.size() || now.get(index) != quest) {
+                    player.sendMessage(ChatColor.YELLOW + "Your quests changed. Please choose again.");
+                    showMain(player);
+                    return;
+                }
+                RerollService.rerollOne(player, index + 1);
+                showMain(player);
+            });
         }
-        form.button("Back", response -> schedule(player, () -> showReroll(player)));
+        form.button("Back");
+        actions.add(() -> showReroll(player));
         form.button("Close");
-        send(player, form);
+        actions.add(() -> {});
+        send(player, form, actions);
     }
 
     private static void confirmRerollAll(Player player) {
@@ -225,13 +240,16 @@ public final class BedrockQuestForms {
         final SimpleForm.Builder form = SimpleForm.builder()
                 .title("Confirm Reroll All")
                 .content("Replace every current daily quest? This spends one reroll action and any configured cost.")
-                .button("Confirm Reroll All", response -> schedule(player, () -> {
+                .button("Confirm Reroll All")
+                .button("Cancel");
+        send(player, form, List.of(
+                () -> {
                     if (!player.hasPermission(REROLL)) return;
                     RerollService.rerollAll(player);
                     showMain(player);
-                }))
-                .button("Cancel", response -> schedule(player, () -> showReroll(player)));
-        send(player, form);
+                },
+                () -> showReroll(player)
+        ));
     }
 
     private static String rewardSummary(Player player, AbstractQuest quest,
@@ -262,7 +280,15 @@ public final class BedrockQuestForms {
         return ChatColor.stripColor(formatted).replace("\r", "").trim();
     }
 
-    private static boolean send(Player player, SimpleForm.Builder form) {
+    private static boolean send(Player player, SimpleForm.Builder form, List<Runnable> actions) {
+        // The Floodgate 2.2.x Cumulus API uses a validated form response handler.
+        final List<Runnable> handlers = List.copyOf(actions);
+        form.validResultHandler(response -> {
+            final int index = response.clickedButtonId();
+            if (index >= 0 && index < handlers.size()) {
+                schedule(player, handlers.get(index));
+            }
+        });
         try {
             return FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
         } catch (LinkageError | IllegalStateException exception) {
