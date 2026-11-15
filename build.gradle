@@ -24,6 +24,8 @@ if (ciVersion != null && !ciVersion.trim().isEmpty()) {
 
 repositories {
     mavenCentral()
+    // GeyserMC/Floodgate's optional Bedrock forms API
+    maven { url = 'https://repo.opencollab.dev/main/' }
     maven { url = 'https://repo.papermc.io/repository/maven-public/' }
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url = 'https://oss.sonatype.org/content/groups/public/' }
@@ -65,6 +67,9 @@ dependencies {
             attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
         }
     }
+
+    /* Optional Floodgate + Cumulus Bedrock forms (provided by Floodgate at runtime). */
+    compileOnly 'org.geysermc.floodgate:api:2.2.5-SNAPSHOT'
 
     /* Folia/Paper scheduling compatibility */
     implementation 'space.arim.morepaperlib:morepaperlib:0.4.3'

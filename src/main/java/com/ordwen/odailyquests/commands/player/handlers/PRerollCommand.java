@@ -2,6 +2,7 @@ package com.ordwen.odailyquests.commands.player.handlers;
 
 import com.ordwen.odailyquests.api.commands.player.PlayerCommandBase;
 import com.ordwen.odailyquests.commands.interfaces.playerinterface.reroll.DailyRerollMenu;
+import com.ordwen.odailyquests.commands.interfaces.bedrock.BedrockQuestForms;
 import com.ordwen.odailyquests.enums.QuestsPermissions;
 import com.ordwen.odailyquests.quests.features.RerollService;
 import com.ordwen.odailyquests.quests.player.PlayerQuests;
@@ -29,7 +30,7 @@ public class PRerollCommand extends PlayerCommandBase {
     @Override
     public void execute(Player player, String[] args) {
         if (args.length == 1) {
-            DailyRerollMenu.openChoice(player);
+            if (!BedrockQuestForms.openRerollIfAvailable(player)) DailyRerollMenu.openChoice(player);
             return;
         }
 

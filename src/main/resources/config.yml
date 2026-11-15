@@ -39,6 +39,12 @@ player_data_load_delay: 0.5
 # /!\ Players without permissions may then end up with no quests at all!
 safety_mode: true
 
+# Native Bedrock forms for /dailyquests and /dailyquests reroll.
+# Only used when Floodgate is installed and the player is connecting from Bedrock.
+# Java players always use the regular inventory GUI.
+bedrock_forms:
+  enabled: true
+
 # Define the number of daily quests assigned to the player for each category.
 # Categories that are not listed here will not be loaded.
 #
