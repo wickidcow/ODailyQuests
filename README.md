@@ -4,9 +4,9 @@
 
 The project was **originally created by Ordwen and the original ODailyQuests contributors**. Their work established the foundation this project continues to build on, and that contribution will always be credited here.
 
-**ODailyQuests 3.0.13** uses **Paper 26.3 as the primary API target**, retains **Minecraft 1.21.11+ compatibility**, emits **Java 21 bytecode**, and is built/tested with a **Java 25** toolchain.
+**ODailyQuests 3.0.14** uses **Paper 26.3 as the primary API target**, retains **Minecraft 1.21.11+ compatibility**, emits **Java 21 bytecode**, and is built/tested with a **Java 25** toolchain.
 
-[![Release](https://img.shields.io/badge/Release-v3.0.13-2ea44f?logo=github)](https://github.com/wickidcow/ODailyQuests/releases/tag/v3.0.13)
+[![Release](https://img.shields.io/badge/Release-v3.0.14-2ea44f?logo=github)](https://github.com/wickidcow/ODailyQuests/releases/tag/v3.0.14)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.11%2B-62b47a)](https://github.com/wickidcow/ODailyQuests/releases)
 [![Java](https://img.shields.io/badge/Java-21%20bytecode-orange?logo=openjdk)](https://github.com/wickidcow/ODailyQuests)
 [![License](https://img.shields.io/badge/License-GPL--3.0-blue)](LICENSE)
@@ -27,6 +27,7 @@ The project was **originally created by Ordwen and the original ODailyQuests con
 - MMOItems and ItemsAdder item recognition
 - standalone **Fable Good** and **Fable Evil** paths
 - a refreshed daily quest GUI with a **one-use-per-day reroll menu**
+- optional native Bedrock menus via Floodgate, including quest checks and rerolls ([setup](BEDROCK_FORMS.md))
 - optional **Jobs / JobsReborn** quest shortcut
 - weighted quests, permission pools, scaling, chains, weekly categories, streaks and community goals
 - `%progressPercent%`, `%totalQuests%`, and backward-compatible `%progression%`

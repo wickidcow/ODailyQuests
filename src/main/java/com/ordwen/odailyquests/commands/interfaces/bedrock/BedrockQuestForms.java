@@ -2,6 +2,7 @@ package com.ordwen.odailyquests.commands.interfaces.bedrock;
 
 import com.ordwen.odailyquests.ODailyQuests;
 import com.ordwen.odailyquests.configuration.functionalities.CompleteOnlyOnClick;
+import com.ordwen.odailyquests.configuration.functionalities.DisabledWorlds;
 import com.ordwen.odailyquests.enums.QuestsPermissions;
 import com.ordwen.odailyquests.quests.features.RerollService;
 import com.ordwen.odailyquests.quests.player.PlayerQuests;
@@ -57,7 +58,7 @@ public final class BedrockQuestForms {
     private static boolean isBedrock(Player player) {
         final ODailyQuests plugin = ODailyQuests.INSTANCE;
         if (plugin == null || !plugin.isEnabled()
-                || !plugin.getConfig().getBoolean("bedrock_forms.enabled", true)
+                || !plugin.getFilesManager().getConfigurationFile().getConfig().getBoolean("bedrock_forms.enabled", true)
                 || !Bukkit.getPluginManager().isPluginEnabled("floodgate")) {
             return false;
         }
@@ -165,6 +166,10 @@ public final class BedrockQuestForms {
             return;
         }
 
+        // Match the Java menu's permission and disabled-world gates for clickable quests.
+        if (!player.hasPermission("odailyquests.progress")
+                || DisabledWorlds.isWorldDisabled(player.getWorld().getName())) return;
+
         final QuestContext context = new QuestContext.Builder(player).clickedItem(quest.getMenuItem()).build();
         if (quest instanceof GetQuest get) {
             new GetQuestCommand(context, progress, get).execute();
@@ -219,7 +224,7 @@ public final class BedrockQuestForms {
                 if (current == null) return;
                 final List<AbstractQuest> now = new ArrayList<>(current.getQuests().keySet());
                 // Reject stale forms rather than rerolling a different quest by index.
-                if (index >= now.size() || now.get(index) != quest) {
+                if (current != quests || index >= now.size() || now.get(index) != quest) {
                     player.sendMessage(ChatColor.YELLOW + "Your quests changed. Please choose again.");
                     showMain(player);
                     return;
@@ -237,6 +242,10 @@ public final class BedrockQuestForms {
 
     private static void confirmRerollAll(Player player) {
         if (!player.hasPermission(REROLL) || !RerollService.canRerollToday(player, true)) return;
+        // Capture the assignment: a pending form must not reroll a newly renewed set.
+        final PlayerQuests atConfirmation = active(player);
+        if (atConfirmation == null) return;
+        final List<AbstractQuest> originalAssignments = new ArrayList<>(atConfirmation.getQuests().keySet());
         final SimpleForm.Builder form = SimpleForm.builder()
                 .title("Confirm Reroll All")
                 .content("Replace every current daily quest? This spends one reroll action and any configured cost.")
@@ -245,11 +254,28 @@ public final class BedrockQuestForms {
         send(player, form, List.of(
                 () -> {
                     if (!player.hasPermission(REROLL)) return;
+                    final PlayerQuests current = active(player);
+                    if (current == null) return;
+                    if (current != atConfirmation || !sameAssignments(originalAssignments,
+                            new ArrayList<>(current.getQuests().keySet()))) {
+                        player.sendMessage(ChatColor.YELLOW + "Your quests changed. Please confirm a new reroll.");
+                        showMain(player);
+                        return;
+                    }
                     RerollService.rerollAll(player);
                     showMain(player);
                 },
                 () -> showReroll(player)
         ));
+    }
+
+    /** Preserve both assignment order and identity across a pending Bedrock response. */
+    static boolean sameAssignments(List<?> previous, List<?> current) {
+        if (previous.size() != current.size()) return false;
+        for (int i = 0; i < previous.size(); i++) {
+            if (previous.get(i) != current.get(i)) return false;
+        }
+        return true;
     }
 
     private static String rewardSummary(Player player, AbstractQuest quest,

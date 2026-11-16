@@ -51,6 +51,7 @@ jobs:
             "com/ordwen/odailyquests/quests/features/RerollService.class"
             "com/ordwen/odailyquests/quests/types/global/CustomQuest.class"
             "com/ordwen/odailyquests/commands/interfaces/playerinterface/reroll/DailyRerollMenu.class"
+            "com/ordwen/odailyquests/commands/interfaces/bedrock/BedrockQuestForms.class"
             "com/ordwen/odailyquests/events/listeners/integrations/PylonInventoryGainEvent.class"
             "com/ordwen/odailyquests/events/listeners/integrations/PylonInventoryGainListener.class"
             "com/ordwen/odailyquests/events/listeners/item/PaperItemCraftedListener.class"
