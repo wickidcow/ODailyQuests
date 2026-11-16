@@ -2,6 +2,7 @@ package com.ordwen.odailyquests.commands.player.handlers;
 
 import com.ordwen.odailyquests.api.commands.player.PlayerCommandBase;
 import com.ordwen.odailyquests.commands.interfaces.playerinterface.PlayerQuestsInterface;
+import com.ordwen.odailyquests.commands.interfaces.bedrock.BedrockQuestForms;
 import com.ordwen.odailyquests.enums.QuestsMessages;
 import com.ordwen.odailyquests.enums.QuestsPermissions;
 import org.bukkit.entity.Player;
@@ -32,7 +33,7 @@ public class MeCommand extends PlayerCommandBase {
             return;
         }
 
-        openInventory(player);
+        if (!BedrockQuestForms.openIfAvailable(player)) openInventory(player);
     }
 
     /**
